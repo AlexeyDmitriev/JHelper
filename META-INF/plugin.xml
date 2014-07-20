@@ -1,35 +1,39 @@
 <idea-plugin version="2">
-  <id>name.admitriev.jhelper</id>
-  <name>JHelper</name>
-  <version>0.1</version>
-  <vendor>Alexey Dmitriev</vendor>
+	<id>name.admitriev.jhelper</id>
+	<name>JHelper</name>
+	<version>0.1</version>
+	<vendor>Alexey Dmitriev</vendor>
 
-  <description>Sport programming tool to inline library code and provide testing framework</description>
+	<description>Sport programming tool to inline library code and provide testing framework</description>
 
-  <change-notes>
-  </change-notes>
+	<change-notes>
+	</change-notes>
 
-  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="131"/>
+	<idea-version since-build="131"/>
 
-  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
-       on how to target different products -->
-  <depends>com.intellij.modules.lang</depends>
+	<depends>com.intellij.modules.lang</depends>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
-  </extensions>
+	<extensions defaultExtensionNs="com.intellij">
+		<!-- Add your extensions here -->
+	</extensions>
 
-  <application-components>
-    <!-- Add your application components here -->
-  </application-components>
+	<application-components>
+		<!-- Add your application components here -->
+	</application-components>
 
-  <project-components>
-    <!-- Add your project components here -->
-  </project-components>
-
-  <actions>
-    <!-- Add your actions here -->
-  </actions>
-
+	<project-components>
+		<!-- Add your project components here -->
+		<component>
+			<implementation-class>name.admitriev.jhelper.components.Configurator</implementation-class>
+		</component>
+	</project-components>
+	<actions>
+		<action
+			id="name.admitriev.jhelper.configureAction"
+			class="name.admitriev.jhelper.actions.ConfigureAction"
+			text="Configure"
+			description="Configure JHelper"
+			icon="/icons/settings.png"
+		/>
+	</actions>
 </idea-plugin>
