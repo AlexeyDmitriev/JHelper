@@ -10,12 +10,16 @@ public class ConfigureAction extends AnAction {
 	@Override
 	public void actionPerformed(AnActionEvent e) {
 		Project project = getEventProject(e);
-		assert project != null;
+		if(project == null)
+			return;
+
 		Configurator configurator = project.getComponent(Configurator.class);
-		Configurator.State newConfiguration = ConfigurationDialog.edit(project, configurator.getState());
-		if(newConfiguration != null) {
-			System.err.println(newConfiguration.getAuthor() + ' ' + newConfiguration.getTasksDirectory());
-			configurator.loadState(newConfiguration);
+		Configurator.State configuration = configurator.getState();
+
+		ConfigurationDialog x = new ConfigurationDialog(project, configuration);
+		x.show();
+		if(x.isOK()) {
+			configurator.loadState(x.getConfiguration());
 		}
 	}
 }

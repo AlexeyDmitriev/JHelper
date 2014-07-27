@@ -1,84 +1,46 @@
 package name.admitriev.jhelper.ui;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.LabeledComponent;
 import name.admitriev.jhelper.components.Configurator;
 import net.egork.chelper.ui.DirectorySelector;
-import net.egork.chelper.ui.OkCancelPanel;
-import net.egork.chelper.util.Utilities;
 import org.jdesktop.swingx.VerticalLayout;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.JDialog;
-import javax.swing.JLabel;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.GridLayout;
-import java.awt.Point;
 
+public class ConfigurationDialog extends DialogWrapper {
+	private final JComponent component;
+	private JTextField author;
+	private DirectorySelector tasksDirectory;
 
-public class ConfigurationDialog extends JDialog {
-	private final JTextField author;
-	private final DirectorySelector tasksDirectory;
-	private boolean isOk = false;
-	@Nullable
-	private Configurator.State result = null;
+	public ConfigurationDialog(@NotNull Project project, Configurator.State configuration) {
+		super(project);
+		setTitle("JHelper configuration for " + project.getName());
 
-	private ConfigurationDialog(Project project, Configurator.State configuration) {
-		super(null, "Project Jhelper configuration", ModalityType.APPLICATION_MODAL);
-		setAlwaysOnTop(true);
 		author = new JTextField(configuration.getAuthor());
 		tasksDirectory = new DirectorySelector(project, configuration.getTasksDirectory());
 
-		OkCancelPanel main = new OkCancelPanel(new VerticalLayout()) {
-			@Override
-			public void onOk() {
-				isOk = true;
-				regenerateResult();
-				ConfigurationDialog.this.setVisible(false);
-			}
+		JPanel panel = new JPanel(new VerticalLayout());
+		panel.add(LabeledComponent.create(author, "Author"));
+		panel.add(LabeledComponent.create(tasksDirectory, "Tasks directory"));
 
-			@Override
-			public void onCancel() {
-				result = null;
-				ConfigurationDialog.this.setVisible(false);
-			}
-		};
+		component = panel;
 
-
-		JPanel okCancelPanel = new JPanel(new GridLayout(1, 2));
-		okCancelPanel.add(main.getOkButton());
-		okCancelPanel.add(main.getCancelButton());
-		main.add(new JLabel("Task directory:"));
-		main.add(tasksDirectory);
-		main.add(new JLabel("Author:"));
-		main.add(author);
-		main.add(okCancelPanel);
-		setContentPane(main);
-		regenerateResult();
-		pack();
-		Point center = Utilities.getLocation(project, main.getSize());
-		setLocation(center);
+		init();
 	}
 
+	@Nullable
 	@Override
-	public void setVisible(boolean b) {
-		if (b) {
-			author.requestFocusInWindow();
-			author.setSelectionStart(0);
-			author.setSelectionEnd(author.getText().length());
-		} else if (!isOk) {
-			result = null;
-		}
-		super.setVisible(b);
+	protected JComponent createCenterPanel() {
+		return component;
 	}
 
-	private void regenerateResult() {
-		result = new Configurator.State(author.getText(), tasksDirectory.getText());
-	}
-
-	public static Configurator.State edit(Project project, Configurator.State configuration) {
-		ConfigurationDialog dialog = new ConfigurationDialog(project, configuration);
-		dialog.setVisible(true);
-		return dialog.result;
+	public Configurator.State getConfiguration() {
+		return new Configurator.State(author.getText(), tasksDirectory.getText());
 	}
 }
