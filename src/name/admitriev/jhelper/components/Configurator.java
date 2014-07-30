@@ -8,7 +8,6 @@ import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.components.StorageScheme;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
 @State(
@@ -47,7 +46,7 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 	}
 
 
-	@Nullable
+	@NotNull
 	@Override
 	public Configurator.State getState() {
 		return state;

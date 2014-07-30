@@ -12,6 +12,7 @@
 	<idea-version since-build="131"/>
 
 	<depends>com.intellij.modules.lang</depends>
+	<depends>com.intellij.modules.appcode</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<!-- Add your extensions here -->
@@ -34,6 +35,13 @@
 			text="Configure"
 			description="Configure JHelper"
 			icon="/icons/settings.png"
+		/>
+		<action
+			id="name.admitriev.jhelper.GenerateCodeAction"
+			class="name.admitriev.jhelper.actions.GenerateCodeAction"
+			text="Generate code to send"
+			description="Inlines include and removes unused code."
+		    icon="/icons/copy.png"
 		/>
 	</actions>
 </idea-plugin>
