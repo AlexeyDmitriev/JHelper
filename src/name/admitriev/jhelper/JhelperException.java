@@ -1,5 +1,6 @@
 package name.admitriev.jhelper;
 
+@SuppressWarnings("UncheckedExceptionClass")
 public class JhelperException extends RuntimeException {
 
 	public JhelperException(String message) {

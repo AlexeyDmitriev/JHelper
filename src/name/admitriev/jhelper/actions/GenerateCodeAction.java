@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import name.admitriev.jhelper.JhelperException;
 import name.admitriev.jhelper.components.Configurator;
+import name.admitriev.jhelper.generation.IncludesProcessor;
 import net.egork.chelper.util.OutputWriter;
 
 import java.io.IOException;
@@ -38,24 +39,22 @@ public class GenerateCodeAction extends AnAction {
 		if(outputFile == null) {
 			throw new JhelperException("no output file found.");
 		}
-
-		try {
-			byte[] bytes = file.getVirtualFile().contentsToByteArray();
-			writeToFile(project, outputFile, bytes);
-		} catch (IOException e1) {
-			throw new JhelperException("Can't read input file", e1);
-		}
+		String result = new IncludesProcessor().process(file);
+		writeToFile(outputFile, authorComment(project), result);
 	}
 
 
-	private void writeToFile(final Project project, final VirtualFile outputFile, final byte[] bytes) {
+
+
+	private void writeToFile(final VirtualFile outputFile, final String... strings) {
 		ApplicationManager.getApplication().runWriteAction(new Runnable() {
 			@Override
 			public void run() {
 				try {
 					OutputWriter writer = new OutputWriter(outputFile.getOutputStream(this));
-					writer.print(authorComment(project));
-					writer.print(new String(bytes, "UTF-8"));
+					for (String string : strings) {
+						writer.print(string);
+					}
 					writer.flush();
 					writer.close();
 				} catch (IOException e) {
@@ -65,7 +64,7 @@ public class GenerateCodeAction extends AnAction {
 		});
 	}
 
-	private String authorComment(Project project) {
+	private static String authorComment(Project project) {
 
 		Configurator configurator = project.getComponent(Configurator.class);
 		Configurator.State configuration = configurator.getState();
