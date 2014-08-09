@@ -3,17 +3,18 @@ package name.admitriev.jhelper.actions;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import name.admitriev.jhelper.JHelperException;
 import name.admitriev.jhelper.components.Configurator;
 import name.admitriev.jhelper.generation.IncludesProcessor;
-import net.egork.chelper.util.OutputWriter;
-
-import java.io.IOException;
+import name.admitriev.jhelper.generation.UnusedCodeRemover;
 
 
 public class GenerateCodeAction extends AnAction {
@@ -41,30 +42,37 @@ public class GenerateCodeAction extends AnAction {
 			throw new JHelperException("no output file found.");
 		}
 		String result = IncludesProcessor.process(file);
-		writeToFile(outputFile, authorComment(project), result);
-		System.err.println("here");
 		PsiFile psiOutputFile = PsiManager.getInstance(project).findFile(outputFile);
 		if(psiOutputFile == null) {
 			throw new JHelperException("can't open output file as PSI");
 		}
+
+		writeToFile(psiOutputFile, authorComment(project), result);
+		System.err.println(psiOutputFile.isValid());
+		System.err.println("ok, includes preprocessed");
+
+		UnusedCodeRemover.remove(psiOutputFile);
 	}
 
-	private void writeToFile(final VirtualFile outputFile, final String... strings) {
-		ApplicationManager.getApplication().runWriteAction(new Runnable() {
+	private void writeToFile(PsiFile outputFile, final String... strings) {
+		final Project project = outputFile.getProject();
+		final Document document = PsiDocumentManager.getInstance(project).getDocument(outputFile);
+		if(document == null) {
+			throw new JHelperException("Can't open output file as document");
+		}
+
+		new WriteCommandAction.Simple<Object>(outputFile.getProject(), outputFile) {
 			@Override
 			public void run() {
-				try {
-					OutputWriter writer = new OutputWriter(outputFile.getOutputStream(this));
-					for (String string : strings) {
-						writer.print(string);
-					}
-					writer.flush();
-					writer.close();
-				} catch (IOException e) {
-					throw new JHelperException("Can't write to output file", e);
+				document.deleteString(0, document.getTextLength());
+				for (String string : strings) {
+					document.insertString(document.getTextLength() ,string);
 				}
+				System.err.println("document text is:" + document);
+				FileDocumentManager.getInstance().saveDocument(document);
+				PsiDocumentManager.getInstance(project).commitDocument(document);
 			}
-		});
+		}.execute();
 	}
 
 	private static String authorComment(Project project) {
