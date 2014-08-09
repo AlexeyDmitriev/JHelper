@@ -48,8 +48,6 @@ public class GenerateCodeAction extends AnAction {
 		}
 
 		writeToFile(psiOutputFile, authorComment(project), result);
-		System.err.println(psiOutputFile.isValid());
-		System.err.println("ok, includes preprocessed");
 
 		UnusedCodeRemover.remove(psiOutputFile);
 	}
@@ -68,7 +66,6 @@ public class GenerateCodeAction extends AnAction {
 				for (String string : strings) {
 					document.insertString(document.getTextLength() ,string);
 				}
-				System.err.println("document text is:" + document);
 				FileDocumentManager.getInstance().saveDocument(document);
 				PsiDocumentManager.getInstance(project).commitDocument(document);
 			}

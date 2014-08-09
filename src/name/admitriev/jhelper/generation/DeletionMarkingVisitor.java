@@ -37,20 +37,16 @@ class DeletionMarkingVisitor extends OCVisitor {
 		if("main".equals(functionDefinition.getName())) {
 			return;
 		}
-		System.err.println("function " + functionDefinition.getName());
 		removeIfNoReference(functionDefinition);
 	}
 
 	private void removeIfNoReference(OCElement element) {
 		for (PsiReference reference : ReferencesSearch.search(element, searchScope)) {
 			PsiElement referenceElement = reference.getElement();
-			System.err.println("reference found:" + referenceElement.getContainingFile());
-			System.err.println("context:" + referenceElement.getParent().getParent().getText());
 			if(!isParentFor(element, referenceElement)) {
 				return;
 			}
 		}
-		System.err.println("marking to remove");
 		toDelete.add(element);
 	}
 

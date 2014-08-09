@@ -17,7 +17,6 @@ public class UnusedCodeRemover {
 
 	public static void remove(PsiFile file) {
 		while (true) {
-			System.err.println("file is:\n" + file.getText());
 			final Collection<PsiElement> toDelete = new ArrayList<PsiElement>();
 			Project project = file.getProject();
 			SearchScope scope = new GlobalSearchScope.FilesScope(project, Collections.singletonList(file.getVirtualFile()));
