@@ -7,6 +7,7 @@ import com.intellij.psi.search.searches.ReferencesSearch;
 import com.jetbrains.objc.psi.OCCppNamespace;
 import com.jetbrains.objc.psi.OCElement;
 import com.jetbrains.objc.psi.OCFunctionDefinition;
+import com.jetbrains.objc.psi.impl.OCDefineDirectiveImpl;
 import com.jetbrains.objc.psi.visitors.OCVisitor;
 
 import java.util.Collection;
@@ -52,14 +53,21 @@ class DeletionMarkingVisitor extends OCVisitor {
 
 	@Override
 	public void visitElement(PsiElement element) {
-		//System.err.println("ignoring " + element);
 		super.visitElement(element);
 	}
 
 	@Override
 	public void visitNamespace(OCCppNamespace namespace) {
-		namespace.acceptChildren(this);
+		if(namespace.getChildren().length == 0) {
+			toDelete.add(namespace);
+		}
+		else {
+			namespace.acceptChildren(this);
+		}
 	}
 
-
+	@Override
+	public void visitDefineDirective(OCDefineDirectiveImpl directive) {
+		removeIfNoReference(directive);
+	}
 }
