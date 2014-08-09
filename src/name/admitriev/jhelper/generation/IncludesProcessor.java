@@ -9,16 +9,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class IncludesProcessor {
-	private Set<PsiFile> usedFiles = null;
+	private Set<PsiFile> usedFiles = new HashSet<PsiFile>();
 	@SuppressWarnings("StringBufferField")
-	private StringBuilder result = null;
+	private StringBuilder result = new StringBuilder();
 
 
-	public String process(PsiFile file) {
-		usedFiles = new HashSet<PsiFile>();
-		result = new StringBuilder();
-		processFile(file);
-		return result.toString();
+	private IncludesProcessor() {
 	}
 
 	private void processFile(PsiFile file) {
@@ -27,22 +23,37 @@ public class IncludesProcessor {
 		}
 		usedFiles.add(file);
 		for (PsiElement element : file.getChildren()) {
-			System.err.println(element);
-			boolean processed = false;
 			if(element instanceof OCImportDirective) {
 				OCImportDirective include = (OCImportDirective)element;
-				if(!include.isAngleBrackets()) {
-					processFile(include.getImportedFile());
-					processed = true;
+				if(include.isAngleBrackets()) {
+					processAngleBracketsInclude(include);
 				}
+				else {
+					processFile(include.getImportedFile());
+				}
+				continue;
 			}
-			else if(element instanceof OCPragma) {
+			if(element instanceof OCPragma) {
 				OCPragma pragma = (OCPragma) element;
 				if("once".equals(pragma.getContent().trim()))
-					processed = true;
+					continue;
 			}
-			if(!processed)
-				result.append(element.getText()).append('\n');
+			result.append(element.getText());
 		}
+	}
+
+	private void processAngleBracketsInclude(OCImportDirective include) {
+		PsiFile file = include.getImportedFile();
+		if(usedFiles.contains(file)) {
+			return;
+		}
+		usedFiles.add(file);
+		result.append(include.getText());
+	}
+
+	public static String process(PsiFile file) {
+		IncludesProcessor processor = new IncludesProcessor();
+		processor.processFile(file);
+		return processor.result.toString();
 	}
 }
