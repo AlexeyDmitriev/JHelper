@@ -7,7 +7,8 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import name.admitriev.jhelper.JhelperException;
+import com.intellij.psi.PsiManager;
+import name.admitriev.jhelper.JHelperException;
 import name.admitriev.jhelper.components.Configurator;
 import name.admitriev.jhelper.generation.IncludesProcessor;
 import net.egork.chelper.util.OutputWriter;
@@ -32,19 +33,21 @@ public class GenerateCodeAction extends AnAction {
 
 		Project project = e.getProject();
 		if(project == null) {
-			throw new JhelperException("no project found");
+			throw new JHelperException("no project found");
 		}
 
 		VirtualFile outputFile = findFileInProject(project, "output/main.cpp");
 		if(outputFile == null) {
-			throw new JhelperException("no output file found.");
+			throw new JHelperException("no output file found.");
 		}
-		String result = new IncludesProcessor().process(file);
+		String result = IncludesProcessor.process(file);
 		writeToFile(outputFile, authorComment(project), result);
+		System.err.println("here");
+		PsiFile psiOutputFile = PsiManager.getInstance(project).findFile(outputFile);
+		if(psiOutputFile == null) {
+			throw new JHelperException("can't open output file as PSI");
+		}
 	}
-
-
-
 
 	private void writeToFile(final VirtualFile outputFile, final String... strings) {
 		ApplicationManager.getApplication().runWriteAction(new Runnable() {
@@ -58,14 +61,13 @@ public class GenerateCodeAction extends AnAction {
 					writer.flush();
 					writer.close();
 				} catch (IOException e) {
-					throw new JhelperException("Can't write to output file", e);
+					throw new JHelperException("Can't write to output file", e);
 				}
 			}
 		});
 	}
 
 	private static String authorComment(Project project) {
-
 		Configurator configurator = project.getComponent(Configurator.class);
 		Configurator.State configuration = configurator.getState();
 

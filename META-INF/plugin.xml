@@ -12,6 +12,7 @@
 	<idea-version since-build="131"/>
 
 	<depends>com.intellij.modules.lang</depends>
+	<depends>com.intellij.modules.platform</depends>
 	<depends>com.intellij.modules.appcode</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
