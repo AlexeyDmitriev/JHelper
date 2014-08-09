@@ -17,6 +17,7 @@ public class ConfigurationDialog extends DialogWrapper {
 	private final JComponent component;
 	private JTextField author;
 	private DirectorySelector tasksDirectory;
+	private FileSelector outputFile;
 
 	public ConfigurationDialog(@NotNull Project project, Configurator.State configuration) {
 		super(project);
@@ -24,10 +25,12 @@ public class ConfigurationDialog extends DialogWrapper {
 
 		author = new JTextField(configuration.getAuthor());
 		tasksDirectory = new DirectorySelector(project, configuration.getTasksDirectory());
+		outputFile = new FileSelector(project, configuration.getOutputFile());
 
 		JPanel panel = new JPanel(new VerticalLayout());
 		panel.add(LabeledComponent.create(author, "Author"));
 		panel.add(LabeledComponent.create(tasksDirectory, "Tasks directory"));
+		panel.add(LabeledComponent.create(outputFile, "Output file"));
 
 		component = panel;
 
@@ -41,6 +44,6 @@ public class ConfigurationDialog extends DialogWrapper {
 	}
 
 	public Configurator.State getConfiguration() {
-		return new Configurator.State(author.getText(), tasksDirectory.getText());
+		return new Configurator.State(author.getText(), tasksDirectory.getText(), outputFile.getText());
 	}
 }

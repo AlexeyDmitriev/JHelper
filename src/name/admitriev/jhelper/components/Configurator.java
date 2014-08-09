@@ -62,14 +62,16 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 	public static class State {
 		private String author;
 		private String tasksDirectory;
+		private String outputFile;
 
-		public State(String author, String tasksDirectory) {
+		public State(String author, String tasksDirectory, String outputFile) {
 			this.author = author;
 			this.tasksDirectory = tasksDirectory;
+			this.outputFile = outputFile;
 		}
 
 		public State() {
-			this("", "tasks");
+			this("", "tasks", "output/main.cpp");
 		}
 
 		public String getAuthor() {
@@ -80,6 +82,10 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 			return tasksDirectory;
 		}
 
+		public String getOutputFile() {
+			return outputFile;
+		}
+
 		@Deprecated
 		public void setAuthor(String author) {
 			this.author = author;
@@ -88,6 +94,11 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 		@Deprecated
 		public void setTasksDirectory(String tasksDirectory) {
 			this.tasksDirectory = tasksDirectory;
+		}
+
+		@Deprecated
+		public void setOutputFile(String outputFile) {
+			this.outputFile = outputFile;
 		}
 	}
 }

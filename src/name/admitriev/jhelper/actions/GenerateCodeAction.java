@@ -37,7 +37,11 @@ public class GenerateCodeAction extends AnAction {
 			throw new JHelperException("no project found");
 		}
 
-		VirtualFile outputFile = findFileInProject(project, "output/main.cpp");
+
+		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator.State configuration = configurator.getState();
+
+		VirtualFile outputFile = findFileInProject(project, configuration.getOutputFile());
 		if(outputFile == null) {
 			throw new JHelperException("no output file found.");
 		}
@@ -52,7 +56,7 @@ public class GenerateCodeAction extends AnAction {
 		UnusedCodeRemover.remove(psiOutputFile);
 	}
 
-	private void writeToFile(PsiFile outputFile, final String... strings) {
+	private static void writeToFile(PsiFile outputFile, final String... strings) {
 		final Project project = outputFile.getProject();
 		final Document document = PsiDocumentManager.getInstance(project).getDocument(outputFile);
 		if(document == null) {
