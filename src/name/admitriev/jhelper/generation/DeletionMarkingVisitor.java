@@ -13,7 +13,7 @@ import com.jetbrains.objc.psi.visitors.OCVisitor;
 
 import java.util.Collection;
 
-class DeletionMarkingVisitor extends OCVisitor {
+public class DeletionMarkingVisitor extends OCVisitor {
 	private final Collection<PsiElement> toDelete;
 	private SearchScope searchScope;
 
@@ -74,7 +74,6 @@ class DeletionMarkingVisitor extends OCVisitor {
 
 	@Override
 	public void visitFunctionPredefinition(OCFunctionPredefinition predefinition) {
-		System.err.println(predefinition);
 		removeIfNoReference(predefinition);
 	}
 }
