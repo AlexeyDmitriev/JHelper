@@ -5,6 +5,8 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.jetbrains.objc.psi.OCCppNamespace;
+import com.jetbrains.objc.psi.OCDeclaration;
+import com.jetbrains.objc.psi.OCDeclarator;
 import com.jetbrains.objc.psi.OCElement;
 import com.jetbrains.objc.psi.OCFunctionDefinition;
 import com.jetbrains.objc.psi.OCFunctionPredefinition;
@@ -75,5 +77,12 @@ public class DeletionMarkingVisitor extends OCVisitor {
 	@Override
 	public void visitFunctionPredefinition(OCFunctionPredefinition predefinition) {
 		removeIfNoReference(predefinition);
+	}
+
+	@Override
+	public void visitDeclaration(OCDeclaration declaration) {
+		for (OCDeclarator variable : declaration.getDeclarators()) {
+			removeIfNoReference(variable);
+		}
 	}
 }
