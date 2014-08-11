@@ -13,7 +13,7 @@
 
 	<depends>com.intellij.modules.lang</depends>
 	<depends>com.intellij.modules.platform</depends>
-	<depends>com.intellij.modules.appcode</depends>
+	<depends>com.intellij.modules.cidr.lang</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<!-- Add your extensions here -->
