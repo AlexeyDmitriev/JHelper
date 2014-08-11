@@ -10,10 +10,13 @@ import com.jetbrains.objc.psi.OCDeclarator;
 import com.jetbrains.objc.psi.OCElement;
 import com.jetbrains.objc.psi.OCFunctionDefinition;
 import com.jetbrains.objc.psi.OCFunctionPredefinition;
+import com.jetbrains.objc.psi.OCStruct;
 import com.jetbrains.objc.psi.impl.OCDefineDirectiveImpl;
 import com.jetbrains.objc.psi.visitors.OCVisitor;
+import name.admitriev.jhelper.JHelperException;
 
 import java.util.Collection;
+import java.util.List;
 
 public class DeletionMarkingVisitor extends OCVisitor {
 	private final Collection<PsiElement> toDelete;
@@ -81,8 +84,31 @@ public class DeletionMarkingVisitor extends OCVisitor {
 
 	@Override
 	public void visitDeclaration(OCDeclaration declaration) {
-		for (OCDeclarator variable : declaration.getDeclarators()) {
-			removeIfNoReference(variable);
+		List<OCDeclarator> variables = declaration.getDeclarators();
+		if(variables.isEmpty()) {
+			PsiElement[] types = declaration.getTypeElement().getChildren();
+			switch (types.length) {
+				case 0:
+					break;
+				case 1:
+					if(types[0] instanceof OCStruct) {
+						OCStruct struct = (OCStruct) types[0];
+						removeIfNoReference(struct);
+						struct.acceptChildren(this);
+					}
+					else {
+						throw new JHelperException("Type is not a OCStruct. Please file a bug at https://github.com/AlexeyDmitriev/JHelper/issues with stack trace and your code");
+					}
+					break;
+				default:
+					throw new JHelperException("2 or more children in declaration. Please file a bug at https://github.com/AlexeyDmitriev/JHelper/issues with stack trace and your code");
+			}
 		}
+		else {
+			for (OCDeclarator variable : variables) {
+				removeIfNoReference(variable);
+			}
+		}
+
 	}
 }
