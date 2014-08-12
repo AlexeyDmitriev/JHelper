@@ -16,7 +16,7 @@
 	<depends>com.intellij.modules.cidr.lang</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<!-- Add your extensions here -->
+		<configurationType implementation="name.admitriev.jhelper.configuration.TaskConfigurationType"/>
 	</extensions>
 
 	<application-components>
