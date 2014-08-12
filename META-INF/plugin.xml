@@ -35,14 +35,14 @@
 			class="name.admitriev.jhelper.actions.ConfigureAction"
 			text="Configure"
 			description="Configure JHelper"
-			icon="/icons/settings.png"
+			icon="/name/admitriev/jhelper/icons/settings.png"
 		/>
 		<action
 			id="name.admitriev.jhelper.GenerateCodeAction"
 			class="name.admitriev.jhelper.actions.GenerateCodeAction"
 			text="Generate code to send"
 			description="Inlines include and removes unused code."
-		    icon="/icons/copy.png"
+		    icon="/name/admitriev/jhelper/icons/copy.png"
 		/>
 	</actions>
 </idea-plugin>
