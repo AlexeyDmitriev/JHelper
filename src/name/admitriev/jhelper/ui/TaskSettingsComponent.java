@@ -18,6 +18,8 @@ public class TaskSettingsComponent extends JPanel {
 	public TaskSettingsComponent(Project project) {
 		super(new VerticalLayout());
 		this.project = project;
+		//noinspection OverridableMethodCallDuringObjectConstruction
+		setTask(Task.emptyTask(project));
 	}
 
 	public Task getTask() {

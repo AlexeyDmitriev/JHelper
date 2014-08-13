@@ -24,11 +24,11 @@
 	</application-components>
 
 	<project-components>
-		<!-- Add your project components here -->
 		<component>
 			<implementation-class>name.admitriev.jhelper.components.Configurator</implementation-class>
 		</component>
 	</project-components>
+
 	<actions>
 		<action
 			id="name.admitriev.jhelper.configureAction"
@@ -43,6 +43,13 @@
 			text="Generate code to send"
 			description="Inlines include and removes unused code."
 		    icon="/name/admitriev/jhelper/icons/copy.png"
+		/>
+		<action
+			id="name.admitriev.jhelper.AddTaskAction"
+			class="name.admitriev.jhelper.actions.AddTaskAction"
+			text="Add Task"
+			description="Creates new task."
+			icon="/name/admitriev/jhelper/icons/newTask.png"
 		/>
 	</actions>
 </idea-plugin>

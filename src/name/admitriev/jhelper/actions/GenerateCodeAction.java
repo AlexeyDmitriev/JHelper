@@ -12,6 +12,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import name.admitriev.jhelper.JHelperException;
+import name.admitriev.jhelper.Util;
 import name.admitriev.jhelper.components.Configurator;
 import name.admitriev.jhelper.generation.IncludesProcessor;
 import name.admitriev.jhelper.generation.UnusedCodeRemover;
@@ -27,7 +28,7 @@ public class GenerateCodeAction extends AnAction {
 			return;
 		}
 
-		if(!isCppFile(file)) {
+		if(!Util.isCppFile(file)) {
 			System.err.println("Not a cpp file");
 			return;
 		}
@@ -91,10 +92,6 @@ public class GenerateCodeAction extends AnAction {
 	private static VirtualFile findFileInProject(Project project, String path) {
 		VirtualFile projectDirectory = project.getBaseDir();
 		return projectDirectory.findFileByRelativePath(path);
-	}
-
-	private static boolean isCppFile(PsiFile file) {
-		return file.getName().endsWith(".cpp");
 	}
 
 }
