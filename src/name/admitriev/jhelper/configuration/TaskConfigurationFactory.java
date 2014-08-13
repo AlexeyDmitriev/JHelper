@@ -8,7 +8,7 @@ import name.admitriev.jhelper.task.Task;
 import org.jetbrains.annotations.NotNull;
 
 public class TaskConfigurationFactory extends ConfigurationFactory {
-	TaskConfigurationFactory(@NotNull ConfigurationType type) {
+	public TaskConfigurationFactory(@NotNull ConfigurationType type) {
 		super(type);
 	}
 
