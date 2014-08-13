@@ -16,4 +16,9 @@ public class TaskConfigurationFactory extends ConfigurationFactory {
 	public RunConfiguration createTemplateConfiguration(Project project) {
 		return new TaskConfiguration(project, this, Task.emptyTask(project));
 	}
+
+	@Override
+	public boolean isApplicable(@NotNull Project project) {
+		return false;
+	}
 }
