@@ -13,6 +13,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiManager;
+import name.admitriev.jhelper.JHelperException;
 import name.admitriev.jhelper.Util;
 import name.admitriev.jhelper.configuration.TaskConfiguration;
 import name.admitriev.jhelper.configuration.TaskConfigurationType;
@@ -54,18 +55,18 @@ public class AddTaskAction extends AnAction {
 	private static void generateCPP(Project project, Task task, VirtualFile newTaskFile) {
 		VirtualFile parent = newTaskFile.getParent();
 		final PsiDirectory psiParent = PsiManager.getInstance(project).findDirectory(parent);
-		assert psiParent != null;
+		if(psiParent == null) {
+			throw new JHelperException("Can't open parent directory as PSI");
+		}
 
 		Language objC = Language.findLanguageByID("ObjectiveC");
 		if(objC == null) {
-			System.err.println("Language not found");
-			return;
+			throw new JHelperException("Language not found");
 		}
 
 		final PsiFile file = PsiFileFactory.getInstance(project).createFileFromText(task.getClassName() + ".cpp", objC, generateFileContent(task.getClassName()));
 		if(file == null) {
-			System.err.println("Can't generate file");
-			return;
+			throw new JHelperException("Can't generate file");
 		}
 		ApplicationManager.getApplication().runWriteAction(new Runnable() {
 			@Override
