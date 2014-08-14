@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class IncludesProcessor {
-	private Set<PsiFile> usedFiles = new HashSet<PsiFile>();
+	private Set<PsiFile> processedFiles = new HashSet<PsiFile>();
 	@SuppressWarnings("StringBufferField")
 	private StringBuilder result = new StringBuilder();
 
@@ -18,10 +18,10 @@ public class IncludesProcessor {
 	}
 
 	private void processFile(PsiFile file) {
-		if(usedFiles.contains(file)) {
+		if(processedFiles.contains(file)) {
 			return;
 		}
-		usedFiles.add(file);
+		processedFiles.add(file);
 		for (PsiElement element : file.getChildren()) {
 			if(element instanceof OCImportDirective) {
 				OCImportDirective include = (OCImportDirective)element;
@@ -35,7 +35,7 @@ public class IncludesProcessor {
 			}
 			if(element instanceof OCPragma) {
 				OCPragma pragma = (OCPragma) element;
-				if("once".equals(pragma.getContent().trim()))
+				if(pragma.getContent().trim().equals("once"))
 					continue;
 			}
 			result.append(element.getText());
@@ -44,10 +44,10 @@ public class IncludesProcessor {
 
 	private void processAngleBracketsInclude(OCImportDirective include) {
 		PsiFile file = include.getImportedFile();
-		if(usedFiles.contains(file)) {
+		if(processedFiles.contains(file)) {
 			return;
 		}
-		usedFiles.add(file);
+		processedFiles.add(file);
 		result.append(include.getText());
 	}
 

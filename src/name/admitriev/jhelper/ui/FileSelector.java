@@ -28,6 +28,7 @@ public class FileSelector extends JPanel {
 			@Override
 			public Dimension getPreferredSize() {
 				Dimension dimension = super.getPreferredSize();
+				//Make it square
 				//noinspection SuspiciousNameCombination
 				dimension.width = dimension.height;
 				return dimension;
