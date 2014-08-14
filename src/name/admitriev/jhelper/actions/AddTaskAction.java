@@ -3,12 +3,18 @@ package name.admitriev.jhelper.actions;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.ConfigurationFactory;
+import com.intellij.lang.Language;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiFileFactory;
+import com.intellij.psi.PsiManager;
 import name.admitriev.jhelper.Util;
+import name.admitriev.jhelper.configuration.TaskConfiguration;
 import name.admitriev.jhelper.configuration.TaskConfigurationType;
 import name.admitriev.jhelper.task.Task;
 import name.admitriev.jhelper.ui.AddTaskDialog;
@@ -41,6 +47,48 @@ public class AddTaskAction extends AnAction {
 		});
 
 		createConfigurationForTask(project, task);
+
+		generateCPP(project, task, newTaskFile);
+	}
+
+	private static void generateCPP(Project project, Task task, VirtualFile newTaskFile) {
+		VirtualFile parent = newTaskFile.getParent();
+		final PsiDirectory psiParent = PsiManager.getInstance(project).findDirectory(parent);
+		assert psiParent != null;
+
+		Language objC = Language.findLanguageByID("ObjectiveC");
+		if(objC == null) {
+			System.err.println("Language not found");
+			return;
+		}
+
+		final PsiFile file = PsiFileFactory.getInstance(project).createFileFromText(task.getClassName() + ".cpp", objC, generateFileContent(task.getClassName()));
+		if(file == null) {
+			System.err.println("Can't generate file");
+			return;
+		}
+		ApplicationManager.getApplication().runWriteAction(new Runnable() {
+			@Override
+			public void run() {
+				psiParent.add(file);
+			}
+		});
+	}
+
+	private static CharSequence generateFileContent(String className) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("class ").append(className).append(" {\n");
+		sb.append("public:\n");
+		sb.append("\tvoid solve() {\n");
+		sb.append("\t\t\n");
+		sb.append("\t}\n");
+		sb.append("};\n");
+		sb.append("int main() {\n");
+		sb.append('\t').append(className).append(" solver;\n");
+		sb.append("\tsolver.solve();\n");
+		sb.append("\treturn 0;\n");
+		sb.append("}\n");
+		return sb;
 	}
 
 	private static void createConfigurationForTask(Project project, Task task) {
@@ -48,7 +96,7 @@ public class AddTaskAction extends AnAction {
 		ConfigurationFactory factory = configurationType.getConfigurationFactories()[0];
 
 		RunManager manager = RunManager.getInstance(project);
-		RunnerAndConfigurationSettings configuration = manager.createRunConfiguration(task.getName(), factory);
+		RunnerAndConfigurationSettings configuration = manager.createConfiguration(new TaskConfiguration(project, factory, task), factory);
 		manager.addConfiguration(configuration, true);
 
 		manager.setSelectedConfiguration(configuration);
