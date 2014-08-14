@@ -76,19 +76,17 @@ public class AddTaskAction extends AnAction {
 	}
 
 	private static CharSequence generateFileContent(String className) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("class ").append(className).append(" {\n");
-		sb.append("public:\n");
-		sb.append("\tvoid solve() {\n");
-		sb.append("\t\t\n");
-		sb.append("\t}\n");
-		sb.append("};\n");
-		sb.append("int main() {\n");
-		sb.append('\t').append(className).append(" solver;\n");
-		sb.append("\tsolver.solve();\n");
-		sb.append("\treturn 0;\n");
-		sb.append("}\n");
-		return sb;
+		return "class " + className + " {\n" +
+		       "public:\n" +
+		       "\tvoid solve() {\n" +
+		       "\t\t\n" +
+		       "\t}\n" +
+		       "};\n" +
+		       "int main() {\n" +
+		       '\t' + className + " solver;\n" +
+		       "\tsolver.solve();\n" +
+		       "\treturn 0;\n" +
+		       "}\n";
 	}
 
 	private static void createConfigurationForTask(Project project, Task task) {
