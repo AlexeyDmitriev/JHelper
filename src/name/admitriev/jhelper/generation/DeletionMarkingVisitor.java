@@ -13,7 +13,7 @@ import com.jetbrains.objc.psi.OCFunctionPredefinition;
 import com.jetbrains.objc.psi.OCStructLike;
 import com.jetbrains.objc.psi.impl.OCDefineDirectiveImpl;
 import com.jetbrains.objc.psi.visitors.OCVisitor;
-import name.admitriev.jhelper.JHelperException;
+import name.admitriev.jhelper.exceptions.JHelperException;
 
 import java.util.Collection;
 import java.util.List;
@@ -97,11 +97,11 @@ public class DeletionMarkingVisitor extends OCVisitor {
 						struct.acceptChildren(this);
 					}
 					else {
-						throw new JHelperException("Type is not a OCStructLike. Please file a bug at https://github.com/AlexeyDmitriev/JHelper/issues with stack trace and your code");
+						throw new JHelperException("Type is not a OCStructLike.");
 					}
 					break;
 				default:
-					throw new JHelperException("2 or more children in declaration. Please file a bug at https://github.com/AlexeyDmitriev/JHelper/issues with stack trace and your code");
+					throw new JHelperException("2 or more children in declaration.");
 			}
 		}
 		else {

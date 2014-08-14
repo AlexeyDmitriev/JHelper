@@ -5,6 +5,7 @@ import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import name.admitriev.jhelper.exceptions.NotificationException;
 import net.egork.chelper.util.OutputWriter;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +19,7 @@ public class Util {
 		try {
 			return new OutputWriter(virtualFile.getOutputStream(requestor));
 		} catch (IOException e) {
-			throw new JHelperException("Can't open virtual file to write", e);
+			throw new NotificationException("Couldn't open virtual file to write", e);
 		}
 	}
 
@@ -50,7 +51,7 @@ public class Util {
 								child = file.createChildDirectory(this, name);
 							}
 						} catch (IOException e) {
-							throw new JHelperException("Can't create directory: " + file.getPath() + '/' + name, e);
+							throw new NotificationException("Couldn't create directory: " + file.getPath() + '/' + name, e);
 						}
 					}
 				}
