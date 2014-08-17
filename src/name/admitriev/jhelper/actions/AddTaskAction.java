@@ -26,7 +26,7 @@ public class AddTaskAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
 		Project project = e.getProject();
 		if(project == null) {
-			throw new NotificationException("Project is not found", "Are you in any project?");
+			throw new NotificationException("No project found", "Are you in any project?");
 		}
 
 		AddTaskDialog dialog = new AddTaskDialog(project);

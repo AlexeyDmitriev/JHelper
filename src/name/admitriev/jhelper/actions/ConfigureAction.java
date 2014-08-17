@@ -11,7 +11,7 @@ public class ConfigureAction extends BaseAction {
 	public void performAction(AnActionEvent e) {
 		Project project = e.getProject();
 		if(project == null) {
-			throw new NotificationException("Project is not found", "Are you in any project?");
+			throw new NotificationException("No project found", "Are you in any project?");
 		}
 
 		Configurator configurator = project.getComponent(Configurator.class);
