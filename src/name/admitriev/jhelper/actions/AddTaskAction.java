@@ -55,7 +55,7 @@ public class AddTaskAction extends BaseAction {
 		VirtualFile parent = newTaskFile.getParent();
 		final PsiDirectory psiParent = PsiManager.getInstance(project).findDirectory(parent);
 		if(psiParent == null) {
-			throw new NotificationException("Can't open parent directory as PSI");
+			throw new NotificationException("Couldn't open parent directory as PSI");
 		}
 
 		Language objC = Language.findLanguageByID("ObjectiveC");
@@ -65,7 +65,7 @@ public class AddTaskAction extends BaseAction {
 
 		final PsiFile file = PsiFileFactory.getInstance(project).createFileFromText(task.getClassName() + ".cpp", objC, generateFileContent(task.getClassName()));
 		if(file == null) {
-			throw new NotificationException("Can't generate file");
+			throw new NotificationException("Couldn't generate file");
 		}
 		ApplicationManager.getApplication().runWriteAction(new Runnable() {
 			@Override

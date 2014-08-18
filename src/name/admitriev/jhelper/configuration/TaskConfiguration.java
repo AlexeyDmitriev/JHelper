@@ -5,7 +5,6 @@ import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationBase;
-import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
@@ -13,6 +12,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.jetbrains.cidr.execution.CidrCommandLineState;
+import name.admitriev.jhelper.exceptions.JHelperException;
 import name.admitriev.jhelper.task.Task;
 import name.admitriev.jhelper.ui.TaskSettingsComponent;
 import net.egork.chelper.util.InputReader;
@@ -24,6 +25,9 @@ import javax.swing.JComponent;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Run Configuration for running JHelper tasks
+ */
 public class TaskConfiguration extends RunConfigurationBase {
 	private Task task;
 	public TaskConfiguration(Project project, ConfigurationFactory factory, Task task) {
@@ -62,8 +66,8 @@ public class TaskConfiguration extends RunConfigurationBase {
 
 	@Nullable
 	@Override
-	public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
-		throw new ExecutionException("Can't run anything yet");
+	public CidrCommandLineState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
+		throw new JHelperException("This method is not expected to be used");
 	}
 
 	@Override
@@ -96,5 +100,9 @@ public class TaskConfiguration extends RunConfigurationBase {
 	public void writeExternal(Element element) throws WriteExternalException {
 		element.setAttribute("task_path", task.getPath());
 		super.writeExternal(element);
+	}
+
+	public Task getTask() {
+		return task;
 	}
 }

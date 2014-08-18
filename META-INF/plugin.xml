@@ -17,6 +17,7 @@
 
 	<extensions defaultExtensionNs="com.intellij">
 		<configurationType implementation="name.admitriev.jhelper.configuration.TaskConfigurationType"/>
+		<programRunner implementation="name.admitriev.jhelper.configuration.TaskRunner"/>
 	</extensions>
 
 	<application-components>
@@ -31,21 +32,21 @@
 
 	<actions>
 		<action
-			id="name.admitriev.jhelper.configureAction"
+			id="name.admitriev.jhelper.actions.configureAction"
 			class="name.admitriev.jhelper.actions.ConfigureAction"
 			text="Configure"
 			description="Configure JHelper"
 			icon="/name/admitriev/jhelper/icons/settings.png"
 		/>
 		<action
-			id="name.admitriev.jhelper.GenerateCodeAction"
+			id="name.admitriev.jhelper.actions.GenerateCodeAction"
 			class="name.admitriev.jhelper.actions.GenerateCodeAction"
 			text="Generate code to send"
 			description="Inlines include and removes unused code."
 		    icon="/name/admitriev/jhelper/icons/copy.png"
 		/>
 		<action
-			id="name.admitriev.jhelper.AddTaskAction"
+			id="name.admitriev.jhelper.actions.AddTaskAction"
 			class="name.admitriev.jhelper.actions.AddTaskAction"
 			text="Add Task"
 			description="Creates new task."
