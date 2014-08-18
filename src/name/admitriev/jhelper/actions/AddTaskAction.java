@@ -4,7 +4,6 @@ import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.lang.Language;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -21,9 +20,9 @@ import name.admitriev.jhelper.task.Task;
 import name.admitriev.jhelper.ui.AddTaskDialog;
 import net.egork.chelper.util.OutputWriter;
 
-public class AddTaskAction extends AnAction {
+public class AddTaskAction extends BaseAction {
 	@Override
-	public void actionPerformed(AnActionEvent e) {
+	public void performAction(AnActionEvent e) {
 		Project project = e.getProject();
 		if(project == null) {
 			throw new NotificationException("No project found", "Are you in any project?");
