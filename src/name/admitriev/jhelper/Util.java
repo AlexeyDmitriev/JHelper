@@ -5,7 +5,7 @@ import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import name.admitriev.jhelper.exception.NotificationException;
+import name.admitriev.jhelper.exceptions.NotificationException;
 import net.egork.chelper.util.OutputWriter;
 import org.jetbrains.annotations.Nullable;
 

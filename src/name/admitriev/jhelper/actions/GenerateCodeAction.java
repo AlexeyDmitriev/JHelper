@@ -12,7 +12,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import name.admitriev.jhelper.Util;
 import name.admitriev.jhelper.components.Configurator;
-import name.admitriev.jhelper.exception.NotificationException;
+import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.generation.IncludesProcessor;
 import name.admitriev.jhelper.generation.UnusedCodeRemover;
 

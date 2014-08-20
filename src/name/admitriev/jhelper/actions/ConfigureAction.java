@@ -3,7 +3,7 @@ package name.admitriev.jhelper.actions;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import name.admitriev.jhelper.components.Configurator;
-import name.admitriev.jhelper.exception.NotificationException;
+import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.ui.ConfigurationDialog;
 
 public class ConfigureAction extends BaseAction {

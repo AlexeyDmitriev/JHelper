@@ -13,7 +13,7 @@ import com.jetbrains.objc.psi.OCFunctionPredefinition;
 import com.jetbrains.objc.psi.OCStructLike;
 import com.jetbrains.objc.psi.impl.OCDefineDirectiveImpl;
 import com.jetbrains.objc.psi.visitors.OCVisitor;
-import name.admitriev.jhelper.exception.ReportNeededException;
+import name.admitriev.jhelper.exceptions.ReportNeededException;
 
 import java.util.Collection;
 import java.util.List;

@@ -15,7 +15,7 @@ import com.intellij.psi.PsiManager;
 import name.admitriev.jhelper.Util;
 import name.admitriev.jhelper.configuration.TaskConfiguration;
 import name.admitriev.jhelper.configuration.TaskConfigurationType;
-import name.admitriev.jhelper.exception.NotificationException;
+import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.task.Task;
 import name.admitriev.jhelper.ui.AddTaskDialog;
 import net.egork.chelper.util.OutputWriter;

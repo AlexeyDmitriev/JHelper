@@ -1,4 +1,4 @@
-package name.admitriev.jhelper.exception;
+package name.admitriev.jhelper.exceptions;
 
 public class NotificationException extends RuntimeException {
 	private final String title;

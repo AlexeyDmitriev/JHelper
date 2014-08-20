@@ -5,8 +5,8 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import name.admitriev.jhelper.exception.NotificationException;
-import name.admitriev.jhelper.exception.ReportNeededException;
+import name.admitriev.jhelper.exceptions.NotificationException;
+import name.admitriev.jhelper.exceptions.ReportNeededException;
 
 public abstract class BaseAction extends AnAction {
 	@Override
