@@ -81,12 +81,7 @@ public class AddTaskAction extends BaseAction {
 		       "\tvoid solve() {\n" +
 		       "\t\t\n" +
 		       "\t}\n" +
-		       "};\n" +
-		       "int main() {\n" +
-		       '\t' + className + " solver;\n" +
-		       "\tsolver.solve();\n" +
-		       "\treturn 0;\n" +
-		       "}\n";
+		       "};\n";
 	}
 
 	private static void createConfigurationForTask(Project project, Task task) {

@@ -37,13 +37,6 @@
 			icon="/name/admitriev/jhelper/icons/settings.png"
 		/>
 		<action
-			id="name.admitriev.jhelper.actions.GenerateCodeAction"
-			class="name.admitriev.jhelper.actions.GenerateCodeAction"
-			text="Generate code to send"
-			description="Inlines include and removes unused code."
-		    icon="/name/admitriev/jhelper/icons/copy.png"
-		/>
-		<action
 			id="name.admitriev.jhelper.actions.AddTaskAction"
 			class="name.admitriev.jhelper.actions.AddTaskAction"
 			text="Add Task"

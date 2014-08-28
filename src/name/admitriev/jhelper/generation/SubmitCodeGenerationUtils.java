@@ -14,6 +14,7 @@ import com.intellij.psi.search.SearchScope;
 import name.admitriev.jhelper.Util;
 import name.admitriev.jhelper.components.Configurator;
 import name.admitriev.jhelper.exceptions.NotificationException;
+import name.admitriev.jhelper.task.Task;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -26,10 +27,10 @@ public class SubmitCodeGenerationUtils {
 
 	/**
 	 * Generates code for submission.
-	 * Inlines all used code except standard library and puts it to output file from configuration
+	 * Adds main function, inlines all used code except standard library and puts it to output file from configuration
 	 * @param project Project to get configuration from
 	 */
-	public static void generateSubmissionFile(Project project, @NotNull PsiFile inputFile) {
+	public static void generateSubmissionFile(Project project, @NotNull PsiFile inputFile, Task task) {
 
 		if(!Util.isCppFile(inputFile)) {
 			throw new NotificationException("Not a cpp file", "Only cpp files are currently supported");
@@ -42,9 +43,17 @@ public class SubmitCodeGenerationUtils {
 		String result = IncludesProcessor.process(inputFile);
 		PsiFile psiOutputFile = getOutputFile(project);
 
-		writeToFile(psiOutputFile, authorComment(project), result);
+		writeToFile(psiOutputFile, authorComment(project), result, generateMainFunction(task));
 
 		removeUnusedCode(psiOutputFile);
+	}
+
+	private static String generateMainFunction(Task task) {
+		return "int main() {\n" +
+		       '\t' + task.getClassName() + " solver;\n" +
+		       "\tsolver.solve();\n" +
+		       "\treturn 0;\n" +
+		       "}\n";
 	}
 
 	@NotNull

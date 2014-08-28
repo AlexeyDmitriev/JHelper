@@ -120,6 +120,6 @@ public class TaskRunner extends DefaultProgramRunner {
 		if (psiFile == null) {
 			throw new NotificationException("Couldn't get PSI file for input file");
 		}
-		SubmitCodeGenerationUtils.generateSubmissionFile(project, psiFile);
+		SubmitCodeGenerationUtils.generateSubmissionFile(project, psiFile, task);
 	}
 }
