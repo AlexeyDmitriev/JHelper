@@ -52,7 +52,7 @@ public class SubmitCodeGenerationUtils {
 	private static String generateMainFunction(Task task) {
 		return "int main() {\n" +
 		       '\t' + task.getClassName() + " solver;\n" +
-		       "\tsolver.solve();\n" +
+		       "\tsolver.solve(std::cin, std::cout);\n" +
 		       "\treturn 0;\n" +
 		       "}\n";
 	}

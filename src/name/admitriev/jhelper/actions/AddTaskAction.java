@@ -84,9 +84,11 @@ public class AddTaskAction extends BaseAction {
 	}
 
 	private static CharSequence generateFileContent(String className) {
-		return "class " + className + " {\n" +
+		return "#include <iostream>\n" +
+		       '\n' +
+		       "class " + className + " {\n" +
 		       "public:\n" +
-		       "\tvoid solve() {\n" +
+		       "\tvoid solve(std::istream& in, std::ostream& out) {\n" +
 		       "\t\t\n" +
 		       "\t}\n" +
 		       "};\n";
