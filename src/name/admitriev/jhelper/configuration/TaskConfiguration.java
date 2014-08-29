@@ -1,6 +1,5 @@
 package name.admitriev.jhelper.configuration;
 
-import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -30,6 +29,7 @@ import java.io.InputStream;
  */
 public class TaskConfiguration extends RunConfigurationBase {
 	private Task task;
+
 	public TaskConfiguration(Project project, ConfigurationFactory factory, Task task) {
 		super(project, factory, task.getName());
 		this.task = task;
@@ -41,6 +41,7 @@ public class TaskConfiguration extends RunConfigurationBase {
 		return new SettingsEditor<TaskConfiguration>() {
 
 			private TaskSettingsComponent component = new TaskSettingsComponent(getProject());
+
 			@Override
 			protected void resetEditorFrom(TaskConfiguration s) {
 				component.setTask(s.task);
@@ -66,13 +67,13 @@ public class TaskConfiguration extends RunConfigurationBase {
 
 	@Nullable
 	@Override
-	public CidrCommandLineState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
+	public CidrCommandLineState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
 		throw new JHelperException("This method is not expected to be used");
 	}
 
 	@Override
 	public TaskConfiguration clone() {
-		TaskConfiguration newConfiguration = (TaskConfiguration)super.clone();
+		TaskConfiguration newConfiguration = (TaskConfiguration) super.clone();
 		newConfiguration.task = task.copy();
 		return newConfiguration;
 	}
@@ -83,13 +84,14 @@ public class TaskConfiguration extends RunConfigurationBase {
 		String path = element.getAttribute("task_path").getValue();
 		VirtualFile projectFile = getProject().getBaseDir();
 		VirtualFile taskFile = projectFile.findFileByRelativePath(path);
-		if(taskFile == null) {
+		if (taskFile == null) {
 			return;
 		}
 		InputStream stream;
 		try {
 			stream = taskFile.getInputStream();
-		} catch (IOException ignored) {
+		}
+		catch (IOException ignored) {
 			return;
 		}
 		task = Task.loadTask(new InputReader(stream));

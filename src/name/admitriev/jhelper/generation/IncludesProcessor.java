@@ -18,14 +18,14 @@ public class IncludesProcessor {
 	}
 
 	private void processFile(PsiFile file) {
-		if(processedFiles.contains(file)) {
+		if (processedFiles.contains(file)) {
 			return;
 		}
 		processedFiles.add(file);
 		for (PsiElement element : file.getChildren()) {
-			if(element instanceof OCImportDirective) {
-				OCImportDirective include = (OCImportDirective)element;
-				if(include.isAngleBrackets()) {
+			if (element instanceof OCImportDirective) {
+				OCImportDirective include = (OCImportDirective) element;
+				if (include.isAngleBrackets()) {
 					processAngleBracketsInclude(include);
 				}
 				else {
@@ -33,10 +33,11 @@ public class IncludesProcessor {
 				}
 				continue;
 			}
-			if(element instanceof OCPragma) {
+			if (element instanceof OCPragma) {
 				OCPragma pragma = (OCPragma) element;
-				if(pragma.getContent().trim().equals("once"))
+				if (pragma.getContent().trim().equals("once")) {
 					continue;
+				}
 			}
 			result.append(element.getText());
 		}
@@ -44,7 +45,7 @@ public class IncludesProcessor {
 
 	private void processAngleBracketsInclude(OCImportDirective include) {
 		PsiFile file = include.getImportedFile();
-		if(processedFiles.contains(file)) {
+		if (processedFiles.contains(file)) {
 			return;
 		}
 		processedFiles.add(file);

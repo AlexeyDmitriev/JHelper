@@ -31,7 +31,7 @@ public class DeletionMarkingVisitor extends OCVisitor {
 	private static boolean isParentFor(OCElement potentialParent, PsiElement potentialChild) {
 		while (potentialChild != null) {
 			//noinspection ObjectEquality
-			if(potentialChild == potentialParent) {
+			if (potentialChild == potentialParent) {
 				return true;
 			}
 			potentialChild = potentialChild.getParent();
@@ -41,7 +41,7 @@ public class DeletionMarkingVisitor extends OCVisitor {
 
 	@Override
 	public void visitFunctionDefinition(OCFunctionDefinition functionDefinition) {
-		if("main".equals(functionDefinition.getName())) {
+		if ("main".equals(functionDefinition.getName())) {
 			return;
 		}
 		removeIfNoReference(functionDefinition);
@@ -50,7 +50,7 @@ public class DeletionMarkingVisitor extends OCVisitor {
 	private void removeIfNoReference(OCElement element) {
 		for (PsiReference reference : ReferencesSearch.search(element, searchScope)) {
 			PsiElement referenceElement = reference.getElement();
-			if(!isParentFor(element, referenceElement)) {
+			if (!isParentFor(element, referenceElement)) {
 				return;
 			}
 		}
@@ -64,7 +64,7 @@ public class DeletionMarkingVisitor extends OCVisitor {
 
 	@Override
 	public void visitNamespace(OCCppNamespace namespace) {
-		if(namespace.getChildren().length == 0) {
+		if (namespace.getChildren().length == 0) {
 			toDelete.add(namespace);
 		}
 		else {
@@ -85,13 +85,13 @@ public class DeletionMarkingVisitor extends OCVisitor {
 	@Override
 	public void visitDeclaration(OCDeclaration declaration) {
 		List<OCDeclarator> variables = declaration.getDeclarators();
-		if(variables.isEmpty()) {
+		if (variables.isEmpty()) {
 			PsiElement[] types = declaration.getTypeElement().getChildren();
 			switch (types.length) {
 				case 0:
 					break;
 				case 1:
-					if(types[0] instanceof OCStructLike) {
+					if (types[0] instanceof OCStructLike) {
 						OCStructLike struct = (OCStructLike) types[0];
 						removeIfNoReference(struct);
 						struct.acceptChildren(this);

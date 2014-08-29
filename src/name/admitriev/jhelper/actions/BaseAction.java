@@ -15,7 +15,12 @@ public abstract class BaseAction extends AnAction {
 			performAction(e);
 		}
 		catch (NotificationException exception) {
-			Notification notification = new Notification("JHelper", exception.getTitle(), exception.getContent(), NotificationType.ERROR);
+			Notification notification = new Notification(
+					"JHelper",
+					exception.getTitle(),
+					exception.getContent(),
+					NotificationType.ERROR
+			);
 			Notifications.Bus.notify(notification);
 		}
 		catch (JHelperException exception) {

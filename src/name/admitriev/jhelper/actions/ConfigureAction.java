@@ -10,7 +10,7 @@ public class ConfigureAction extends BaseAction {
 	@Override
 	public void performAction(AnActionEvent e) {
 		Project project = e.getProject();
-		if(project == null) {
+		if (project == null) {
 			throw new NotificationException("No project found", "Are you in any project?");
 		}
 
@@ -19,7 +19,7 @@ public class ConfigureAction extends BaseAction {
 
 		ConfigurationDialog x = new ConfigurationDialog(project, configuration);
 		x.show();
-		if(x.isOK()) {
+		if (x.isOK()) {
 			configurator.loadState(x.getConfiguration());
 		}
 	}

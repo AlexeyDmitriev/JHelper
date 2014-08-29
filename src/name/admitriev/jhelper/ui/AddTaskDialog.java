@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 
 public class AddTaskDialog extends DialogWrapper {
 	private TaskSettingsComponent component;
+
 	public AddTaskDialog(@NotNull Project project) {
 		super(project);
 		component = new TaskSettingsComponent(project);

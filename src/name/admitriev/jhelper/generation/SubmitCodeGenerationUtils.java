@@ -28,15 +28,16 @@ public class SubmitCodeGenerationUtils {
 	/**
 	 * Generates code for submission.
 	 * Adds main function, inlines all used code except standard library and puts it to output file from configuration
+	 *
 	 * @param project Project to get configuration from
 	 */
 	public static void generateSubmissionFile(Project project, @NotNull PsiFile inputFile, Task task) {
 
-		if(!Util.isCppFile(inputFile)) {
+		if (!Util.isCppFile(inputFile)) {
 			throw new NotificationException("Not a cpp file", "Only cpp files are currently supported");
 		}
 
-		if(project == null) {
+		if (project == null) {
 			throw new NotificationException("No project found", "Are you in any project?");
 		}
 
@@ -62,12 +63,15 @@ public class SubmitCodeGenerationUtils {
 		Configurator.State configuration = configurator.getState();
 
 		VirtualFile outputFile = project.getBaseDir().findFileByRelativePath(configuration.getOutputFile());
-		if(outputFile == null) {
-			throw new NotificationException("No output file found.", "You should configure output file to point to existing file");
+		if (outputFile == null) {
+			throw new NotificationException(
+					"No output file found.",
+					"You should configure output file to point to existing file"
+			);
 		}
 
 		PsiFile psiOutputFile = PsiManager.getInstance(project).findFile(outputFile);
-		if(psiOutputFile == null) {
+		if (psiOutputFile == null) {
 			throw new NotificationException("Couldn't open output file as PSI");
 		}
 		return psiOutputFile;
@@ -76,7 +80,7 @@ public class SubmitCodeGenerationUtils {
 	private static void writeToFile(PsiFile outputFile, final String... strings) {
 		final Project project = outputFile.getProject();
 		final Document document = PsiDocumentManager.getInstance(project).getDocument(outputFile);
-		if(document == null) {
+		if (document == null) {
 			throw new NotificationException("Couldn't open output file as document");
 		}
 
@@ -85,7 +89,7 @@ public class SubmitCodeGenerationUtils {
 			public void run() {
 				document.deleteString(0, document.getTextLength());
 				for (String string : strings) {
-					document.insertString(document.getTextLength() ,string);
+					document.insertString(document.getTextLength(), string);
 				}
 				FileDocumentManager.getInstance().saveDocument(document);
 				PsiDocumentManager.getInstance(project).commitDocument(document);
@@ -107,9 +111,12 @@ public class SubmitCodeGenerationUtils {
 		while (true) {
 			final Collection<PsiElement> toDelete = new ArrayList<PsiElement>();
 			Project project = file.getProject();
-			SearchScope scope = new GlobalSearchScope.FilesScope(project, Collections.singletonList(file.getVirtualFile()));
+			SearchScope scope = new GlobalSearchScope.FilesScope(
+					project,
+					Collections.singletonList(file.getVirtualFile())
+			);
 			file.acceptChildren(new DeletionMarkingVisitor(toDelete, scope));
-			if(toDelete.isEmpty()) {
+			if (toDelete.isEmpty()) {
 				break;
 			}
 			new WriteCommandAction.Simple<Object>(project, file) {

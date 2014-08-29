@@ -34,36 +34,54 @@ public class FileSelector extends JPanel {
 				return dimension;
 			}
 		};
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				PathChooserDialog dialog = FileChooserFactory.getInstance().createPathChooser(new FileChooserDescriptor(true, false, false, false, false, false) {
+		button.addActionListener(
+				new ActionListener() {
 					@Override
-					public boolean isFileSelectable(VirtualFile file) {
-						return super.isFileSelectable(file) && FileUtilities.isChild(project.getBaseDir(), file);
-					}
+					public void actionPerformed(ActionEvent e) {
+						PathChooserDialog dialog = FileChooserFactory.getInstance().createPathChooser(
+								new FileChooserDescriptor(true, false, false, false, false, false) {
+									@Override
+									public boolean isFileSelectable(VirtualFile file) {
+										return super.isFileSelectable(file) && FileUtilities.isChild(
+												project.getBaseDir(),
+												file
+										);
+									}
 
-					@Override
-					public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
-						return super.isFileVisible(file, showHiddenFiles) && (FileUtilities.isChild(project.getBaseDir(), file) || FileUtilities.isChild(file, project.getBaseDir()));
-					}
-				}, project, FileSelector.this);
-				VirtualFile toSelect = project.getBaseDir().findFileByRelativePath(textField.getText());
-				if (toSelect == null)
-					toSelect = project.getBaseDir();
-				dialog.choose(toSelect, new Consumer<List<VirtualFile>>() {
-					@Override
-					@SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
-					public void consume(List<VirtualFile> files) {
-						if (files.size() == 1) {
-							String path = FileUtilities.getRelativePath(project.getBaseDir(), files.get(0));
-							if (path != null)
-								textField.setText(path);
+									@Override
+									public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
+										return super.isFileVisible(file, showHiddenFiles) && (FileUtilities.isChild(
+												project.getBaseDir(),
+												file
+										) || FileUtilities.isChild(file, project.getBaseDir())
+										);
+									}
+								}, project, FileSelector.this
+						);
+						VirtualFile toSelect = project.getBaseDir().findFileByRelativePath(textField.getText());
+						if (toSelect == null) {
+							toSelect = project.getBaseDir();
 						}
+						dialog.choose(
+								toSelect, new Consumer<List<VirtualFile>>() {
+									@Override
+									@SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
+									public void consume(List<VirtualFile> files) {
+										if (files.size() == 1) {
+											String path = FileUtilities.getRelativePath(
+													project.getBaseDir(),
+													files.get(0)
+											);
+											if (path != null) {
+												textField.setText(path);
+											}
+										}
+									}
+								}
+						);
 					}
-				});
-			}
-		});
+				}
+		);
 		add(textField, BorderLayout.CENTER);
 
 		add(button, BorderLayout.EAST);

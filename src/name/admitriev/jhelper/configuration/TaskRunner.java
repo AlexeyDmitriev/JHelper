@@ -46,12 +46,14 @@ public class TaskRunner extends DefaultProgramRunner {
 
 	/**
 	 * Runs specified TaskConfiguration: generates code and then runs output configuration.
+	 *
 	 * @throws ClassCastException if {@code environment.getRunProfile()} is not {@link TaskConfiguration}.
 	 * @throws ExecutionException if output configuration throws it.
 	 * @see ExecutionEnvironment#getRunProfile()
 	 */
 	@Override
-	public void execute(@NotNull ExecutionEnvironment environment, @Nullable Callback callback) throws ExecutionException {
+	public void execute(@NotNull ExecutionEnvironment environment, @Nullable Callback callback) throws
+			ExecutionException {
 		Project project = environment.getProject();
 
 		TaskConfiguration taskConfiguration = (TaskConfiguration) environment.getRunProfile();
@@ -76,7 +78,8 @@ public class TaskRunner extends DefaultProgramRunner {
 		 */
 		try {
 			Class<ProgramRunnerUtil> clazz = ProgramRunnerUtil.class;
-			Method executionMethod = clazz.getMethod("executeConfiguration",
+			Method executionMethod = clazz.getMethod(
+					"executeConfiguration",
 					Project.class,
 					DataContext.class,
 					RunnerAndConfigurationSettings.class,

@@ -24,27 +24,29 @@ public class AddTaskAction extends BaseAction {
 	@Override
 	public void performAction(AnActionEvent e) {
 		Project project = e.getProject();
-		if(project == null) {
+		if (project == null) {
 			throw new NotificationException("No project found", "Are you in any project?");
 		}
 
 		AddTaskDialog dialog = new AddTaskDialog(project);
 		dialog.show();
-		if(!dialog.isOK()) {
+		if (!dialog.isOK()) {
 			return;
 		}
 		final Task task = dialog.getTask();
 
 		final VirtualFile newTaskFile = Util.findOrCreateByRelativePath(project.getBaseDir(), task.getPath());
-		ApplicationManager.getApplication().runWriteAction(new Runnable() {
-			@Override
-			public void run() {
-				OutputWriter writer = Util.getOutputWriter(newTaskFile, this);
-				task.saveTask(writer);
-				writer.flush();
-				writer.close();
-			}
-		});
+		ApplicationManager.getApplication().runWriteAction(
+				new Runnable() {
+					@Override
+					public void run() {
+						OutputWriter writer = Util.getOutputWriter(newTaskFile, this);
+						task.saveTask(writer);
+						writer.flush();
+						writer.close();
+					}
+				}
+		);
 
 		createConfigurationForTask(project, task);
 
@@ -54,25 +56,31 @@ public class AddTaskAction extends BaseAction {
 	private static void generateCPP(Project project, Task task, VirtualFile newTaskFile) {
 		VirtualFile parent = newTaskFile.getParent();
 		final PsiDirectory psiParent = PsiManager.getInstance(project).findDirectory(parent);
-		if(psiParent == null) {
+		if (psiParent == null) {
 			throw new NotificationException("Couldn't open parent directory as PSI");
 		}
 
 		Language objC = Language.findLanguageByID("ObjectiveC");
-		if(objC == null) {
+		if (objC == null) {
 			throw new NotificationException("Language not found");
 		}
 
-		final PsiFile file = PsiFileFactory.getInstance(project).createFileFromText(task.getClassName() + ".cpp", objC, generateFileContent(task.getClassName()));
-		if(file == null) {
+		final PsiFile file = PsiFileFactory.getInstance(project).createFileFromText(
+				task.getClassName() + ".cpp",
+				objC,
+				generateFileContent(task.getClassName())
+		);
+		if (file == null) {
 			throw new NotificationException("Couldn't generate file");
 		}
-		ApplicationManager.getApplication().runWriteAction(new Runnable() {
-			@Override
-			public void run() {
-				psiParent.add(file);
-			}
-		});
+		ApplicationManager.getApplication().runWriteAction(
+				new Runnable() {
+					@Override
+					public void run() {
+						psiParent.add(file);
+					}
+				}
+		);
 	}
 
 	private static CharSequence generateFileContent(String className) {
@@ -89,7 +97,14 @@ public class AddTaskAction extends BaseAction {
 		ConfigurationFactory factory = configurationType.getConfigurationFactories()[0];
 
 		RunManager manager = RunManager.getInstance(project);
-		RunnerAndConfigurationSettings configuration = manager.createConfiguration(new TaskConfiguration(project, factory, task), factory);
+		RunnerAndConfigurationSettings configuration = manager.createConfiguration(
+				new TaskConfiguration(
+						project,
+						factory,
+						task
+				),
+				factory
+		);
 		manager.addConfiguration(configuration, true);
 
 		manager.setSelectedConfiguration(configuration);

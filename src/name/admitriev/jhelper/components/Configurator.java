@@ -14,7 +14,9 @@ import org.jetbrains.annotations.NotNull;
 		name = "Configurator",
 		storages = {
 				@Storage(id = "default", file = StoragePathMacros.PROJECT_FILE, scheme = StorageScheme.DEFAULT),
-				@Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/JHelper.xml", scheme = StorageScheme.DIRECTORY_BASED)
+				@Storage(id = "dir",
+				         file = StoragePathMacros.PROJECT_CONFIG_DIR + "/JHelper.xml",
+				         scheme = StorageScheme.DIRECTORY_BASED)
 		}
 )
 public class Configurator implements ProjectComponent, PersistentStateComponent<Configurator.State> {
@@ -59,6 +61,7 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 	}
 
 	private Configurator.State state;
+
 	public static class State {
 		private String author;
 		private String tasksDirectory;

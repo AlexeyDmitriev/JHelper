@@ -8,7 +8,7 @@ public class NotificationException extends RuntimeException {
 	private final String content;
 
 	public NotificationException(String content) {
-		this(content, (Throwable)null);
+		this(content, (Throwable) null);
 	}
 
 	public NotificationException(String content, Throwable cause) {
