@@ -39,7 +39,6 @@ public class TaskConfiguration extends RunConfigurationBase {
 	@Override
 	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
 		return new SettingsEditor<TaskConfiguration>() {
-
 			private TaskSettingsComponent component = new TaskSettingsComponent(getProject());
 
 			@Override

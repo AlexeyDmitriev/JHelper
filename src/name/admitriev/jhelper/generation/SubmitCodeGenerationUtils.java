@@ -15,6 +15,7 @@ import name.admitriev.jhelper.Util;
 import name.admitriev.jhelper.components.Configurator;
 import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.task.Task;
+import net.egork.chelper.task.StreamConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -50,11 +51,40 @@ public class SubmitCodeGenerationUtils {
 	}
 
 	private static String generateMainFunction(Task task) {
-		return "int main() {\n" +
-		       '\t' + task.getClassName() + " solver;\n" +
-		       "\tsolver.solve(std::cin, std::cout);\n" +
-		       "\treturn 0;\n" +
-		       "}\n";
+		StringBuilder builder = new StringBuilder();
+		builder.append("#include <iostream>\n");
+		builder.append("#include <fstream>\n");
+		builder.append('\n');
+		builder.append("int main() {\n");
+		builder.append('\t').append(task.getClassName()).append(" solver;\n");
+		String inputFileName = task.getInput().getFileName(task.getName(), ".in");
+
+		if (inputFileName == null) {
+			builder.append("\tstd::istream& in(").append("std::cin").append(");\n");
+		}
+		else if (task.getInput().type == StreamConfiguration.StreamType.LOCAL_REGEXP) {
+			throw new NotificationException("Local regexps aren't supported yet");
+		}
+		else {
+			builder.append("\tstd::ifstream in(\"").append(inputFileName).append("\");\n");
+		}
+
+		String outputFileName = task.getOutput().getFileName(task.getName(), ".out");
+		if (outputFileName == null) {
+			builder.append("\tstd::ostream& out(").append("std::cout").append(");\n");
+		}
+		else if (task.getOutput().type == StreamConfiguration.StreamType.LOCAL_REGEXP) {
+			throw new NotificationException("Your task is in inconsistent state", "Can't output to local regexp");
+		}
+		else {
+			builder.append("\tstd::ofstream out(\"").append(outputFileName).append("\");\n");
+		}
+
+		builder.append("\tsolver.solve(in, out);\n");
+		builder.append("\treturn 0;\n");
+		builder.append("}\n");
+
+		return builder.toString();
 	}
 
 	@NotNull
