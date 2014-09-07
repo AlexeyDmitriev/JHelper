@@ -1,9 +1,14 @@
-package name.admitriev.jhelper;
+package name.admitriev.jhelper.generation;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import name.admitriev.jhelper.exceptions.NotificationException;
 import net.egork.chelper.util.OutputWriter;
@@ -11,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
-public class Util {
-	private Util() {
+public class FileUtils {
+	private FileUtils() {
 	}
 
 	public static OutputWriter getOutputWriter(VirtualFile virtualFile, Object requestor) {
@@ -78,7 +83,31 @@ public class Util {
 		);
 	}
 
+	/**
+	 * Checks if given file is a C++ file.
+	 * In other words checks if code may be generated for that file
+	 */
 	public static boolean isCppFile(PsiFile file) {
 		return file.getName().endsWith(".cpp");
+	}
+
+	public static void writeToFile(PsiFile outputFile, final String... strings) {
+		final Project project = outputFile.getProject();
+		final Document document = PsiDocumentManager.getInstance(project).getDocument(outputFile);
+		if (document == null) {
+			throw new NotificationException("Couldn't open output file as document");
+		}
+
+		new WriteCommandAction.Simple<Object>(outputFile.getProject(), outputFile) {
+			@Override
+			public void run() {
+				document.deleteString(0, document.getTextLength());
+				for (String string : strings) {
+					document.insertString(document.getTextLength(), string);
+				}
+				FileDocumentManager.getInstance().saveDocument(document);
+				PsiDocumentManager.getInstance(project).commitDocument(document);
+			}
+		}.execute();
 	}
 }

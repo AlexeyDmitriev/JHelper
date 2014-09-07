@@ -12,10 +12,11 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiManager;
-import name.admitriev.jhelper.Util;
+import name.admitriev.jhelper.generation.FileUtils;
 import name.admitriev.jhelper.configuration.TaskConfiguration;
 import name.admitriev.jhelper.configuration.TaskConfigurationType;
 import name.admitriev.jhelper.exceptions.NotificationException;
+import name.admitriev.jhelper.generation.TemplatesUtils;
 import name.admitriev.jhelper.task.Task;
 import name.admitriev.jhelper.ui.AddTaskDialog;
 import net.egork.chelper.util.OutputWriter;
@@ -35,12 +36,12 @@ public class AddTaskAction extends BaseAction {
 		}
 		final Task task = dialog.getTask();
 
-		final VirtualFile newTaskFile = Util.findOrCreateByRelativePath(project.getBaseDir(), task.getPath());
+		final VirtualFile newTaskFile = FileUtils.findOrCreateByRelativePath(project.getBaseDir(), task.getPath());
 		ApplicationManager.getApplication().runWriteAction(
 				new Runnable() {
 					@Override
 					public void run() {
-						OutputWriter writer = Util.getOutputWriter(newTaskFile, this);
+						OutputWriter writer = FileUtils.getOutputWriter(newTaskFile, this);
 						task.saveTask(writer);
 						writer.flush();
 						writer.close();
@@ -68,7 +69,7 @@ public class AddTaskAction extends BaseAction {
 		final PsiFile file = PsiFileFactory.getInstance(project).createFileFromText(
 				task.getClassName() + ".cpp",
 				objC,
-				generateFileContent(task.getClassName())
+				TemplatesUtils.getTaskContent(project, task.getClassName())
 		);
 		if (file == null) {
 			throw new NotificationException("Couldn't generate file");
@@ -81,17 +82,6 @@ public class AddTaskAction extends BaseAction {
 					}
 				}
 		);
-	}
-
-	private static CharSequence generateFileContent(String className) {
-		return "#include <iostream>\n" +
-		       '\n' +
-		       "class " + className + " {\n" +
-		       "public:\n" +
-		       "\tvoid solve(std::istream& in, std::ostream& out) {\n" +
-		       "\t\t\n" +
-		       "\t}\n" +
-		       "};\n";
 	}
 
 	private static void createConfigurationForTask(Project project, Task task) {

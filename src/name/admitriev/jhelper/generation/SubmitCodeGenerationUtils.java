@@ -1,17 +1,13 @@
 package name.admitriev.jhelper.generation;
 
 import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.SearchScope;
-import name.admitriev.jhelper.Util;
 import name.admitriev.jhelper.components.Configurator;
 import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.task.Task;
@@ -34,7 +30,7 @@ public class SubmitCodeGenerationUtils {
 	 */
 	public static void generateSubmissionFile(Project project, @NotNull PsiFile inputFile, Task task) {
 
-		if (!Util.isCppFile(inputFile)) {
+		if (!FileUtils.isCppFile(inputFile)) {
 			throw new NotificationException("Not a cpp file", "Only cpp files are currently supported");
 		}
 
@@ -45,7 +41,7 @@ public class SubmitCodeGenerationUtils {
 		String result = IncludesProcessor.process(inputFile);
 		PsiFile psiOutputFile = getOutputFile(project);
 
-		writeToFile(psiOutputFile, authorComment(project), result, generateMainFunction(task));
+		FileUtils.writeToFile(psiOutputFile, authorComment(project), result, generateMainFunction(task));
 
 		removeUnusedCode(psiOutputFile);
 	}
@@ -105,26 +101,6 @@ public class SubmitCodeGenerationUtils {
 			throw new NotificationException("Couldn't open output file as PSI");
 		}
 		return psiOutputFile;
-	}
-
-	private static void writeToFile(PsiFile outputFile, final String... strings) {
-		final Project project = outputFile.getProject();
-		final Document document = PsiDocumentManager.getInstance(project).getDocument(outputFile);
-		if (document == null) {
-			throw new NotificationException("Couldn't open output file as document");
-		}
-
-		new WriteCommandAction.Simple<Object>(outputFile.getProject(), outputFile) {
-			@Override
-			public void run() {
-				document.deleteString(0, document.getTextLength());
-				for (String string : strings) {
-					document.insertString(document.getTextLength(), string);
-				}
-				FileDocumentManager.getInstance().saveDocument(document);
-				PsiDocumentManager.getInstance(project).commitDocument(document);
-			}
-		}.execute();
 	}
 
 	private static String authorComment(Project project) {
