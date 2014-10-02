@@ -1,0 +1,12 @@
+#include <iostream>
+#include <fstream>
+
+%Code%
+
+int main() {
+	%ClassName% solver;
+	%Input%
+	%Output%
+	%SolverCall%
+	return 0;
+}

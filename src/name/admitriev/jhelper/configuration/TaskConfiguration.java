@@ -13,14 +13,17 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.jetbrains.cidr.execution.CidrCommandLineState;
 import name.admitriev.jhelper.exceptions.JHelperException;
+import name.admitriev.jhelper.exceptions.NotificationException;
+import name.admitriev.jhelper.generation.FileUtils;
 import name.admitriev.jhelper.task.Task;
 import name.admitriev.jhelper.ui.TaskSettingsComponent;
 import net.egork.chelper.util.InputReader;
+import net.egork.chelper.util.OutputWriter;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,10 +32,12 @@ import java.io.InputStream;
  */
 public class TaskConfiguration extends RunConfigurationBase {
 	private Task task;
+	private Project project;
 
 	public TaskConfiguration(Project project, ConfigurationFactory factory, Task task) {
 		super(project, factory, task.getName());
 		this.task = task;
+		this.project = project;
 	}
 
 	@NotNull
@@ -50,6 +55,14 @@ public class TaskConfiguration extends RunConfigurationBase {
 			protected void applyEditorTo(TaskConfiguration s) {
 				s.task = component.getTask();
 				setName(s.task.getName());
+				VirtualFile taskFile = s.project.getBaseDir().findFileByRelativePath(s.task.getPath());
+				if(taskFile == null) {
+					throw new NotificationException("Couldn't find task file to save: " + s.task.getPath());
+				}
+				OutputWriter outputWriter = FileUtils.getOutputWriter(taskFile, this);
+				s.task.saveTask(outputWriter);
+				outputWriter.flush();
+				outputWriter.close();
 			}
 
 			@NotNull
@@ -74,6 +87,7 @@ public class TaskConfiguration extends RunConfigurationBase {
 	public TaskConfiguration clone() {
 		TaskConfiguration newConfiguration = (TaskConfiguration) super.clone();
 		newConfiguration.task = task.copy();
+		newConfiguration.project = project;
 		return newConfiguration;
 	}
 
@@ -105,5 +119,9 @@ public class TaskConfiguration extends RunConfigurationBase {
 
 	public Task getTask() {
 		return task;
+	}
+
+	public void setTask(Task task) {
+		this.task = task;
 	}
 }

@@ -6,19 +6,21 @@ import name.admitriev.jhelper.task.Task;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 public class AddTaskDialog extends DialogWrapper {
 	private TaskSettingsComponent component;
 
 	public AddTaskDialog(@NotNull Project project) {
 		super(project);
-		component = new TaskSettingsComponent(project, new StreamConfigurationPanel.SizeChangedListener() {
-				@Override
-				public void sizeChanged() {
-					pack();
+		component = new TaskSettingsComponent(
+				project,
+				new StreamConfigurationPanel.SizeChangedListener() {
+					@Override
+					public void sizeChanged() {
+						pack();
+					}
 				}
-			}
 		);
 		init();
 	}

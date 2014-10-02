@@ -66,15 +66,17 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 		private String author;
 		private String tasksDirectory;
 		private String outputFile;
+		private String runFile;
 
-		public State(String author, String tasksDirectory, String outputFile) {
+		public State(String author, String tasksDirectory, String outputFile, String runFile) {
 			this.author = author;
 			this.tasksDirectory = tasksDirectory;
 			this.outputFile = outputFile;
+			this.runFile = runFile;
 		}
 
 		public State() {
-			this("", "tasks", "output/main.cpp");
+			this("", "tasks", "output/main.cpp", "testrunner/main.cpp");
 		}
 
 		public String getAuthor() {
@@ -89,19 +91,32 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 			return outputFile;
 		}
 
+		public String getRunFile() {
+			return runFile;
+		}
+
+		@SuppressWarnings("UnusedDeclaration")
 		@Deprecated
 		public void setAuthor(String author) {
 			this.author = author;
 		}
 
+		@SuppressWarnings("UnusedDeclaration")
 		@Deprecated
 		public void setTasksDirectory(String tasksDirectory) {
 			this.tasksDirectory = tasksDirectory;
 		}
 
+		@SuppressWarnings("UnusedDeclaration")
 		@Deprecated
 		public void setOutputFile(String outputFile) {
 			this.outputFile = outputFile;
+		}
+
+		@SuppressWarnings("UnusedDeclaration")
+		@Deprecated
+		public void setRunFile(String runFile) {
+			this.runFile = runFile;
 		}
 	}
 }

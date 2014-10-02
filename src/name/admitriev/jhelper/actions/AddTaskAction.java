@@ -12,16 +12,25 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiManager;
-import name.admitriev.jhelper.generation.FileUtils;
 import name.admitriev.jhelper.configuration.TaskConfiguration;
 import name.admitriev.jhelper.configuration.TaskConfigurationType;
 import name.admitriev.jhelper.exceptions.NotificationException;
+import name.admitriev.jhelper.generation.FileUtils;
 import name.admitriev.jhelper.generation.TemplatesUtils;
 import name.admitriev.jhelper.task.Task;
 import name.admitriev.jhelper.ui.AddTaskDialog;
 import net.egork.chelper.util.OutputWriter;
 
 public class AddTaskAction extends BaseAction {
+	/**
+	 * Generates task file content depending on custom user template
+	 */
+	public static String getTaskContent(Project project, String className) {
+		String template = TemplatesUtils.getTemplate(project, "task");
+		template = template.replace(TemplatesUtils.CLASS_NAME, className);
+		return template;
+	}
+
 	@Override
 	public void performAction(AnActionEvent e) {
 		Project project = e.getProject();
@@ -69,7 +78,7 @@ public class AddTaskAction extends BaseAction {
 		final PsiFile file = PsiFileFactory.getInstance(project).createFileFromText(
 				task.getClassName() + ".cpp",
 				objC,
-				TemplatesUtils.getTaskContent(project, task.getClassName())
+				getTaskContent(project, task.getClassName())
 		);
 		if (file == null) {
 			throw new NotificationException("Couldn't generate file");

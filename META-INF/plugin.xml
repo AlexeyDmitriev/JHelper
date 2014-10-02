@@ -43,5 +43,12 @@
 			description="Creates new task."
 			icon="/name/admitriev/jhelper/icons/newTask.png"
 		/>
+		<action
+			id="name.admitriev.jhelper.actions.EditTestsAction"
+			class="name.admitriev.jhelper.actions.EditTestsAction"
+			text="Edit tests"
+			description="Edit tests for a current task"
+			icon="/name/admitriev/jhelper/icons/editTests.png"
+		/>
 	</actions>
 </idea-plugin>

@@ -17,7 +17,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import name.admitriev.jhelper.exceptions.NotificationException;
-import name.admitriev.jhelper.generation.SubmitCodeGenerationUtils;
+import name.admitriev.jhelper.generation.CodeGenerationUtils;
 import name.admitriev.jhelper.task.Task;
 import org.antlr.v4.runtime.misc.Nullable;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +32,8 @@ import java.util.List;
  * as described in <a href="http://confluence.jetbrains.com/display/IDEADEV/Run+Configurations#RunConfigurations-RunningaProcess">IDEA DEV Confluence</a>
  */
 public class TaskRunner extends DefaultProgramRunner {
+
+	public static final String RUN_CONFIGURATION_NAME = "testrunner";
 
 	@NotNull
 	@Override
@@ -59,15 +61,17 @@ public class TaskRunner extends DefaultProgramRunner {
 		TaskConfiguration taskConfiguration = (TaskConfiguration) environment.getRunProfile();
 		generateSubmissionFileForTask(project, taskConfiguration);
 
+		generateRunFileForTask(project, taskConfiguration);
+
 		List<RunnerAndConfigurationSettings> allSettings = RunManager.getInstance(project).getAllSettings();
 		RunnerAndConfigurationSettings outputSettings = null;
 		for (RunnerAndConfigurationSettings configuration : allSettings) {
-			if (configuration.getName().equals("output")) {
+			if (configuration.getName().equals(RUN_CONFIGURATION_NAME)) {
 				outputSettings = configuration;
 			}
 		}
 		if (outputSettings == null) {
-			throw new NotificationException("No output configuration found");
+			throw new NotificationException("No run configuration found", "It should be called (" + RUN_CONFIGURATION_NAME + ")");
 		}
 
 		/*
@@ -110,6 +114,24 @@ public class TaskRunner extends DefaultProgramRunner {
 		ProgramRunnerUtil.executeConfiguration(project, outputSettings, environment.getExecutor());
 	}
 
+	private static void generateRunFileForTask(Project project, TaskConfiguration taskConfiguration) {
+		Task task = taskConfiguration.getTask();
+		String pathToTaskFile = task.getPath();
+		String pathToClassFile = pathToTaskFile + "/../" + task.getClassName() + ".cpp";
+		VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
+		if (virtualFile == null) {
+			throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
+		}
+
+		PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
+		if (psiFile == null) {
+			throw new NotificationException("Couldn't get PSI file for input file");
+		}
+
+		CodeGenerationUtils.generateRunFile(project, psiFile, task);
+
+	}
+
 	private static void generateSubmissionFileForTask(Project project, TaskConfiguration taskConfiguration) {
 		Task task = taskConfiguration.getTask();
 		String pathToTaskFile = task.getPath();
@@ -123,6 +145,6 @@ public class TaskRunner extends DefaultProgramRunner {
 		if (psiFile == null) {
 			throw new NotificationException("Couldn't get PSI file for input file");
 		}
-		SubmitCodeGenerationUtils.generateSubmissionFile(project, psiFile, task);
+		CodeGenerationUtils.generateSubmissionFile(project, psiFile, task);
 	}
 }

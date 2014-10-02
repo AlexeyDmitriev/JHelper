@@ -15,6 +15,7 @@ public class JHelperException extends RuntimeException {
 
 	@Override
 	public String getMessage() {
-		return "Please, report that bug to issue tracker on https://github.com/AlexeyDmitriev/JHelper . Attach your code and this stack trace. " + super.getMessage();
+		return "Please, report that bug to issue tracker on https://github.com/AlexeyDmitriev/JHelper . Attach your code and this stack trace. "
+		       + super.getMessage();
 	}
 }

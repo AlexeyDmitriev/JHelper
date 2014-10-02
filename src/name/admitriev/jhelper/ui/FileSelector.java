@@ -8,11 +8,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
 import net.egork.chelper.util.FileUtilities;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -50,10 +47,11 @@ public class FileSelector extends JPanel {
 
 									@Override
 									public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
-										return super.isFileVisible(file, showHiddenFiles) && (FileUtilities.isChild(
-												project.getBaseDir(),
-												file
-										) || FileUtilities.isChild(file, project.getBaseDir())
+										return super.isFileVisible(file, showHiddenFiles) && (
+												FileUtilities.isChild(
+														project.getBaseDir(),
+														file
+												) || FileUtilities.isChild(file, project.getBaseDir())
 										);
 									}
 								}, project, FileSelector.this

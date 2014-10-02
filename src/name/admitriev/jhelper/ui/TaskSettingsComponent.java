@@ -7,8 +7,7 @@ import net.egork.chelper.task.StreamConfiguration;
 import net.egork.chelper.ui.DirectorySelector;
 import org.jdesktop.swingx.VerticalLayout;
 
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 /**
  * Panel for task configuration.
@@ -19,6 +18,7 @@ public class TaskSettingsComponent extends JPanel {
 	private DirectorySelector path = null;
 	private StreamConfigurationPanel input = null;
 	private StreamConfigurationPanel output = null;
+	private Task task = null;
 
 	private Project project;
 
@@ -42,7 +42,8 @@ public class TaskSettingsComponent extends JPanel {
 				className.getText(),
 				path.getText(),
 				input.getStreamConfiguration(),
-				output.getStreamConfiguration()
+				output.getStreamConfiguration(),
+				task.getTests()
 		);
 	}
 
@@ -53,6 +54,8 @@ public class TaskSettingsComponent extends JPanel {
 		path = new DirectorySelector(project, task.getPath());
 		input = new StreamConfigurationPanel(task.getInput(), StreamConfiguration.StreamType.values(), listener);
 		output = new StreamConfigurationPanel(task.getOutput(), StreamConfiguration.OUTPUT_TYPES, listener);
+
+		this.task = task;
 
 		add(LabeledComponent.create(name, "Task name"));
 		add(LabeledComponent.create(className, "Class name"));
