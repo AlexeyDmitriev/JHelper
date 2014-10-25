@@ -14,12 +14,15 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiManager;
 import name.admitriev.jhelper.configuration.TaskConfiguration;
 import name.admitriev.jhelper.configuration.TaskConfigurationType;
+import name.admitriev.jhelper.exceptions.JHelperException;
 import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.generation.FileUtils;
 import name.admitriev.jhelper.generation.TemplatesUtils;
 import name.admitriev.jhelper.task.Task;
 import name.admitriev.jhelper.ui.AddTaskDialog;
 import net.egork.chelper.util.OutputWriter;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class AddTaskAction extends BaseAction {
 	/**
@@ -61,6 +64,29 @@ public class AddTaskAction extends BaseAction {
 		createConfigurationForTask(project, task);
 
 		generateCPP(project, task, newTaskFile);
+
+		reloadProjectInCLion(project);
+	}
+
+	private void reloadProjectInCLion(Project project) {
+		String errorMessage = "Couldn't reload a CLion project. API changed?";
+		try {
+			Class<?> clz = AddTaskAction.class.getClassLoader().loadClass("com.jetbrains.cidr.cpp.cmake.CMakeWorkspace");
+			Object instance = clz.getMethod("getInstance").invoke(null, project);
+			clz.getMethod("scheduleReload").invoke(instance, true);
+		}
+		catch (ClassNotFoundException ignored) {
+			// Probably not a CLion, ignore
+		}
+		catch (InvocationTargetException e) {
+			throw new JHelperException(errorMessage, e);
+		}
+		catch (NoSuchMethodException e) {
+			throw new JHelperException(errorMessage, e);
+		}
+		catch (IllegalAccessException e) {
+			throw new JHelperException(errorMessage, e);
+		}
 	}
 
 	private static void generateCPP(Project project, Task task, VirtualFile newTaskFile) {
