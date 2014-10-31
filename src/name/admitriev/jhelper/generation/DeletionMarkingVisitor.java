@@ -9,14 +9,12 @@ import com.jetbrains.objc.psi.OCDeclaration;
 import com.jetbrains.objc.psi.OCDeclarator;
 import com.jetbrains.objc.psi.OCElement;
 import com.jetbrains.objc.psi.OCFunctionDefinition;
-import com.jetbrains.objc.psi.OCFunctionPredefinition;
 import com.jetbrains.objc.psi.OCStructLike;
+import com.jetbrains.objc.psi.OCTypeElement;
 import com.jetbrains.objc.psi.impl.OCDefineDirectiveImpl;
 import com.jetbrains.objc.psi.visitors.OCVisitor;
-import name.admitriev.jhelper.exceptions.JHelperException;
 
 import java.util.Collection;
-import java.util.List;
 
 public class DeletionMarkingVisitor extends OCVisitor {
 	private final Collection<PsiElement> toDelete;
@@ -44,7 +42,7 @@ public class DeletionMarkingVisitor extends OCVisitor {
 		if ("main".equals(functionDefinition.getName())) {
 			return;
 		}
-		removeIfNoReference(functionDefinition);
+		super.visitFunctionDefinition(functionDefinition);
 	}
 
 	private void removeIfNoReference(OCElement element) {
@@ -55,11 +53,6 @@ public class DeletionMarkingVisitor extends OCVisitor {
 			}
 		}
 		toDelete.add(element);
-	}
-
-	@Override
-	public void visitElement(PsiElement element) {
-		super.visitElement(element);
 	}
 
 	@Override
@@ -77,38 +70,25 @@ public class DeletionMarkingVisitor extends OCVisitor {
 		removeIfNoReference(directive);
 	}
 
+
 	@Override
-	public void visitFunctionPredefinition(OCFunctionPredefinition predefinition) {
-		removeIfNoReference(predefinition);
+	public void visitDeclarator(OCDeclarator declarator) {
+		removeIfNoReference(declarator);
+	}
+
+	@Override
+	public void visitStructLike(OCStructLike structLike) {
+		removeIfNoReference(structLike);
+		structLike.acceptChildren(this);
+	}
+
+	@Override
+	public void visitTypeElement(OCTypeElement typeElement) {
+		typeElement.acceptChildren(this);
 	}
 
 	@Override
 	public void visitDeclaration(OCDeclaration declaration) {
-		List<OCDeclarator> variables = declaration.getDeclarators();
-		if (variables.isEmpty()) {
-			PsiElement[] types = declaration.getTypeElement().getChildren();
-			switch (types.length) {
-				case 0:
-					break;
-				case 1:
-					if (types[0] instanceof OCStructLike) {
-						OCStructLike struct = (OCStructLike) types[0];
-						removeIfNoReference(struct);
-						struct.acceptChildren(this);
-					}
-					else {
-						throw new JHelperException("Type is not a OCStructLike.");
-					}
-					break;
-				default:
-					throw new JHelperException("2 or more children in declaration.");
-			}
-		}
-		else {
-			for (OCDeclarator variable : variables) {
-				removeIfNoReference(variable);
-			}
-		}
-
+		declaration.acceptChildren(this);
 	}
 }
