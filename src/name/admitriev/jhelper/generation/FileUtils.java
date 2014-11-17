@@ -110,4 +110,25 @@ public class FileUtils {
 			}
 		}.execute();
 	}
+
+	public static String relativePath(String parentPath, String childPath) {
+		if (!parentPath.endsWith("/")) {
+			parentPath += "/";
+		}
+		if (!isChild(parentPath, childPath)) {
+			throw new IllegalArgumentException("childPath should be inside a parentPath");
+		}
+		//Minimum is needed for case when childPath = parentPath and there's no / at the end of childPath
+		return childPath.substring(Math.min(parentPath.length(), childPath.length()));
+	}
+
+	public static boolean isChild(String parentPath, String childPath) {
+		if (!parentPath.endsWith("/")) {
+			parentPath += "/";
+		}
+		if (!childPath.endsWith("/")) {
+			childPath += "/";
+		}
+		return childPath.startsWith(parentPath);
+	}
 }
