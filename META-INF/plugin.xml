@@ -50,5 +50,12 @@
 			description="Edit tests for a current task"
 			icon="/name/admitriev/jhelper/icons/editTests.png"
 		/>
+		<action
+			id="name.admitriev.jhelper.actions.CopySourceAction"
+			class="name.admitriev.jhelper.actions.CopySourceAction"
+			text="Copy source"
+			description="Copies source of output file"
+			icon="/name/admitriev/jhelper/icons/copy.png"
+		/>
 	</actions>
 </idea-plugin>
