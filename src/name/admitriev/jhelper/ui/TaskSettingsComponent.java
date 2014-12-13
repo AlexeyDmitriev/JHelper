@@ -33,6 +33,9 @@ public class TaskSettingsComponent extends JPanel {
 		this.listener = listener;
 		//noinspection OverridableMethodCallDuringObjectConstruction
 		setTask(Task.emptyTask(project));
+
+		UIUtils.lockFields(name, className);
+		UIUtils.lockFields(name, path.getTextField(), Task.defaultPathFormat(project));
 	}
 
 	public Task getTask() {

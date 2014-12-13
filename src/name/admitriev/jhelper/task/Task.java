@@ -108,17 +108,21 @@ public class Task {
 	}
 
 	public static Task emptyTask(Project project) {
-		Configurator configurator = project.getComponent(Configurator.class);
-		Configurator.State configuration = configurator.getState();
-		String path = configuration.getTasksDirectory();
 		return new Task(
 				"",
 				"",
-				path + "/.task",
+				String.format(defaultPathFormat(project), ""),
 				StreamConfiguration.STANDARD,
 				StreamConfiguration.STANDARD,
 				new Test[0]
 		);
+	}
+
+	public static String defaultPathFormat(Project project) {
+		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator.State configuration = configurator.getState();
+		String path = configuration.getTasksDirectory();
+		return path + "/%s.task";
 	}
 
 	public Task withTests(Test[] newTests) {
