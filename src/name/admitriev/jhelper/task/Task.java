@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import name.admitriev.jhelper.components.Configurator;
 import net.egork.chelper.task.StreamConfiguration;
 import net.egork.chelper.task.Test;
+import net.egork.chelper.task.TestType;
 import net.egork.chelper.util.InputReader;
 import net.egork.chelper.util.OutputWriter;
 
@@ -19,6 +20,7 @@ public class Task {
 	private final String path;
 	private final StreamConfiguration input;
 	private final StreamConfiguration output;
+	private final TestType testType;
 	private final Test[] tests;
 
 	public Task(
@@ -27,6 +29,7 @@ public class Task {
 			String path,
 			StreamConfiguration input,
 			StreamConfiguration output,
+			TestType testType,
 			Test[] tests
 	) {
 		this.input = input;
@@ -34,7 +37,12 @@ public class Task {
 		this.name = name;
 		this.className = className;
 		this.path = path;
+		this.testType = testType;
 		this.tests = Arrays.copyOf(tests, tests.length);
+	}
+
+	public Task(Task task) {
+		this(task.name, task.className, task.path, task.input, task.output, task.testType, task.tests);
 	}
 
 	public String getName() {
@@ -61,10 +69,6 @@ public class Task {
 		return Arrays.copyOf(tests, tests.length);
 	}
 
-	public Task copy() {
-		return new Task(name, className, path, input, output, Arrays.copyOf(tests, tests.length));
-	}
-
 	public void saveTask(OutputWriter out) {
 		out.printString(name);
 		out.printString(className);
@@ -73,6 +77,7 @@ public class Task {
 		out.printString(input.fileName);
 		out.printEnum(output.type);
 		out.printString(output.fileName);
+		out.printEnum(testType);
 
 		out.printLine(tests.length);
 		for (Test test : tests) {
@@ -88,6 +93,7 @@ public class Task {
 		String inputFileName = in.readString();
 		StreamConfiguration.StreamType outputStreamType = in.readEnum(StreamConfiguration.StreamType.class);
 		String outputFileName = in.readString();
+		TestType testType = in.readEnum(TestType.class);
 		int testsNumber = in.readInt();
 		Test[] tests = new Test[testsNumber];
 		for (int i = 0; i < testsNumber; ++i) {
@@ -101,6 +107,7 @@ public class Task {
 				path,
 				new StreamConfiguration(inputStreamType, inputFileName),
 				new StreamConfiguration(outputStreamType, outputFileName),
+				testType,
 				tests
 		);
 	}
@@ -112,6 +119,7 @@ public class Task {
 				String.format(defaultPathFormat(project), ""),
 				StreamConfiguration.STANDARD,
 				StreamConfiguration.STANDARD,
+				TestType.SINGLE,
 				new Test[0]
 		);
 	}
@@ -124,6 +132,10 @@ public class Task {
 	}
 
 	public Task withTests(Test[] newTests) {
-		return new Task(name, className, path, input, output, newTests);
+		return new Task(name, className, path, input, output, testType, newTests);
+	}
+
+	public TestType getTestType() {
+		return testType;
 	}
 }

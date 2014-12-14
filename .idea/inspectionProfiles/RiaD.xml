@@ -778,7 +778,7 @@
       <option name="m_limit" value="10" />
     </inspection_tool>
     <inspection_tool class="SwitchStatementsWithoutDefault" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="m_ignoreFullyCoveredEnums" value="true" />
+      <option name="m_ignoreFullyCoveredEnums" value="false" />
     </inspection_tool>
     <inspection_tool class="SynchronizationOnStaticField" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SynchronizeOnLock" enabled="true" level="WARNING" enabled_by_default="true" />

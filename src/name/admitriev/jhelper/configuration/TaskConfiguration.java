@@ -86,7 +86,7 @@ public class TaskConfiguration extends RunConfigurationBase {
 	@Override
 	public TaskConfiguration clone() {
 		TaskConfiguration newConfiguration = (TaskConfiguration) super.clone();
-		newConfiguration.task = task.copy();
+		newConfiguration.task = new Task(task);
 		newConfiguration.project = project;
 		return newConfiguration;
 	}

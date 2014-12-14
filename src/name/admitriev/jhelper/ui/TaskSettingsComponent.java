@@ -1,9 +1,11 @@
 package name.admitriev.jhelper.ui;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.LabeledComponent;
 import name.admitriev.jhelper.task.Task;
 import net.egork.chelper.task.StreamConfiguration;
+import net.egork.chelper.task.TestType;
 import org.jdesktop.swingx.VerticalLayout;
 
 import javax.swing.*;
@@ -17,6 +19,7 @@ public class TaskSettingsComponent extends JPanel {
 	private FileSelector path = null;
 	private StreamConfigurationPanel input = null;
 	private StreamConfigurationPanel output = null;
+	private ComboBox testType = null;
 	private Task task = null;
 
 	private Project project;
@@ -42,6 +45,7 @@ public class TaskSettingsComponent extends JPanel {
 				path.getText(),
 				input.getStreamConfiguration(),
 				output.getStreamConfiguration(),
+				(TestType) testType.getSelectedItem(),
 				task.getTests()
 		);
 	}
@@ -58,6 +62,9 @@ public class TaskSettingsComponent extends JPanel {
 		input = new StreamConfigurationPanel(task.getInput(), StreamConfiguration.StreamType.values(), listener);
 		output = new StreamConfigurationPanel(task.getOutput(), StreamConfiguration.OUTPUT_TYPES, listener);
 
+		testType = new ComboBox(TestType.values());
+		testType.setSelectedItem(task.getTestType());
+
 		this.task = task;
 
 		add(LabeledComponent.create(name, "Task name"));
@@ -65,6 +72,7 @@ public class TaskSettingsComponent extends JPanel {
 		add(LabeledComponent.create(path, "Path"));
 		add(LabeledComponent.create(input, "Input"));
 		add(LabeledComponent.create(output, "Output"));
+		add(LabeledComponent.create(testType, "Test type"));
 
 		UIUtils.mirrorFields(name, className);
 		UIUtils.mirrorFields(name, path.getTextField(), Task.defaultPathFormat(project));

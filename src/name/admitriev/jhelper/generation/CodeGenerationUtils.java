@@ -13,6 +13,7 @@ import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.task.Task;
 import net.egork.chelper.task.StreamConfiguration;
 import net.egork.chelper.task.Test;
+import net.egork.chelper.task.TestType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class CodeGenerationUtils {
 		template = template.replace(TemplatesUtils.TASK_FILE, path);
 		template = template.replace(TemplatesUtils.TESTS, generateTestDeclaration(task.getTests()));
 		template = template.replace(TemplatesUtils.CLASS_NAME, task.getClassName());
-		template = template.replace(TemplatesUtils.SOLVER_CALL, "solver.solve(in, out);");
+		template = template.replace(TemplatesUtils.SOLVER_CALL, generateSolverCall(task.getTestType()));
 		return template;
 	}
 
@@ -115,8 +116,27 @@ public class CodeGenerationUtils {
 		template = template.replace(TemplatesUtils.CLASS_NAME, task.getClassName());
 		template = template.replace(TemplatesUtils.INPUT, getInputDeclaration(task));
 		template = template.replace(TemplatesUtils.OUTPUT, getOutputDeclaration(task));
-		template = template.replace(TemplatesUtils.SOLVER_CALL, "solver.solve(in, out);");
+		template = template.replace(TemplatesUtils.SOLVER_CALL, generateSolverCall(task.getTestType()));
 		return template;
+	}
+
+	private static String generateSolverCall(TestType testType) {
+		switch (testType) {
+			case SINGLE:
+				return "solver.solve(in, out);";
+			case MULTI_NUMBER:
+				return "int n;\n" +
+				       "in >> n;\n" +
+				       "for(int i = 0; i < n; ++i) {\n" +
+				       "\tsolver.solve(in, out);\n" +
+				       "}\n";
+			case MULTI_EOF:
+				return "while(in.good()) {\n" +
+				       "\tsolver.solve(in, out);\n" +
+				       "}\n";
+			default:
+				throw new IllegalArgumentException("Unknown testType:" + testType);
+		}
 	}
 
 	private static String getOutputDeclaration(Task task) {
