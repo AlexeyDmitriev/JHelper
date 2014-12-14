@@ -33,9 +33,6 @@ public class TaskSettingsComponent extends JPanel {
 		this.listener = listener;
 		//noinspection OverridableMethodCallDuringObjectConstruction
 		setTask(Task.emptyTask(project));
-
-		UIUtils.lockFields(name, className);
-		UIUtils.lockFields(name, path.getTextField(), Task.defaultPathFormat(project));
 	}
 
 	public Task getTask() {
@@ -68,6 +65,9 @@ public class TaskSettingsComponent extends JPanel {
 		add(LabeledComponent.create(path, "Path"));
 		add(LabeledComponent.create(input, "Input"));
 		add(LabeledComponent.create(output, "Output"));
+
+		UIUtils.mirrorFields(name, className);
+		UIUtils.mirrorFields(name, path.getTextField(), Task.defaultPathFormat(project));
 	}
 
 

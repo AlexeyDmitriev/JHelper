@@ -11,13 +11,14 @@ public class UIUtils {
 	}
 
 	/**
-	 * Lock fields so that when the main of them changed, the copy is changed accordingly.
-	 * Copy always has format {@code String.format(format, main.getText())} until a copy is changed.
-	 * After change in a copy, this function does nothing.
+	 * Make two fields change simultaneously until the second one ({@code copy}) changed manually.
+	 * Maintains equality of {@code String.format(format, main.getText())} and {@code copy.getText()}
+	 *
+	 * Does nothing if this equality is wrong when method is called.
 	 *
 	 * @param format format for {@link java.lang.String#format}. Should contain exactly one format specifier equal to %s
 	 */
-	public static void lockFields(final JTextField main, final JTextField copy, final String format) {
+	public static void mirrorFields(final JTextField main, final JTextField copy, final String format) {
 		if (!String.format(format, main.getText()).equals(copy.getText())) {
 			// The copy is already changed.
 			return;
@@ -56,11 +57,12 @@ public class UIUtils {
 	}
 
 	/**
-	 * Lock fields so that when the main of them changed, the copy is changed accordingly.
-	 * Copy always equals to main until the copy is changed.
-	 * After change in a copy, this function does nothing.
+	 * Make two fields change simultaneously until the second one ({@code copy}) changed manually.
+	 * Maintains equality of {@code main.getText()} and {@code copy.getText()}
+	 *
+	 * Does nothing if this equality is wrong when method is called.
 	 */
-	public static void lockFields(JTextField main, JTextField copy) {
-		lockFields(main, copy, "%s");
+	public static void mirrorFields(JTextField main, JTextField copy) {
+		mirrorFields(main, copy, "%s");
 	}
 }

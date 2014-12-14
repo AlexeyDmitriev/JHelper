@@ -34,8 +34,7 @@ public class Task {
 		this.name = name;
 		this.className = className;
 		this.path = path;
-		//noinspection AssignmentToCollectionOrArrayFieldFromParameter
-		this.tests = tests;
+		this.tests = Arrays.copyOf(tests, tests.length);
 	}
 
 	public String getName() {
@@ -59,8 +58,7 @@ public class Task {
 	}
 
 	public Test[] getTests() {
-		//noinspection ReturnOfCollectionOrArrayField
-		return tests;
+		return Arrays.copyOf(tests, tests.length);
 	}
 
 	public Task copy() {
