@@ -39,7 +39,12 @@ public class DeletionMarkingVisitor extends OCVisitor {
 
 	@Override
 	public void visitFunctionDefinition(OCFunctionDefinition functionDefinition) {
-		if ("main".equals(functionDefinition.getName())) {
+		String name = functionDefinition.getName();
+		if ("main".equals(name)) {
+			return;
+		}
+		if (name != null && name.startsWith("operator")) {
+			// To workaround a fact that no usages found for operators
 			return;
 		}
 		super.visitFunctionDefinition(functionDefinition);
