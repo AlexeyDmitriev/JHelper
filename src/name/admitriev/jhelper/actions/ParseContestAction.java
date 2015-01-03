@@ -1,38 +1,32 @@
 package name.admitriev.jhelper.actions;
 
+import com.intellij.ide.IdeView;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.jetbrains.objc.psi.OCFile;
 import name.admitriev.jhelper.IDEUtils;
-import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.task.Task;
 import name.admitriev.jhelper.task.TaskUtils;
-import name.admitriev.jhelper.ui.AddTaskDialog;
+import name.admitriev.jhelper.ui.ParseDialog;
 import name.admitriev.jhelper.ui.UIUtils;
 
-public class AddTaskAction extends BaseAction {
-
+public class ParseContestAction extends BaseAction {
 	@Override
-	public void performAction(AnActionEvent e) {
+	protected void performAction(AnActionEvent e) {
 		Project project = e.getProject();
-		if (project == null) {
-			throw new NotificationException("No project found", "Are you in any project?");
-		}
-
-		AddTaskDialog dialog = new AddTaskDialog(project);
+		ParseDialog dialog = new ParseDialog(project);
 		dialog.show();
 		if (!dialog.isOK()) {
 			return;
 		}
-		Task task = dialog.getTask();
-
-		PsiElement generatedFile = TaskUtils.saveTask(task, project);
-
-		UIUtils.openMethodInView(e.getData(LangDataKeys.IDE_VIEW), (OCFile) generatedFile, "solve");
+		IdeView view = e.getData(LangDataKeys.IDE_VIEW);
+		for (Task task : dialog.getResult()) {
+			PsiElement generatedFile = TaskUtils.saveTask(task, project);
+			UIUtils.openMethodInView(view, (OCFile) generatedFile, "solve");
+		}
 
 		IDEUtils.reloadProjectInCLion(project);
 	}
-
 }

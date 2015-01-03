@@ -1,6 +1,14 @@
 package name.admitriev.jhelper.ui;
 
+import com.intellij.ide.IdeView;
+import com.intellij.openapi.util.Ref;
+import com.intellij.psi.PsiElement;
 import com.intellij.ui.DocumentAdapter;
+import com.jetbrains.objc.psi.OCBlockStatement;
+import com.jetbrains.objc.psi.OCFile;
+import com.jetbrains.objc.psi.OCFunctionDefinition;
+import com.jetbrains.objc.psi.visitors.OCRecursiveVisitor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -31,8 +39,9 @@ public class UIUtils {
 
 					@Override
 					protected void textChanged(DocumentEvent e) {
-						if (secondChanged.get())
+						if (secondChanged.get()) {
 							return;
+						}
 						while (!changingFirst.compareAndSet(false, true)) {
 							// intentionally empty
 						}
@@ -64,5 +73,37 @@ public class UIUtils {
 	 */
 	public static void mirrorFields(JTextField main, JTextField copy) {
 		mirrorFields(main, copy, "%s");
+	}
+
+	/**
+	 * Finds method @{code methodName} in @{code file} and opens it in @{code view}.
+	 *
+	 * Does nothing if the view is null
+	 */
+	public static void openMethodInView(IdeView view, OCFile file, String methodName) {
+		if (view != null) {
+			view.selectElement(findMethodBody(file, methodName));
+		}
+	}
+
+	private static PsiElement findMethodBody(OCFile file, @NotNull final String method) {
+		final Ref<PsiElement> result = new Ref<PsiElement>();
+		file.accept(
+				new OCRecursiveVisitor() {
+					@Override
+					public void visitFunctionDefinition(OCFunctionDefinition ocFunctionDefinition) {
+						if (method.equals(ocFunctionDefinition.getName())) {
+							// continue recursion
+							super.visitFunctionDefinition(ocFunctionDefinition);
+						}
+					}
+
+					@Override
+					public void visitBlockStatement(OCBlockStatement ocBlockStatement) {
+						result.set(ocBlockStatement.getOpeningBrace().getNextSibling());
+					}
+				}
+		);
+		return result.get();
 	}
 }

@@ -1,0 +1,241 @@
+package name.admitriev.jhelper.ui;
+
+import com.intellij.notification.NotificationType;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.ui.ListCellRendererWrapper;
+import com.intellij.ui.components.JBList;
+import com.intellij.ui.components.JBScrollPane;
+import name.admitriev.jhelper.components.Configurator;
+import name.admitriev.jhelper.parsing.Receiver;
+import name.admitriev.jhelper.task.Task;
+import net.egork.chelper.parser.Description;
+import net.egork.chelper.parser.Parser;
+import net.egork.chelper.parser.ParserTask;
+import net.egork.chelper.task.TestType;
+import net.egork.chelper.util.Messenger;
+import org.jdesktop.swingx.HorizontalLayout;
+import org.jdesktop.swingx.VerticalLayout;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class ParseDialog extends DialogWrapper {
+	private JComponent component;
+
+	private ComboBox parserComboBox;
+	private ComboBox testType;
+
+	private JBList contestList;
+	private Receiver contestReceiver = new Receiver.Empty();
+	private ParseListModel contestModel = new ParseListModel();
+
+	private JBList problemList;
+	private Receiver problemReceiver = new Receiver.Empty();
+	private ParseListModel problemModel = new ParseListModel();
+
+	private Project project;
+
+	public ParseDialog(@Nullable Project project) {
+		super(project);
+		this.project = project;
+		setTitle("Parse contest");
+		JPanel panel = new JPanel(new VerticalLayout());
+
+		parserComboBox = new ComboBox(Parser.PARSERS);
+		parserComboBox.setRenderer(
+				new ListCellRendererWrapper() {
+					@Override
+					public void customize(JList list, Object value, int index, boolean selected, boolean hasFocus) {
+						Parser parser = (Parser) value;
+						setText(parser.getName());
+						setIcon(parser.getIcon());
+					}
+				}
+		);
+		parserComboBox.addActionListener(
+				new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						refresh();
+					}
+				}
+		);
+
+		testType = new ComboBox(TestType.values());
+
+		contestList = new JBList(contestModel);
+		contestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		contestList.addListSelectionListener(
+				new ListSelectionListener() {
+					@Override
+					public void valueChanged(ListSelectionEvent e) {
+						problemReceiver.stop();
+						problemModel.removeAll();
+
+						Parser parser = (Parser) parserComboBox.getSelectedItem();
+						Description contest = (Description) contestList.getSelectedValue();
+
+						problemReceiver = generateProblemReceiver();
+
+						if (contest != null) {
+							new ParserTask(
+									contest.id, problemReceiver, parser
+							);
+						}
+					}
+				}
+		);
+
+		problemList = new JBList(problemModel);
+		problemList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+
+		JPanel contestsTasksPanel = new JPanel(new HorizontalLayout());
+		contestsTasksPanel.add(
+				new JBScrollPane(
+						contestList,
+						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+				)
+		);
+		contestsTasksPanel.add(
+				new JBScrollPane(
+						problemList,
+						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+				)
+		);
+
+		panel.add(LabeledComponent.create(parserComboBox, "Parser"));
+		panel.add(contestsTasksPanel);
+		panel.add(LabeledComponent.create(testType, "Test type"));
+
+		component = panel;
+
+		init();
+	}
+
+	private void refresh() {
+		Parser parser = (Parser) parserComboBox.getSelectedItem();
+		Description chosenDescription = (Description) contestList.getSelectedValue();
+		contestReceiver.stop();
+		contestModel.removeAll();
+
+		contestReceiver = generateContestReceiver(chosenDescription);
+
+		new ParserTask(
+				null, contestReceiver, parser
+		);
+	}
+
+	private Receiver generateProblemReceiver() {
+		return new Receiver() {
+			@Override
+			public void receiveDescriptions(final Collection<Description> descriptions) {
+				final Receiver thisReceiver = this;
+				SwingUtilities.invokeLater(
+						new Runnable() {
+							@Override
+							public void run() {
+								//noinspection ObjectEquality
+								if (problemReceiver != thisReceiver) {
+									return;
+								}
+								boolean shouldMark = problemModel.getSize() == 0;
+								problemModel.addAll(descriptions);
+								if (shouldMark) {
+									problemList.setSelectionInterval(0, problemModel.getSize() - 1);
+								}
+							}
+						}
+				);
+			}
+		};
+	}
+
+	private Receiver generateContestReceiver(final Description chosenDescription) {
+		return new Receiver() {
+			@Override
+			public void receiveDescriptions(final Collection<Description> descriptions) {
+				final Receiver thisReceiver = this;
+				SwingUtilities.invokeLater(
+						new Runnable() {
+							@Override
+							public void run() {
+								//noinspection ObjectEquality
+								if (contestReceiver != thisReceiver) {
+									return;
+								}
+								boolean shouldMark = contestModel.getSize() == 0;
+								contestModel.addAll(descriptions);
+								if (shouldMark) {
+									for (Description contest : descriptions) {
+										if (chosenDescription != null && chosenDescription.id.equals(contest.id)) {
+											contestList.setSelectedValue(contest, true);
+											return;
+										}
+									}
+									if (contestModel.getSize() > 0) {
+										contestList.setSelectedIndex(0);
+									}
+								}
+							}
+						}
+				);
+			}
+		};
+	}
+
+	@Nullable
+	@Override
+	protected JComponent createCenterPanel() {
+		refresh();
+		return component;
+	}
+
+	public Collection<Task> getResult() {
+		List<Task> list = new ArrayList<Task>();
+		Object[] selectedTasks = problemList.getSelectedValues();
+		Parser parser = (Parser) parserComboBox.getSelectedItem();
+
+		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator.State configuration = configurator.getState();
+
+		String path = configuration.getTasksDirectory();
+
+		for (Object taskDescription : selectedTasks) {
+			Description description = (Description) taskDescription;
+			net.egork.chelper.task.Task rawTask = parser.parseTask(description);
+			if (rawTask == null) {
+				Messenger.publishMessage(
+						"Unable to parse task " + description.description +
+						". Connection problems or format change", NotificationType.ERROR
+				);
+				continue;
+			}
+			Task myTask = new Task(
+					rawTask.name,
+					rawTask.taskClass,
+					String.format("%s/%s.task", path, rawTask.name),
+					rawTask.input,
+					rawTask.output,
+					(TestType) testType.getSelectedItem(),
+					rawTask.tests
+			);
+			list.add(myTask);
+		}
+		return list;
+	}
+}
+
+
