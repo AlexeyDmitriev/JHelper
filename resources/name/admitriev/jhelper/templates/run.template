@@ -45,4 +45,5 @@ int main() {
 	else {
 		std::cout << "Some cases failed" << std::endl;
 	};
+	return 0;
 }
