@@ -15,7 +15,6 @@ import net.egork.chelper.parser.Description;
 import net.egork.chelper.parser.Parser;
 import net.egork.chelper.parser.ParserTask;
 import net.egork.chelper.task.TestType;
-import net.egork.chelper.util.Messenger;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.Nullable;
@@ -217,9 +216,10 @@ public class ParseDialog extends DialogWrapper {
 			Description description = (Description) taskDescription;
 			net.egork.chelper.task.Task rawTask = parser.parseTask(description);
 			if (rawTask == null) {
-				Messenger.publishMessage(
-						"Unable to parse task " + description.description +
-						". Connection problems or format change", NotificationType.ERROR
+				Notificator.showNotification(
+						"Unable to parse task " + description.description,
+						"Connection problems or format change",
+						NotificationType.ERROR
 				);
 				continue;
 			}
