@@ -1,7 +1,7 @@
 package name.admitriev.jhelper.components;
 
+import com.intellij.openapi.components.AbstractProjectComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.components.StoragePathMacros;
@@ -19,18 +19,10 @@ import org.jetbrains.annotations.NotNull;
 				         scheme = StorageScheme.DIRECTORY_BASED)
 		}
 )
-public class Configurator implements ProjectComponent, PersistentStateComponent<Configurator.State> {
-	@SuppressWarnings("UnusedParameters")
+public class Configurator extends AbstractProjectComponent implements PersistentStateComponent<Configurator.State> {
 	public Configurator(Project project) {
+		super(project);
 		state = new Configurator.State();
-	}
-
-	@Override
-	public void initComponent() {
-	}
-
-	@Override
-	public void disposeComponent() {
 	}
 
 	@Override
@@ -38,15 +30,6 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 	public String getComponentName() {
 		return "Configurator";
 	}
-
-	@Override
-	public void projectOpened() {
-	}
-
-	@Override
-	public void projectClosed() {
-	}
-
 
 	@NotNull
 	@Override
