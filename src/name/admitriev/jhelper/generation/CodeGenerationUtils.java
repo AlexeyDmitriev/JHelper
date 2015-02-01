@@ -87,7 +87,9 @@ public class CodeGenerationUtils {
 	private static String generateTestDeclaration(Test[] tests) {
 		StringBuilder result = new StringBuilder();
 		for (Test test : tests) {
-			result.append("{" + quote(test.input) + ", " + quote(test.output) + "},");
+			result.append(
+					"{" + quote(test.input) + ", " + quote(test.output) + ", " + Boolean.toString(test.active) + "},"
+			);
 		}
 		return result.toString();
 	}
