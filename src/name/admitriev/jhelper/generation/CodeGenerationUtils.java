@@ -148,7 +148,7 @@ public class CodeGenerationUtils {
 			throw new NotificationException("Your task is in inconsistent state", "Can't output to local regexp");
 		}
 		else {
-			return "std::ofstream in(\"" + outputFileName + "\");";
+			return "std::ofstream out(\"" + outputFileName + "\");";
 		}
 	}
 
