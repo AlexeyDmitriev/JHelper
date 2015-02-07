@@ -32,14 +32,14 @@ int main() {
 	bool allOK = true;
 	int testID = 0;
 	for(const jhelper::Test& test: tests ) {
-		std::stringstream in(test.input);
-		std::ostringstream out;
-		%ClassName% solver;
-		%SolverCall%
 		std::cout << "Test #" << ++testID << std::endl;
 		std::cout << "Input: \n" << test.input << std::endl;
 		std::cout << "Expected output: \n" << test.output << std::endl;
 		if (test.active) {
+			std::stringstream in(test.input);
+			std::ostringstream out;
+			%ClassName% solver;
+			%SolverCall%
 			std::cout << "Actual output: \n" << out.str() << std::endl;
 			bool result = jhelper::check(test.output, out.str());
 			allOK = allOK && result;
