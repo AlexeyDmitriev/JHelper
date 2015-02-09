@@ -71,7 +71,12 @@ public class CodeGenerationUtils {
 				generateSubmissionFileContent(project, result, task)
 		);
 
-		removeUnusedCode(psiOutputFile);
+		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator.State configuration = configurator.getState();
+
+		if (configuration.isCodeEliminationOn()) {
+			removeUnusedCode(psiOutputFile);
+		}
 	}
 
 

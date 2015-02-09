@@ -50,16 +50,18 @@ public class Configurator extends AbstractProjectComponent implements Persistent
 		private String tasksDirectory;
 		private String outputFile;
 		private String runFile;
+		private boolean codeEliminationOn;
 
-		public State(String author, String tasksDirectory, String outputFile, String runFile) {
+		public State(String author, String tasksDirectory, String outputFile, String runFile, boolean codeEliminationOn) {
 			this.author = author;
 			this.tasksDirectory = tasksDirectory;
 			this.outputFile = outputFile;
 			this.runFile = runFile;
+			this.codeEliminationOn = codeEliminationOn;
 		}
 
 		public State() {
-			this("", "tasks", "output/main.cpp", "testrunner/main.cpp");
+			this("", "tasks", "output/main.cpp", "testrunner/main.cpp", true);
 		}
 
 		public String getAuthor() {
@@ -76,6 +78,10 @@ public class Configurator extends AbstractProjectComponent implements Persistent
 
 		public String getRunFile() {
 			return runFile;
+		}
+
+		public boolean isCodeEliminationOn() {
+			return codeEliminationOn;
 		}
 
 		@SuppressWarnings("UnusedDeclaration")
@@ -100,6 +106,12 @@ public class Configurator extends AbstractProjectComponent implements Persistent
 		@Deprecated
 		public void setRunFile(String runFile) {
 			this.runFile = runFile;
+		}
+
+		@SuppressWarnings("UnusedDeclaration")
+		@Deprecated
+		public void setCodeEliminationOn(boolean codeEliminationOn) {
+			this.codeEliminationOn = codeEliminationOn;
 		}
 	}
 }
