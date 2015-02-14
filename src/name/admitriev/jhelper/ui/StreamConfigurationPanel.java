@@ -18,6 +18,7 @@ public class StreamConfigurationPanel extends JPanel {
 	public StreamConfigurationPanel(
 			StreamConfiguration configuration,
 			StreamConfiguration.StreamType[] allowedTypes,
+			String defaultFileName,
 			final SizeChangedListener listener
 	) {
 		super(new VerticalLayout());
@@ -34,7 +35,7 @@ public class StreamConfigurationPanel extends JPanel {
 					}
 				}
 		);
-		fileName = new JTextField(configuration.type.hasStringParameter ? configuration.fileName : "input.txt");
+		fileName = new JTextField(configuration.type.hasStringParameter ? configuration.fileName : defaultFileName);
 		fileName.setVisible(((StreamConfiguration.StreamType) type.getSelectedItem()).hasStringParameter);
 
 		add(type);
