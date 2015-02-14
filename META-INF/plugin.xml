@@ -7,7 +7,7 @@
 	<description>Sport programming tool to inline library code and provide testing framework.</description>
 
 	<change-notes>
-		In 0.5 compatibility of templates broken.
+		In 0.5 compatibility of templates is broken.
 		In order to fix compilation you need to delete (or move) run.template in root directory of your project and then re-apply your changes, if any.
 		It should be done even if you didn't customize the template
 	</change-notes>
