@@ -14,7 +14,9 @@ public class IDEUtils {
 	public static void reloadProjectInCLion(Project project) {
 		String errorMessage = "Couldn't reload a CLion project. API changed?";
 		try {
-			Class<?> clz = AddTaskAction.class.getClassLoader().loadClass("com.jetbrains.cidr.cpp.cmake.CMakeWorkspace");
+			Class<?> clz = AddTaskAction.class.getClassLoader().loadClass(
+					"com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace"
+			);
 			Object instance = clz.getMethod("getInstance", Project.class).invoke(null, project);
 			clz.getMethod("scheduleReload", boolean.class).invoke(instance, true);
 		}
