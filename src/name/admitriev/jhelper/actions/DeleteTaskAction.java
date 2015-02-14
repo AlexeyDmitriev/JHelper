@@ -69,7 +69,7 @@ public class DeleteTaskAction extends BaseAction {
 		else {
 			Notificator.showNotification(
 					"Not a JHelper configuration",
-					"To delete configuration you should chose it as a configuration first",
+					"To delete a configuration you should choose it first",
 					NotificationType.WARNING
 			);
 		}
