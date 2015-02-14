@@ -42,7 +42,6 @@ public class DeleteTaskAction extends BaseAction {
 									classFile.delete(this);
 								}
 								catch (IOException ignored) {
-									System.err.println("lol");
 									Notificator.showNotification(
 											"Couldn't delete class file",
 											NotificationType.WARNING
