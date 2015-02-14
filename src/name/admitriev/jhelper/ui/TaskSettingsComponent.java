@@ -59,8 +59,18 @@ public class TaskSettingsComponent extends JPanel {
 				task.getPath(),
 				RelativeFileChooserDescriptor.fileChooser(project.getBaseDir())
 		);
-		input = new StreamConfigurationPanel(task.getInput(), StreamConfiguration.StreamType.values(), listener);
-		output = new StreamConfigurationPanel(task.getOutput(), StreamConfiguration.OUTPUT_TYPES, listener);
+		input = new StreamConfigurationPanel(
+				task.getInput(),
+				StreamConfiguration.StreamType.values(),
+				"input.txt",
+				listener
+		);
+		output = new StreamConfigurationPanel(
+				task.getOutput(),
+				StreamConfiguration.OUTPUT_TYPES,
+				"output.txt",
+				listener
+		);
 
 		testType = new ComboBox(TestType.values());
 		testType.setSelectedItem(task.getTestType());
