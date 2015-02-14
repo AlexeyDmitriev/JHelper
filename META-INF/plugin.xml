@@ -70,5 +70,12 @@
 			description="Creates a task for each problem in a contest"
 			icon="/name/admitriev/jhelper/icons/parseContest.png"
 		/>
+		<action
+			id="name.admitriev.jhelper.actions.DeleteTaskAction"
+			class="name.admitriev.jhelper.actions.DeleteTaskAction"
+			text="Delete task"
+			description="Deletes selected configuration, its task file and class file"
+			icon="/name/admitriev/jhelper/icons/delete.png"
+		/>
 	</actions>
 </idea-plugin>
