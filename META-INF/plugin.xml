@@ -1,7 +1,7 @@
 <idea-plugin version="2">
 	<id>name.admitriev.jhelper</id>
 	<name>JHelper</name>
-	<version>0.5.3</version>
+	<version>0.5.4</version>
 	<vendor>Alexey Dmitriev</vendor>
 
 	<description>Sport programming tool to inline library code and provide testing framework.</description>
