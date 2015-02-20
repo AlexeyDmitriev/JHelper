@@ -4,6 +4,7 @@ import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.impl.RunManagerImpl;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import name.admitriev.jhelper.configuration.TaskConfiguration;
@@ -26,18 +27,24 @@ public class EditTestsAction extends BaseAction {
 		if (configuration instanceof TaskConfiguration) {
 			TaskConfiguration taskConfiguration = (TaskConfiguration) configuration;
 			Task task = taskConfiguration.getTask();
-			Task newTask = task.withTests(EditTestsDialog.editTests(task.getTests(), project));
+			final Task newTask = task.withTests(EditTestsDialog.editTests(task.getTests(), project));
 			taskConfiguration.setTask(newTask);
 
-			VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(newTask.getPath());
+			final VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(newTask.getPath());
 			if (taskFile == null) {
 				throw new NotificationException("Couldn't find task file to save: " + newTask.getPath());
 			}
-			OutputWriter writer = FileUtils.getOutputWriter(taskFile, this);
-			newTask.saveTask(writer);
-			writer.flush();
-			writer.close();
-
+			ApplicationManager.getApplication().runWriteAction(
+					new Runnable() {
+						@Override
+						public void run() {
+							OutputWriter writer = FileUtils.getOutputWriter(taskFile, this);
+							newTask.saveTask(writer);
+							writer.flush();
+							writer.close();
+						}
+					}
+			);
 		}
 	}
 }
