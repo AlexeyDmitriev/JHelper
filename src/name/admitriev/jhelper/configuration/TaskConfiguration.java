@@ -6,6 +6,7 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
@@ -52,17 +53,24 @@ public class TaskConfiguration extends RunConfigurationBase {
 			}
 
 			@Override
-			protected void applyEditorTo(TaskConfiguration s) {
+			protected void applyEditorTo(final TaskConfiguration s) {
 				s.task = component.getTask();
 				setName(s.task.getName());
-				VirtualFile taskFile = s.project.getBaseDir().findFileByRelativePath(s.task.getPath());
-				if(taskFile == null) {
+				final VirtualFile taskFile = s.project.getBaseDir().findFileByRelativePath(s.task.getPath());
+				if (taskFile == null) {
 					throw new NotificationException("Couldn't find task file to save: " + s.task.getPath());
 				}
-				OutputWriter outputWriter = FileUtils.getOutputWriter(taskFile, this);
-				s.task.saveTask(outputWriter);
-				outputWriter.flush();
-				outputWriter.close();
+				ApplicationManager.getApplication().runWriteAction(
+						new Runnable() {
+							@Override
+							public void run() {
+								OutputWriter outputWriter = FileUtils.getOutputWriter(taskFile, this);
+								s.task.saveTask(outputWriter);
+								outputWriter.flush();
+								outputWriter.close();
+							}
+						}
+				);
 			}
 
 			@NotNull
