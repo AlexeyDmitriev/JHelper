@@ -4,15 +4,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
-import com.jetbrains.objc.psi.OCCppNamespace;
-import com.jetbrains.objc.psi.OCDeclaration;
-import com.jetbrains.objc.psi.OCDeclarator;
-import com.jetbrains.objc.psi.OCElement;
-import com.jetbrains.objc.psi.OCFunctionDefinition;
-import com.jetbrains.objc.psi.OCStructLike;
-import com.jetbrains.objc.psi.OCTypeElement;
-import com.jetbrains.objc.psi.impl.OCDefineDirectiveImpl;
-import com.jetbrains.objc.psi.visitors.OCVisitor;
+import com.jetbrains.cidr.lang.psi.OCCppNamespace;
+import com.jetbrains.cidr.lang.psi.OCDeclaration;
+import com.jetbrains.cidr.lang.psi.OCDeclarator;
+import com.jetbrains.cidr.lang.psi.OCElement;
+import com.jetbrains.cidr.lang.psi.OCFunctionDefinition;
+import com.jetbrains.cidr.lang.psi.OCStructLike;
+import com.jetbrains.cidr.lang.psi.OCTypeElement;
+import com.jetbrains.cidr.lang.psi.impl.OCDefineDirectiveImpl;
+import com.jetbrains.cidr.lang.psi.visitors.OCVisitor;
 
 import java.util.Collection;
 

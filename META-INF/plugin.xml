@@ -1,7 +1,7 @@
 <idea-plugin version="2">
 	<id>name.admitriev.jhelper</id>
 	<name>JHelper</name>
-	<version>0.5.4</version>
+	<version>0.5.5</version>
 	<vendor>Alexey Dmitriev</vendor>
 
 	<description>Sport programming tool to inline library code and provide testing framework.</description>
@@ -12,7 +12,7 @@
 		It should be done even if you didn't customize the template
 	</change-notes>
 
-	<idea-version since-build="131.1"/>
+	<idea-version since-build="141.102"/>
 
 	<depends>com.intellij.modules.cidr.lang</depends>
 

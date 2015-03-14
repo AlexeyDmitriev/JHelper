@@ -2,8 +2,8 @@ package name.admitriev.jhelper.generation;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.jetbrains.objc.psi.OCImportDirective;
-import com.jetbrains.objc.psi.OCPragma;
+import com.jetbrains.cidr.lang.psi.OCIncludeDirective;
+import com.jetbrains.cidr.lang.psi.OCPragma;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,13 +23,13 @@ public class IncludesProcessor {
 		}
 		processedFiles.add(file);
 		for (PsiElement element : file.getChildren()) {
-			if (element instanceof OCImportDirective) {
-				OCImportDirective include = (OCImportDirective) element;
+			if (element instanceof OCIncludeDirective) {
+				OCIncludeDirective include = (OCIncludeDirective) element;
 				if (include.isAngleBrackets()) {
 					processAngleBracketsInclude(include);
 				}
 				else {
-					processFile(include.getImportedFile());
+					processFile(include.getIncludedFile());
 				}
 				continue;
 			}
@@ -43,8 +43,8 @@ public class IncludesProcessor {
 		}
 	}
 
-	private void processAngleBracketsInclude(OCImportDirective include) {
-		PsiFile file = include.getImportedFile();
+	private void processAngleBracketsInclude(OCIncludeDirective include) {
+		PsiFile file = include.getIncludedFile();
 		if (processedFiles.contains(file)) {
 			return;
 		}
