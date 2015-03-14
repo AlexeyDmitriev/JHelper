@@ -4,10 +4,10 @@ import com.intellij.ide.IdeView;
 import com.intellij.openapi.util.Ref;
 import com.intellij.psi.PsiElement;
 import com.intellij.ui.DocumentAdapter;
-import com.jetbrains.objc.psi.OCBlockStatement;
-import com.jetbrains.objc.psi.OCFile;
-import com.jetbrains.objc.psi.OCFunctionDefinition;
-import com.jetbrains.objc.psi.visitors.OCRecursiveVisitor;
+import com.jetbrains.cidr.lang.psi.OCBlockStatement;
+import com.jetbrains.cidr.lang.psi.OCFile;
+import com.jetbrains.cidr.lang.psi.OCFunctionDefinition;
+import com.jetbrains.cidr.lang.psi.visitors.OCRecursiveVisitor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
