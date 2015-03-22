@@ -44,7 +44,6 @@ public class EditTestsDialog extends DialogWrapper {
 	public EditTestsDialog(Test[] tests, Project project) {
 		super(project);
 		setTitle("Tests");
-		setResizable(false);
 		this.tests = new ArrayList<Test>(Arrays.asList(tests));
 		VariableGridLayout mainLayout = new VariableGridLayout(1, 2, 5, 5);
 		mainLayout.setColFraction(0, LIST_PANEL_FRACTION);
