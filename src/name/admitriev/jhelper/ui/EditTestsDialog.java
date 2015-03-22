@@ -201,8 +201,8 @@ public class EditTestsDialog extends DialogWrapper {
 				}
 		);
 		middleButtonsPanel.add(newTest);
-		JButton remove = new JButton("Remove");
-		remove.addActionListener(
+		JButton removeButton = new JButton("Remove");
+		removeButton.addActionListener(
 				new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -233,7 +233,7 @@ public class EditTestsDialog extends DialogWrapper {
 					}
 				}
 		);
-		middleButtonsPanel.add(remove);
+		middleButtonsPanel.add(removeButton);
 		buttonsPanel.add(middleButtonsPanel);
 		return buttonsPanel;
 	}
