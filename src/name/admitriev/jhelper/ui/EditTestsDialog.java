@@ -145,8 +145,7 @@ public class EditTestsDialog extends DialogWrapper {
 	}
 
 	private JPanel createButtonPanel() {
-		JPanel buttonsPanel = new JPanel(new GridLayout(3, 1));
-		JPanel upperButtonsPanel = new JPanel(new GridLayout(1, 2));
+		JPanel buttonsPanel = new JPanel(new GridLayout(2, 2));
 		JButton all = new JButton("All");
 		all.addActionListener(
 				new ActionListener() {
@@ -165,7 +164,7 @@ public class EditTestsDialog extends DialogWrapper {
 					}
 				}
 		);
-		upperButtonsPanel.add(all);
+		buttonsPanel.add(all);
 		JButton none = new JButton("None");
 		none.addActionListener(
 				new ActionListener() {
@@ -184,9 +183,7 @@ public class EditTestsDialog extends DialogWrapper {
 					}
 				}
 		);
-		upperButtonsPanel.add(none);
-		buttonsPanel.add(upperButtonsPanel);
-		JPanel middleButtonsPanel = new JPanel(new GridLayout(1, 2));
+		buttonsPanel.add(none);
 		JButton newTest = new JButton("New");
 		newTest.addActionListener(
 				new ActionListener() {
@@ -201,7 +198,7 @@ public class EditTestsDialog extends DialogWrapper {
 					}
 				}
 		);
-		middleButtonsPanel.add(newTest);
+		buttonsPanel.add(newTest);
 		JButton removeButton = new JButton("Remove");
 		removeButton.addActionListener(
 				new ActionListener() {
@@ -234,8 +231,7 @@ public class EditTestsDialog extends DialogWrapper {
 					}
 				}
 		);
-		middleButtonsPanel.add(removeButton);
-		buttonsPanel.add(middleButtonsPanel);
+		buttonsPanel.add(removeButton);
 		return buttonsPanel;
 	}
 
