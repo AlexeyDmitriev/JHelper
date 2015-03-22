@@ -3,6 +3,7 @@ package name.admitriev.jhelper.ui;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import net.egork.chelper.task.Test;
@@ -23,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class EditTestsDialog extends DialogWrapper {
-	private static int HEIGHT = new JLabel("Test").getPreferredSize().height;
+	private static final int HEIGHT = new JLabel("Test").getPreferredSize().height;
 
 	private List<Test> tests;
 	private int currentTest;
@@ -62,6 +63,7 @@ public class EditTestsDialog extends DialogWrapper {
 		testList.setLayoutOrientation(JList.VERTICAL);
 		testList.addListSelectionListener(
 				new ListSelectionListener() {
+					@Override
 					public void valueChanged(ListSelectionEvent e) {
 						if (updating) {
 							return;
@@ -74,28 +76,21 @@ public class EditTestsDialog extends DialogWrapper {
 					}
 				}
 		);
-//		testList.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				int index = testList.locationToIndex(e.getPoint());
-//				if (index >= 0 && index < testList.getItemsCount()) {
-//					saveCurrentTest();
-//					setSelectedTest(index);
-//				}
-//			}
-//		});
 		checkBoxesAndSelectorPanel.add(testList, BorderLayout.CENTER);
 		selectorAndButtonsPanel.add(
 				new JBScrollPane(
 						checkBoxesAndSelectorPanel,
-						JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-				), BorderLayout.CENTER
+						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+				),
+				BorderLayout.CENTER
 		);
 		JPanel buttonsPanel = new JPanel(new GridLayout(3, 1));
 		JPanel upperButtonsPanel = new JPanel(new GridLayout(1, 2));
 		JButton all = new JButton("All");
 		all.addActionListener(
 				new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						int index = 0;
 						for (JCheckBox checkBox : checkBoxes) {
@@ -114,6 +109,7 @@ public class EditTestsDialog extends DialogWrapper {
 		JButton none = new JButton("None");
 		none.addActionListener(
 				new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						int index = 0;
 						for (JCheckBox checkBox : checkBoxes) {
@@ -134,6 +130,7 @@ public class EditTestsDialog extends DialogWrapper {
 		JButton newTest = new JButton("New");
 		newTest.addActionListener(
 				new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						saveCurrentTest();
 						int index = EditTestsDialog.this.tests.size();
@@ -148,6 +145,7 @@ public class EditTestsDialog extends DialogWrapper {
 		JButton remove = new JButton("Remove");
 		remove.addActionListener(
 				new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						if (currentTest == -1) {
 							return;
@@ -183,16 +181,9 @@ public class EditTestsDialog extends DialogWrapper {
 		JPanel testPanel = new JPanel(new GridLayout(2, 1, 5, 5));
 		JPanel inputPanel = new JPanel(new BorderLayout());
 		inputPanel.add(new JLabel("Input:"), BorderLayout.NORTH);
-		DocumentListener listener = new DocumentListener() {
-			public void insertUpdate(DocumentEvent e) {
-				saveCurrentTest();
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				saveCurrentTest();
-			}
-
-			public void changedUpdate(DocumentEvent e) {
+		DocumentListener listener = new DocumentAdapter() {
+			@Override
+			protected void textChanged(DocumentEvent e) {
 				saveCurrentTest();
 			}
 		};
@@ -209,6 +200,7 @@ public class EditTestsDialog extends DialogWrapper {
 		knowAnswer = new JCheckBox("Know answer?");
 		knowAnswer.addActionListener(
 				new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						saveCurrentTest();
 					}
@@ -237,6 +229,7 @@ public class EditTestsDialog extends DialogWrapper {
 		checkBox.setMinimumSize(preferredSize);
 		checkBox.addActionListener(
 				new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						tests.set(test.index, tests.get(test.index).setActive(checkBox.isSelected()));
 						setSelectedTest(currentTest);
@@ -283,8 +276,6 @@ public class EditTestsDialog extends DialogWrapper {
 				)
 		);
 		outputPanel.setVisible(knowAnswer.isSelected());
-//        output.invalidate();
-//        output.repaint();
 	}
 
 	public Test[] getTests() {
