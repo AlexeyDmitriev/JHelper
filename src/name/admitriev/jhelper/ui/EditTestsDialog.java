@@ -26,6 +26,7 @@ public class EditTestsDialog extends DialogWrapper {
 	private static final int HEIGHT = new JLabel("Test").getPreferredSize().height;
 	private static final double LIST_PANEL_FRACTION = 0.35;
 	private static final Dimension PREFERRED_SIZE = new Dimension(600, 400);
+	public static final int GAP = 5;
 
 	private List<Test> tests;
 
@@ -45,7 +46,7 @@ public class EditTestsDialog extends DialogWrapper {
 		super(project);
 		setTitle("Tests");
 		this.tests = new ArrayList<Test>(Arrays.asList(tests));
-		VariableGridLayout mainLayout = new VariableGridLayout(1, 2, 5, 5);
+		VariableGridLayout mainLayout = new VariableGridLayout(1, 2, GAP, GAP);
 		mainLayout.setColFraction(0, LIST_PANEL_FRACTION);
 		JPanel mainPanel = new JPanel(mainLayout);
 		JPanel selectorAndButtonsPanel = new JPanel(new BorderLayout());
@@ -104,7 +105,7 @@ public class EditTestsDialog extends DialogWrapper {
 	}
 
 	private JPanel generateTestPanel() {
-		JPanel testPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+		JPanel testPanel = new JPanel(new GridLayout(2, 1, GAP, GAP));
 
 		input = generateSavingTextArea();
 		JPanel inputPanel = LabeledComponent.create(new JBScrollPane(input), "Input");
