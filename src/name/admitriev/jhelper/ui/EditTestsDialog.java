@@ -2,18 +2,17 @@ package name.admitriev.jhelper.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import net.egork.chelper.task.Test;
 import net.egork.chelper.ui.VariableGridLayout;
-import net.egork.chelper.util.Utilities;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
@@ -25,8 +24,11 @@ import java.util.List;
 
 public class EditTestsDialog extends DialogWrapper {
 	private static final int HEIGHT = new JLabel("Test").getPreferredSize().height;
+	private static final double LIST_PANEL_FRACTION = 0.35;
+	private static final Dimension PREFERRED_SIZE = new Dimension(600, 400);
 
 	private List<Test> tests;
+
 	private int currentTest;
 	private JBList testList;
 	private JTextArea input;
@@ -45,11 +47,33 @@ public class EditTestsDialog extends DialogWrapper {
 		setResizable(false);
 		this.tests = new ArrayList<Test>(Arrays.asList(tests));
 		VariableGridLayout mainLayout = new VariableGridLayout(1, 2, 5, 5);
-		mainLayout.setColFraction(0, 0.35);
-		mainLayout.setColFraction(1, 0.65);
+		mainLayout.setColFraction(0, LIST_PANEL_FRACTION);
 		JPanel mainPanel = new JPanel(mainLayout);
 		JPanel selectorAndButtonsPanel = new JPanel(new BorderLayout());
-		selectorAndButtonsPanel.add(new JLabel("Tests:"), BorderLayout.NORTH);
+
+		selectorAndButtonsPanel.add(
+				LabeledComponent.create(
+						new JBScrollPane(
+								generateListPanel(),
+								ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+								ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+						),
+						"Tests"
+				)
+		);
+
+		selectorAndButtonsPanel.add(createButtonPanel(), BorderLayout.PAGE_END);
+		mainPanel.add(selectorAndButtonsPanel);
+		mainPanel.add(generateTestPanel());
+
+		mainPanel.setPreferredSize(PREFERRED_SIZE);
+		component = mainPanel;
+		setSelectedTest(Math.min(0, tests.length - 1));
+
+		init();
+	}
+
+	private JPanel generateListPanel() {
 		JPanel checkBoxesAndSelectorPanel = new JPanel(new BorderLayout());
 		checkBoxesPanel = new JPanel(new VerticalFlowLayout(VerticalFlowLayout.TOP, 0, 0, false, false));
 		for (Test test : tests) {
@@ -57,7 +81,7 @@ public class EditTestsDialog extends DialogWrapper {
 			checkBoxesPanel.add(checkBox);
 		}
 		checkBoxesAndSelectorPanel.add(checkBoxesPanel, BorderLayout.WEST);
-		testList = new JBList((Object[]) tests);
+		testList = new JBList(tests);
 		testList.setFixedCellHeight(HEIGHT);
 		testList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		testList.setLayoutOrientation(JList.VERTICAL);
@@ -77,14 +101,50 @@ public class EditTestsDialog extends DialogWrapper {
 				}
 		);
 		checkBoxesAndSelectorPanel.add(testList, BorderLayout.CENTER);
-		selectorAndButtonsPanel.add(
-				new JBScrollPane(
-						checkBoxesAndSelectorPanel,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-				),
-				BorderLayout.CENTER
+		return checkBoxesAndSelectorPanel;
+	}
+
+	private JPanel generateTestPanel() {
+		JPanel testPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+
+		input = generateSavingTextArea();
+		JPanel inputPanel = LabeledComponent.create(new JBScrollPane(input), "Input");
+
+		output = generateSavingTextArea();
+		outputPanel = LabeledComponent.create(new JBScrollPane(output), "Output");
+
+		knowAnswer = new JCheckBox("Know answer?");
+		knowAnswer.addActionListener(
+				new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						saveCurrentTest();
+					}
+				}
 		);
+		JPanel outputAndCheckBoxPanel = new JPanel(new BorderLayout());
+		outputAndCheckBoxPanel.add(knowAnswer, BorderLayout.NORTH);
+		outputAndCheckBoxPanel.add(outputPanel, BorderLayout.CENTER);
+		testPanel.add(inputPanel);
+		testPanel.add(outputAndCheckBoxPanel);
+		return testPanel;
+	}
+
+	private JTextArea generateSavingTextArea() {
+		JTextArea result = new JTextArea();
+		result.setFont(Font.decode(Font.MONOSPACED));
+		result.getDocument().addDocumentListener(
+				new DocumentAdapter() {
+					@Override
+					protected void textChanged(DocumentEvent e) {
+						saveCurrentTest();
+					}
+				}
+		);
+		return result;
+	}
+
+	private JPanel createButtonPanel() {
 		JPanel buttonsPanel = new JPanel(new GridLayout(3, 1));
 		JPanel upperButtonsPanel = new JPanel(new GridLayout(1, 2));
 		JButton all = new JButton("All");
@@ -95,9 +155,9 @@ public class EditTestsDialog extends DialogWrapper {
 						int index = 0;
 						for (JCheckBox checkBox : checkBoxes) {
 							checkBox.setSelected(true);
-							EditTestsDialog.this.tests.set(
+							tests.set(
 									index,
-									EditTestsDialog.this.tests.get(index).setActive(true)
+									tests.get(index).setActive(true)
 							);
 							index++;
 						}
@@ -114,9 +174,9 @@ public class EditTestsDialog extends DialogWrapper {
 						int index = 0;
 						for (JCheckBox checkBox : checkBoxes) {
 							checkBox.setSelected(false);
-							EditTestsDialog.this.tests.set(
+							tests.set(
 									index,
-									EditTestsDialog.this.tests.get(index).setActive(false)
+									tests.get(index).setActive(false)
 							);
 							index++;
 						}
@@ -133,9 +193,9 @@ public class EditTestsDialog extends DialogWrapper {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						saveCurrentTest();
-						int index = EditTestsDialog.this.tests.size();
+						int index = tests.size();
 						Test test = new Test("", "", index);
-						EditTestsDialog.this.tests.add(test);
+						tests.add(test);
 						checkBoxesPanel.add(createCheckBox(test));
 						setSelectedTest(index);
 					}
@@ -154,12 +214,12 @@ public class EditTestsDialog extends DialogWrapper {
 							checkBoxesPanel.remove(checkBoxes.get(currentTest));
 							checkBoxes.remove(currentTest);
 						}
-						EditTestsDialog.this.tests.remove(currentTest);
-						int size = EditTestsDialog.this.tests.size();
+						tests.remove(currentTest);
+						int size = tests.size();
 						for (int i = currentTest; i < size; i++) {
-							Test test = EditTestsDialog.this.tests.get(i);
+							Test test = tests.get(i);
 							test = new Test(test.input, test.output, i, test.active);
-							EditTestsDialog.this.tests.set(i, test);
+							tests.set(i, test);
 							checkBoxesPanel.add(createCheckBox(test));
 						}
 						if (currentTest < size) {
@@ -176,49 +236,7 @@ public class EditTestsDialog extends DialogWrapper {
 		);
 		middleButtonsPanel.add(remove);
 		buttonsPanel.add(middleButtonsPanel);
-		selectorAndButtonsPanel.add(buttonsPanel, BorderLayout.SOUTH);
-		mainPanel.add(selectorAndButtonsPanel);
-		JPanel testPanel = new JPanel(new GridLayout(2, 1, 5, 5));
-		JPanel inputPanel = new JPanel(new BorderLayout());
-		inputPanel.add(new JLabel("Input:"), BorderLayout.NORTH);
-		DocumentListener listener = new DocumentAdapter() {
-			@Override
-			protected void textChanged(DocumentEvent e) {
-				saveCurrentTest();
-			}
-		};
-		input = new JTextArea();
-		input.setFont(Font.decode(Font.MONOSPACED));
-		input.getDocument().addDocumentListener(listener);
-		inputPanel.add(new JBScrollPane(input), BorderLayout.CENTER);
-		outputPanel = new JPanel(new BorderLayout());
-		outputPanel.add(new JLabel("Output:"), BorderLayout.NORTH);
-		output = new JTextArea();
-		output.setFont(Font.decode(Font.MONOSPACED));
-		output.getDocument().addDocumentListener(listener);
-		outputPanel.add(new JBScrollPane(output), BorderLayout.CENTER);
-		knowAnswer = new JCheckBox("Know answer?");
-		knowAnswer.addActionListener(
-				new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						saveCurrentTest();
-					}
-				}
-		);
-		JPanel outputAndCheckBoxPanel = new JPanel(new BorderLayout());
-		outputAndCheckBoxPanel.add(knowAnswer, BorderLayout.NORTH);
-		outputAndCheckBoxPanel.add(outputPanel, BorderLayout.CENTER);
-		testPanel.add(inputPanel);
-		testPanel.add(outputAndCheckBoxPanel);
-		mainPanel.add(testPanel);
-		mainPanel.setPreferredSize(new Dimension(600, 400));
-		component = mainPanel;
-		setSelectedTest(Math.min(0, tests.length - 1));
-
-		setLocation(Utilities.getLocation(project, getSize()));
-
-		init();
+		return buttonsPanel;
 	}
 
 	private JCheckBox createCheckBox(final Test test) {
