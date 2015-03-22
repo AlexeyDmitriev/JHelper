@@ -11,7 +11,7 @@ import name.admitriev.jhelper.configuration.TaskConfiguration;
 import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.generation.FileUtils;
 import name.admitriev.jhelper.task.Task;
-import net.egork.chelper.ui.EditTestsDialog;
+import name.admitriev.jhelper.ui.EditTestsDialog;
 import net.egork.chelper.util.OutputWriter;
 
 public class EditTestsAction extends BaseAction {
@@ -27,7 +27,12 @@ public class EditTestsAction extends BaseAction {
 		if (configuration instanceof TaskConfiguration) {
 			TaskConfiguration taskConfiguration = (TaskConfiguration) configuration;
 			Task task = taskConfiguration.getTask();
-			final Task newTask = task.withTests(EditTestsDialog.editTests(task.getTests(), project));
+			EditTestsDialog dialog = new EditTestsDialog(task.getTests(), project);
+			dialog.show();
+			if (!dialog.isOK()) {
+				return;
+			}
+			final Task newTask = task.withTests(dialog.getTests());
 			taskConfiguration.setTask(newTask);
 
 			final VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(newTask.getPath());
