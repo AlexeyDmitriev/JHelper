@@ -21,8 +21,9 @@ public class EditTestsAction extends BaseAction {
 		Project project = e.getProject();
 		RunnerAndConfigurationSettings selectedConfiguration =
 				RunManagerImpl.getInstanceImpl(project).getSelectedConfiguration();
-		if (selectedConfiguration == null)
+		if (selectedConfiguration == null) {
 			return;
+		}
 		RunConfiguration configuration = selectedConfiguration.getConfiguration();
 		if (configuration instanceof TaskConfiguration) {
 			TaskConfiguration taskConfiguration = (TaskConfiguration) configuration;
