@@ -26,7 +26,7 @@ public class EditTestsDialog extends DialogWrapper {
 	private static final int HEIGHT = new JLabel("Test").getPreferredSize().height;
 	private static final double LIST_PANEL_FRACTION = 0.35;
 	private static final Dimension PREFERRED_SIZE = new Dimension(600, 400);
-	public static final int GAP = 5;
+	public static final int GRID_LAYOUT_GAP = 5;
 
 	private List<Test> tests;
 
@@ -46,7 +46,7 @@ public class EditTestsDialog extends DialogWrapper {
 		super(project);
 		setTitle("Tests");
 		this.tests = new ArrayList<Test>(Arrays.asList(tests));
-		VariableGridLayout mainLayout = new VariableGridLayout(1, 2, GAP, GAP);
+		VariableGridLayout mainLayout = new VariableGridLayout(1, 2, GRID_LAYOUT_GAP, GRID_LAYOUT_GAP);
 		mainLayout.setColFraction(0, LIST_PANEL_FRACTION);
 		JPanel mainPanel = new JPanel(mainLayout);
 		JPanel selectorAndButtonsPanel = new JPanel(new BorderLayout());
@@ -105,7 +105,7 @@ public class EditTestsDialog extends DialogWrapper {
 	}
 
 	private JPanel generateTestPanel() {
-		JPanel testPanel = new JPanel(new GridLayout(2, 1, GAP, GAP));
+		JPanel testPanel = new JPanel(new GridLayout(2, 1, GRID_LAYOUT_GAP, GRID_LAYOUT_GAP));
 
 		input = generateSavingTextArea();
 		JPanel inputPanel = LabeledComponent.create(new JBScrollPane(input), "Input");
@@ -146,8 +146,8 @@ public class EditTestsDialog extends DialogWrapper {
 
 	private JPanel createButtonPanel() {
 		JPanel buttonsPanel = new JPanel(new GridLayout(2, 2));
-		JButton all = new JButton("All");
-		all.addActionListener(
+		JButton allButton = new JButton("All");
+		allButton.addActionListener(
 				new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -164,9 +164,9 @@ public class EditTestsDialog extends DialogWrapper {
 					}
 				}
 		);
-		buttonsPanel.add(all);
-		JButton none = new JButton("None");
-		none.addActionListener(
+		buttonsPanel.add(allButton);
+		JButton noneButton = new JButton("None");
+		noneButton.addActionListener(
 				new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -183,9 +183,9 @@ public class EditTestsDialog extends DialogWrapper {
 					}
 				}
 		);
-		buttonsPanel.add(none);
-		JButton newTest = new JButton("New");
-		newTest.addActionListener(
+		buttonsPanel.add(noneButton);
+		JButton newTestButton = new JButton("New");
+		newTestButton.addActionListener(
 				new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -198,7 +198,7 @@ public class EditTestsDialog extends DialogWrapper {
 					}
 				}
 		);
-		buttonsPanel.add(newTest);
+		buttonsPanel.add(newTestButton);
 		JButton removeButton = new JButton("Remove");
 		removeButton.addActionListener(
 				new ActionListener() {
@@ -239,8 +239,6 @@ public class EditTestsDialog extends DialogWrapper {
 		final JCheckBox checkBox = new JCheckBox("", test.active);
 		Dimension preferredSize = new Dimension(checkBox.getPreferredSize().width, HEIGHT);
 		checkBox.setPreferredSize(preferredSize);
-		checkBox.setMaximumSize(preferredSize);
-		checkBox.setMinimumSize(preferredSize);
 		checkBox.addActionListener(
 				new ActionListener() {
 					@Override
@@ -284,8 +282,11 @@ public class EditTestsDialog extends DialogWrapper {
 			return;
 		}
 		tests.set(
-				currentTest, new Test(
-						input.getText(), knowAnswer.isSelected() ? output.getText() : null, currentTest,
+				currentTest,
+				new Test(
+						input.getText(),
+						knowAnswer.isSelected() ? output.getText() : null,
+						currentTest,
 						checkBoxes.get(currentTest).isSelected()
 				)
 		);
