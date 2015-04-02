@@ -3,7 +3,6 @@ package name.admitriev.jhelper.actions;
 import com.intellij.execution.RunManagerEx;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.impl.RunManagerImpl;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -18,8 +17,8 @@ public class DeleteTaskAction extends BaseAction {
 	@Override
 	protected void performAction(AnActionEvent e) {
 		final Project project = e.getProject();
-		RunnerAndConfigurationSettings selectedConfiguration =
-				RunManagerImpl.getInstanceImpl(project).getSelectedConfiguration();
+		RunManagerEx runManager = RunManagerEx.getInstanceEx(project);
+		RunnerAndConfigurationSettings selectedConfiguration = runManager.getSelectedConfiguration();
 		if (selectedConfiguration == null) {
 			return;
 		}
@@ -64,7 +63,8 @@ public class DeleteTaskAction extends BaseAction {
 					}
 			);
 
-			RunManagerEx.getInstanceEx(project).removeConfiguration(selectedConfiguration);
+			runManager.removeConfiguration(selectedConfiguration);
+			selectSomeTaskConfiguration(runManager);
 		}
 		else {
 			Notificator.showNotification(
@@ -72,6 +72,15 @@ public class DeleteTaskAction extends BaseAction {
 					"To delete a configuration you should choose it first",
 					NotificationType.WARNING
 			);
+		}
+	}
+
+	private void selectSomeTaskConfiguration(RunManagerEx runManager) {
+		for (RunnerAndConfigurationSettings settings : runManager.getAllSettings()) {
+			if (settings.getConfiguration() instanceof TaskConfiguration) {
+				runManager.setSelectedConfiguration(settings);
+				return;
+			}
 		}
 	}
 }
