@@ -9,6 +9,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import name.admitriev.jhelper.configuration.TaskConfiguration;
+import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.ui.Notificator;
 
 import java.io.IOException;
@@ -16,7 +17,11 @@ import java.io.IOException;
 public class DeleteTaskAction extends BaseAction {
 	@Override
 	protected void performAction(AnActionEvent e) {
-		final Project project = e.getProject();
+		Project project = e.getProject();
+		if (project == null) {
+			throw new NotificationException("No project found", "Are you in any project?");
+		}
+
 		RunManagerEx runManager = RunManagerEx.getInstanceEx(project);
 		RunnerAndConfigurationSettings selectedConfiguration = runManager.getSelectedConfiguration();
 		if (selectedConfiguration == null) {
@@ -24,45 +29,7 @@ public class DeleteTaskAction extends BaseAction {
 		}
 		RunConfiguration configuration = selectedConfiguration.getConfiguration();
 		if (configuration instanceof TaskConfiguration) {
-			TaskConfiguration taskConfiguration = (TaskConfiguration) configuration;
-
-			final String path = taskConfiguration.getTask().getPath();
-			final String className = taskConfiguration.getTask().getClassName();
-
-			ApplicationManager.getApplication().runWriteAction(
-					new Runnable() {
-						@Override
-						public void run() {
-							VirtualFile classFile = project.getBaseDir().findFileByRelativePath(
-									path + "/../" + className + ".cpp"
-							);
-							if (classFile != null) {
-								try {
-									classFile.delete(this);
-								}
-								catch (IOException ignored) {
-									Notificator.showNotification(
-											"Couldn't delete class file",
-											NotificationType.WARNING
-									);
-								}
-							}
-							VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(path);
-							if (taskFile != null) {
-								try {
-									taskFile.delete(this);
-								}
-								catch (IOException ignored) {
-									Notificator.showNotification(
-											"Couldn't delete task file",
-											NotificationType.WARNING
-									);
-								}
-							}
-						}
-					}
-			);
-
+			removeFiles(project, (TaskConfiguration) configuration);
 			runManager.removeConfiguration(selectedConfiguration);
 			selectSomeTaskConfiguration(runManager);
 		}
@@ -73,6 +40,46 @@ public class DeleteTaskAction extends BaseAction {
 					NotificationType.WARNING
 			);
 		}
+	}
+
+	private void removeFiles(final Project project, TaskConfiguration taskConfiguration) {
+
+		final String path = taskConfiguration.getTask().getPath();
+		final String className = taskConfiguration.getTask().getClassName();
+
+		ApplicationManager.getApplication().runWriteAction(
+				new Runnable() {
+					@Override
+					public void run() {
+						VirtualFile classFile = project.getBaseDir().findFileByRelativePath(
+								path + "/../" + className + ".cpp"
+						);
+						if (classFile != null) {
+							try {
+								classFile.delete(this);
+							}
+							catch (IOException ignored) {
+								Notificator.showNotification(
+										"Couldn't delete class file",
+										NotificationType.WARNING
+								);
+							}
+						}
+						VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(path);
+						if (taskFile != null) {
+							try {
+								taskFile.delete(this);
+							}
+							catch (IOException ignored) {
+								Notificator.showNotification(
+										"Couldn't delete task file",
+										NotificationType.WARNING
+								);
+							}
+						}
+					}
+				}
+		);
 	}
 
 	private void selectSomeTaskConfiguration(RunManagerEx runManager) {
