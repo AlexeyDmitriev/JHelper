@@ -77,5 +77,12 @@
 			description="Deletes selected configuration, its task file and class file"
 			icon="/name/admitriev/jhelper/icons/delete.png"
 		/>
+		<action
+			id="name.admitriev.jhelper.actions.SwitchCMakeConfigurationAction"
+			class="name.admitriev.jhelper.actions.SwitchCMakeConfigurationAction"
+			text="Change CMake configuration of test runner"
+			description="Allows to change CMake configuration (debug/release) of test runner"
+			icon="/name/admitriev/jhelper/icons/speed.png"
+		/>
 	</actions>
 </idea-plugin>
