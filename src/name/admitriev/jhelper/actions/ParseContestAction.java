@@ -1,8 +1,6 @@
 package name.admitriev.jhelper.actions;
 
-import com.intellij.ide.IdeView;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.jetbrains.cidr.lang.psi.OCFile;
@@ -21,7 +19,6 @@ public class ParseContestAction extends BaseAction {
 		if (!dialog.isOK()) {
 			return;
 		}
-		IdeView view = e.getData(LangDataKeys.IDE_VIEW);
 		for (Task task : dialog.getResult()) {
 			PsiElement generatedFile = TaskUtils.saveTask(task, project);
 			UIUtils.openMethodInEditor(project, (OCFile) generatedFile, "solve");
