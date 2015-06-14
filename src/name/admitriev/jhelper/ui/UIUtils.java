@@ -1,6 +1,7 @@
 package name.admitriev.jhelper.ui;
 
-import com.intellij.ide.IdeView;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Ref;
 import com.intellij.psi.PsiElement;
 import com.intellij.ui.DocumentAdapter;
@@ -76,14 +77,14 @@ public class UIUtils {
 	}
 
 	/**
-	 * Finds method @{code methodName} in @{code file} and opens it in @{code view}.
-	 *
-	 * Does nothing if the view is null
+	 * Finds method @{code methodName} in @{code file} and opens it in an editor.
 	 */
-	public static void openMethodInView(IdeView view, OCFile file, String methodName) {
-		if (view != null) {
-			view.selectElement(findMethodBody(file, methodName));
-		}
+	public static void openMethodInEditor(Project project, OCFile file, String methodName) {
+		new OpenFileDescriptor(
+				project,
+				file.getVirtualFile(),
+				findMethodBody(file, methodName).getTextOffset()
+		).navigate(true);
 	}
 
 	private static PsiElement findMethodBody(OCFile file, @NotNull final String method) {

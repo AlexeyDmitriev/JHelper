@@ -24,7 +24,7 @@ public class ParseContestAction extends BaseAction {
 		IdeView view = e.getData(LangDataKeys.IDE_VIEW);
 		for (Task task : dialog.getResult()) {
 			PsiElement generatedFile = TaskUtils.saveTask(task, project);
-			UIUtils.openMethodInView(view, (OCFile) generatedFile, "solve");
+			UIUtils.openMethodInEditor(project, (OCFile) generatedFile, "solve");
 		}
 
 		IDEUtils.reloadProjectInCLion(project);

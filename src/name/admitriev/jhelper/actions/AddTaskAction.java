@@ -1,7 +1,6 @@
 package name.admitriev.jhelper.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.jetbrains.cidr.lang.psi.OCFile;
@@ -30,7 +29,7 @@ public class AddTaskAction extends BaseAction {
 
 		PsiElement generatedFile = TaskUtils.saveTask(task, project);
 
-		UIUtils.openMethodInView(e.getData(LangDataKeys.IDE_VIEW), (OCFile) generatedFile, "solve");
+		UIUtils.openMethodInEditor(project, (OCFile) generatedFile, "solve");
 
 		IDEUtils.reloadProjectInCLion(project);
 	}
