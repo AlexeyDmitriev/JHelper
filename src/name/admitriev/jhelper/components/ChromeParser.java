@@ -3,13 +3,16 @@ package name.admitriev.jhelper.components;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.components.AbstractProjectComponent;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiElement;
 import com.intellij.util.Consumer;
 import com.intellij.util.text.StringTokenizer;
+import com.jetbrains.cidr.lang.psi.OCFile;
 import name.admitriev.jhelper.IDEUtils;
 import name.admitriev.jhelper.network.SimpleHttpServer;
 import name.admitriev.jhelper.task.Task;
 import name.admitriev.jhelper.task.TaskUtils;
 import name.admitriev.jhelper.ui.Notificator;
+import name.admitriev.jhelper.ui.UIUtils;
 import net.egork.chelper.parser.BayanParser;
 import net.egork.chelper.parser.CodeforcesParser;
 import net.egork.chelper.parser.FacebookParser;
@@ -93,7 +96,8 @@ public class ChromeParser extends AbstractProjectComponent {
 										rawTask.testType,
 										rawTask.tests
 								);
-								TaskUtils.saveTask(task, myProject);
+								PsiElement generatedFile = TaskUtils.saveTask(task, myProject);
+								UIUtils.openMethodInEditor(myProject, (OCFile) generatedFile, "solve");
 							}
 
 							IDEUtils.reloadProjectInCLion(myProject);
