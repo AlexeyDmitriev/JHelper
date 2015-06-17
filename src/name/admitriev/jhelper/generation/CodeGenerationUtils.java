@@ -1,5 +1,6 @@
 package name.admitriev.jhelper.generation;
 
+import com.intellij.codeInsight.actions.ReformatCodeProcessor;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -76,6 +77,10 @@ public class CodeGenerationUtils {
 
 		if (configuration.isCodeEliminationOn()) {
 			removeUnusedCode(psiOutputFile);
+		}
+
+		if(configuration.isCodeReformattingOn()) {
+			new ReformatCodeProcessor(psiOutputFile, false).run();
 		}
 	}
 

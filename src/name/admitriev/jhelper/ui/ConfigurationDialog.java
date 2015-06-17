@@ -17,6 +17,7 @@ public class ConfigurationDialog extends DialogWrapper {
 	private FileSelector outputFile;
 	private FileSelector runFile;
 	private JCheckBox codeEliminationOn;
+	private JCheckBox codeReformattingOn;
 
 	public ConfigurationDialog(@NotNull Project project, Configurator.State configuration) {
 		super(project);
@@ -41,6 +42,7 @@ public class ConfigurationDialog extends DialogWrapper {
 		);
 
 		codeEliminationOn = new JCheckBox("Eliminate code?", configuration.isCodeEliminationOn());
+		codeReformattingOn = new JCheckBox("Reformat code?", configuration.isCodeReformattingOn());
 
 		JPanel panel = new JPanel(new VerticalLayout());
 		panel.add(LabeledComponent.create(author, "Author"));
@@ -48,6 +50,7 @@ public class ConfigurationDialog extends DialogWrapper {
 		panel.add(LabeledComponent.create(outputFile, "Output file"));
 		panel.add(LabeledComponent.create(runFile, "Run File"));
 		panel.add(codeEliminationOn);
+		panel.add(codeReformattingOn);
 
 		component = panel;
 
@@ -66,7 +69,8 @@ public class ConfigurationDialog extends DialogWrapper {
 				tasksDirectory.getText(),
 				outputFile.getText(),
 				runFile.getText(),
-				codeEliminationOn.isSelected()
+				codeEliminationOn.isSelected(),
+		        codeReformattingOn.isSelected()
 		);
 	}
 }

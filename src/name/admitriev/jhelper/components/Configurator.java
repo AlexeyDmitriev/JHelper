@@ -15,8 +15,8 @@ import org.jetbrains.annotations.NotNull;
 		storages = {
 				@Storage(id = "default", file = StoragePathMacros.PROJECT_FILE, scheme = StorageScheme.DEFAULT),
 				@Storage(id = "dir",
-				         file = StoragePathMacros.PROJECT_CONFIG_DIR + "/JHelper.xml",
-				         scheme = StorageScheme.DIRECTORY_BASED)
+						file = StoragePathMacros.PROJECT_CONFIG_DIR + "/JHelper.xml",
+						scheme = StorageScheme.DIRECTORY_BASED)
 		}
 )
 public class Configurator extends AbstractProjectComponent implements PersistentStateComponent<Configurator.State> {
@@ -51,17 +51,26 @@ public class Configurator extends AbstractProjectComponent implements Persistent
 		private String outputFile;
 		private String runFile;
 		private boolean codeEliminationOn;
+		private boolean codeReformattingOn;
 
-		public State(String author, String tasksDirectory, String outputFile, String runFile, boolean codeEliminationOn) {
+		public State(
+				String author,
+				String tasksDirectory,
+				String outputFile,
+				String runFile,
+				boolean codeEliminationOn,
+		        boolean codeReformattingOn
+		) {
 			this.author = author;
 			this.tasksDirectory = tasksDirectory;
 			this.outputFile = outputFile;
 			this.runFile = runFile;
 			this.codeEliminationOn = codeEliminationOn;
+			this.codeReformattingOn = codeReformattingOn;
 		}
 
 		public State() {
-			this("", "tasks", "output/main.cpp", "testrunner/main.cpp", true);
+			this("", "tasks", "output/main.cpp", "testrunner/main.cpp", true, true);
 		}
 
 		public String getAuthor() {
@@ -82,6 +91,10 @@ public class Configurator extends AbstractProjectComponent implements Persistent
 
 		public boolean isCodeEliminationOn() {
 			return codeEliminationOn;
+		}
+
+		public boolean isCodeReformattingOn() {
+			return codeReformattingOn;
 		}
 
 		@SuppressWarnings("UnusedDeclaration")
@@ -112,6 +125,12 @@ public class Configurator extends AbstractProjectComponent implements Persistent
 		@Deprecated
 		public void setCodeEliminationOn(boolean codeEliminationOn) {
 			this.codeEliminationOn = codeEliminationOn;
+		}
+
+		@SuppressWarnings("UnusedDeclaration")
+		@Deprecated
+		public void setCodeReformattingOn(boolean codeReformattingOn) {
+			this.codeReformattingOn = codeReformattingOn;
 		}
 	}
 }
