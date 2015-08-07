@@ -14,10 +14,12 @@ import name.admitriev.jhelper.task.TaskUtils;
 import name.admitriev.jhelper.ui.Notificator;
 import name.admitriev.jhelper.ui.UIUtils;
 import net.egork.chelper.parser.BayanParser;
+import net.egork.chelper.parser.CodeChefParser;
 import net.egork.chelper.parser.CodeforcesParser;
 import net.egork.chelper.parser.FacebookParser;
 import net.egork.chelper.parser.GCJParser;
 import net.egork.chelper.parser.HackerRankParser;
+import net.egork.chelper.parser.KattisParser;
 import net.egork.chelper.parser.Parser;
 import net.egork.chelper.parser.UsacoParser;
 import net.egork.chelper.parser.YandexParser;
@@ -44,6 +46,8 @@ public class ChromeParser extends AbstractProjectComponent {
 		taskParsers.put("usaco", new UsacoParser());
 		taskParsers.put("gcj", new GCJParser());
 		taskParsers.put("bayan", new BayanParser());
+		taskParsers.put("kattis", new KattisParser());
+		taskParsers.put("codechef", new CodeChefParser());
 		PARSERS = Collections.unmodifiableMap(taskParsers);
 	}
 
