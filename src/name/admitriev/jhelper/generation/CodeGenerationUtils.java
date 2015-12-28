@@ -79,7 +79,7 @@ public class CodeGenerationUtils {
 			removeUnusedCode(psiOutputFile);
 		}
 
-		if(configuration.isCodeReformattingOn()) {
+		if (configuration.isCodeReformattingOn()) {
 			new ReformatCodeProcessor(psiOutputFile, false).run();
 		}
 	}
@@ -94,11 +94,17 @@ public class CodeGenerationUtils {
 		return template;
 	}
 
+	@NotNull
 	private static String generateTestDeclaration(Test[] tests) {
 		StringBuilder result = new StringBuilder();
 		for (Test test : tests) {
 			result.append(
-					"{" + quote(test.input) + ", " + quote(test.output) + ", " + Boolean.toString(test.active) + "},"
+					"{" +
+					quote(test.input) + ", " +
+					(test.output != null ? quote(test.output) : "") + ", " +
+					Boolean.toString(test.active) + ", " +
+					Boolean.toString(test.output != null) +
+					"},"
 			);
 		}
 		return result.toString();
