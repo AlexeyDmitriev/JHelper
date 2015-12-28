@@ -101,7 +101,7 @@ public class CodeGenerationUtils {
 			result.append(
 					"{" +
 					quote(test.input) + ", " +
-					(test.output != null ? quote(test.output) : "") + ", " +
+					quote(test.output != null ? test.output : "") + ", " +
 					Boolean.toString(test.active) + ", " +
 					Boolean.toString(test.output != null) +
 					"},"
