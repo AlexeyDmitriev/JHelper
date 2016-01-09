@@ -128,14 +128,54 @@ public class CodeGenerationUtils {
 	}
 
 	private static String generateSubmissionFileContent(Project project, String code, Task task) {
-
 		String template = TemplatesUtils.getTemplate(project, "submission");
+		if (task.getInput().type == StreamConfiguration.StreamType.LOCAL_REGEXP) {
+			code = code + '\n' + generateFileNameGetter();
+		}
 		template = template.replace(TemplatesUtils.CODE, code);
 		template = template.replace(TemplatesUtils.CLASS_NAME, task.getClassName());
 		template = template.replace(TemplatesUtils.INPUT, getInputDeclaration(task));
 		template = template.replace(TemplatesUtils.OUTPUT, getOutputDeclaration(task));
 		template = template.replace(TemplatesUtils.SOLVER_CALL, generateSolverCall(task.getTestType()));
 		return template;
+	}
+
+	private static String generateFileNameGetter() {
+		return "#include <dirent.h>\n" +
+		       "#include <stdexcept>\n" +
+		       "#include <regex>\n" +
+		       "#include <sys/stat.h>\n" +
+		       "#include <cstdint>\n" +
+		       "\n" +
+		       "std::string getLastFileName(const std::string& regexString) {\n" +
+		       "\tDIR* dir;\n" +
+		       "\tdirent* entry;\n" +
+		       "\tstd::string result = \"\";\n" +
+		       "\tint64_t resultModificationTime = 0;\n" +
+		       "\tstd::regex regex(regexString);\n" +
+		       "\tif ((dir = opendir (\".\")) != NULL) {\n" +
+		       "\t\twhile ((entry = readdir (dir)) != NULL) {\n" +
+		       "\t\t\tif (std::regex_match(entry->d_name, regex)) {\n" +
+		       "\t\t\t\tstruct stat buffer;\n" +
+		       "\t\t\t\tstat(entry->d_name, &buffer);\n" +
+		       "\t\t\t\tint64_t modificationTime = static_cast<int64_t>(buffer.st_mtimespec.tv_sec) * 1000000000 +\n" +
+		       "\t\t\t\t\t\tstatic_cast<int64_t>(buffer.st_mtimespec.tv_nsec);\n" +
+		       "\n" +
+		       "\t\t\t\tif (modificationTime > resultModificationTime) {\n" +
+		       "\t\t\t\t\tresultModificationTime = modificationTime;\n" +
+		       "\t\t\t\t\tresult = entry->d_name;\n" +
+		       "\t\t\t\t}\n" +
+		       "\t\t\t}\n" +
+		       "\t\t}\n" +
+		       "\t\tclosedir (dir);\n" +
+		       "\t} else {\n" +
+		       "\t\tthrow std::runtime_error(\"Couldn't open current directory\");\n" +
+		       "\t}\n" +
+		       "\tif (result.empty()) {\n" +
+		       "\t\tthrow std::runtime_error(\"No file found\");\n" +
+		       "\t}" +
+		       "\treturn result;\n" +
+		       "}";
 	}
 
 	private static String generateSolverCall(TestType testType) {
@@ -171,15 +211,14 @@ public class CodeGenerationUtils {
 	}
 
 	private static String getInputDeclaration(Task task) {
-		String inputFileName = task.getInput().getFileName(task.getName(), ".in");
-
-		if (inputFileName == null) {
+		if (task.getInput().type == StreamConfiguration.StreamType.LOCAL_REGEXP) {
+			return "std::ifstream in(getLastFileName(" + quote(task.getInput().fileName) + "));";
+		}
+		else if (task.getInput().type == StreamConfiguration.StreamType.STANDARD) {
 			return "std::istream& in(std::cin);";
 		}
-		else if (task.getInput().type == StreamConfiguration.StreamType.LOCAL_REGEXP) {
-			throw new NotificationException("Local regexps aren't supported yet");
-		}
 		else {
+			String inputFileName = task.getInput().getFileName(task.getName(), ".in");
 			return "std::ifstream in(\"" + inputFileName + "\");";
 		}
 	}
