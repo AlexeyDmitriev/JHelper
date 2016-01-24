@@ -69,19 +69,34 @@ public class SwitchCMakeConfigurationAction extends ComboBoxAction {
 	public void update(AnActionEvent e) {
 		Presentation presentation = e.getPresentation();
 		Project project = e.getProject();
-		boolean enabled = false;
-		if (isProjectValid(project)) {
-			CMakeAppRunConfiguration testRunner = getTestRunner(project);
-			if (testRunner != null) {
-				presentation.setText(testRunner.getBuildAndRunConfigurations().buildConfiguration.getName());
-				enabled = true;
-			}
-		}
-
-		presentation.setEnabled(enabled);
-		if (!enabled) {
+		String buildConfigurationName = getBuildConfigurationName(project);
+		if (buildConfigurationName == null) {
+			presentation.setEnabled(false);
 			presentation.setText("");
+		} else {
+			presentation.setEnabled(true);
+			presentation.setText(buildConfigurationName);
 		}
+	}
+
+	@Nullable
+	private String getBuildConfigurationName(@Nullable Project project) {
+		if (!isProjectValid(project)) {
+			return null;
+		}
+		CMakeAppRunConfiguration testRunner = getTestRunner(project);
+		if (testRunner == null) {
+			return null;
+		}
+		CMakeAppRunConfiguration.BuildAndRunConfigurations configurations = testRunner.getBuildAndRunConfigurations();
+		if (configurations == null) {
+			return null;
+		}
+		CMakeConfiguration buildConfiguration = configurations.buildConfiguration;
+		if (buildConfiguration == null) {
+			return null;
+		}
+		return buildConfiguration.getName();
 	}
 
 	private static boolean isProjectValid(Project project) {
@@ -89,7 +104,7 @@ public class SwitchCMakeConfigurationAction extends ComboBoxAction {
 	}
 
 	@Nullable
-	private static CMakeAppRunConfiguration getTestRunner(Project project) {
+	private static CMakeAppRunConfiguration getTestRunner(@NotNull Project project) {
 		for (RunConfiguration configuration : RunManager.getInstance(project).getAllConfigurationsList()) {
 			if (configuration.getName().equals(TaskRunner.RUN_CONFIGURATION_NAME)) {
 				return (CMakeAppRunConfiguration) configuration;
