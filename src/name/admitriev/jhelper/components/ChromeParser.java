@@ -18,6 +18,7 @@ import net.egork.chelper.parser.CodeChefParser;
 import net.egork.chelper.parser.CodeforcesParser;
 import net.egork.chelper.parser.FacebookParser;
 import net.egork.chelper.parser.GCJParser;
+import net.egork.chelper.parser.HackerEarthParser;
 import net.egork.chelper.parser.HackerRankParser;
 import net.egork.chelper.parser.KattisParser;
 import net.egork.chelper.parser.Parser;
@@ -48,6 +49,7 @@ public class ChromeParser extends AbstractProjectComponent {
 		taskParsers.put("bayan", new BayanParser());
 		taskParsers.put("kattis", new KattisParser());
 		taskParsers.put("codechef", new CodeChefParser());
+		taskParsers.put("hackerearth", new HackerEarthParser());
 		PARSERS = Collections.unmodifiableMap(taskParsers);
 	}
 
