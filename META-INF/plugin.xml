@@ -1,15 +1,13 @@
 <idea-plugin version="2">
 	<id>name.admitriev.jhelper</id>
 	<name>JHelper</name>
-	<version>0.8.3</version>
+	<version>0.8.4</version>
 	<vendor>Alexey Dmitriev</vendor>
 
 	<description>Sport programming tool to inline library code and provide testing framework.</description>
 
 	<change-notes>
-		In 0.7 compatibility of templates is broken.
-		In order to fix compilation you need to delete (or move) run.template in root directory of your project and then re-apply your changes, if any.
-		It should be done even if you didn't customize the template
+		Turned off code elimination and formatting by default. Please revise your settings.
 	</change-notes>
 
 	<idea-version since-build="143.1184"/>

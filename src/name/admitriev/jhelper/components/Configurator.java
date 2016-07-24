@@ -70,7 +70,7 @@ public class Configurator extends AbstractProjectComponent implements Persistent
 		}
 
 		public State() {
-			this("", "tasks", "output/main.cpp", "testrunner/main.cpp", true, true);
+			this("", "tasks", "output/main.cpp", "testrunner/main.cpp", false, false);
 		}
 
 		public String getAuthor() {
