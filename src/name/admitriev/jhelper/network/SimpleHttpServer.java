@@ -1,10 +1,11 @@
 package name.admitriev.jhelper.network;
 
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.util.Consumer;
 import name.admitriev.jhelper.ui.Notificator;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,13 +50,14 @@ public class SimpleHttpServer implements Runnable {
 					}
 					final String text = strings[1];
 
-					SwingUtilities.invokeLater(
+					ApplicationManager.getApplication().invokeLater(
 							new Runnable() {
 								@Override
 								public void run() {
 									consumer.consume(text);
 								}
-							}
+							},
+							ModalityState.defaultModalityState()
 					);
 				}
 				finally {

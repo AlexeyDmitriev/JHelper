@@ -43,23 +43,31 @@ public class TaskUtils {
 	 *
 	 * @return generated CPP File
 	 */
-	public static PsiElement saveTask(final Task task, Project project) {
-		final VirtualFile newTaskFile = FileUtils.findOrCreateByRelativePath(project.getBaseDir(), task.getPath());
+
+	public static VirtualFile saveTaskFile(final Task task, Project project) {
+		final VirtualFile taskFile = FileUtils.findOrCreateByRelativePath(project.getBaseDir(), task.getPath());
+		if (taskFile == null) {
+			throw new NotificationException("Couldn't find task file to save: " + taskFile.getPath());
+		}
 		ApplicationManager.getApplication().runWriteAction(
 				new Runnable() {
 					@Override
 					public void run() {
-						OutputWriter writer = FileUtils.getOutputWriter(newTaskFile, this);
+						OutputWriter writer = FileUtils.getOutputWriter(taskFile, this);
 						task.saveTask(writer);
 						writer.flush();
 						writer.close();
 					}
 				}
 		);
+		return taskFile;
+	}
+	public static PsiElement saveTask(Task task, Project project) {
+		VirtualFile taskFile = saveTaskFile(task, project);
 
 		createConfigurationForTask(project, task);
 
-		return generateCPP(project, task, newTaskFile);
+		return generateCPP(project, task, taskFile);
 	}
 
 	private static PsiElement generateCPP(Project project, Task task, VirtualFile newTaskFile) {

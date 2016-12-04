@@ -6,7 +6,6 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
@@ -14,12 +13,10 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.jetbrains.cidr.execution.CidrCommandLineState;
 import name.admitriev.jhelper.exceptions.JHelperException;
-import name.admitriev.jhelper.exceptions.NotificationException;
-import name.admitriev.jhelper.generation.FileUtils;
 import name.admitriev.jhelper.task.Task;
+import name.admitriev.jhelper.task.TaskUtils;
 import name.admitriev.jhelper.ui.TaskSettingsComponent;
 import net.egork.chelper.util.InputReader;
-import net.egork.chelper.util.OutputWriter;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,21 +53,6 @@ public class TaskConfiguration extends RunConfigurationBase {
 			protected void applyEditorTo(final TaskConfiguration s) {
 				s.task = component.getTask();
 				setName(s.task.getName());
-				final VirtualFile taskFile = s.project.getBaseDir().findFileByRelativePath(s.task.getPath());
-				if (taskFile == null) {
-					throw new NotificationException("Couldn't find task file to save: " + s.task.getPath());
-				}
-				ApplicationManager.getApplication().runWriteAction(
-						new Runnable() {
-							@Override
-							public void run() {
-								OutputWriter outputWriter = FileUtils.getOutputWriter(taskFile, this);
-								s.task.saveTask(outputWriter);
-								outputWriter.flush();
-								outputWriter.close();
-							}
-						}
-				);
 			}
 
 			@NotNull
@@ -123,6 +105,11 @@ public class TaskConfiguration extends RunConfigurationBase {
 	public void writeExternal(Element element) throws WriteExternalException {
 		element.setAttribute("task_path", task.getPath());
 		super.writeExternal(element);
+		VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(task.getPath());
+		if (taskFile == null) {
+			return;
+		}
+		TaskUtils.saveTaskFile(task, project);
 	}
 
 	public Task getTask() {

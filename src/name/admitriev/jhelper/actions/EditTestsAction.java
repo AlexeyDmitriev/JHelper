@@ -4,15 +4,13 @@ import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.impl.RunManagerImpl;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import name.admitriev.jhelper.configuration.TaskConfiguration;
 import name.admitriev.jhelper.exceptions.NotificationException;
-import name.admitriev.jhelper.generation.FileUtils;
 import name.admitriev.jhelper.task.Task;
+import name.admitriev.jhelper.task.TaskUtils;
 import name.admitriev.jhelper.ui.EditTestsDialog;
-import net.egork.chelper.util.OutputWriter;
 
 public class EditTestsAction extends BaseAction {
 
@@ -40,17 +38,7 @@ public class EditTestsAction extends BaseAction {
 			if (taskFile == null) {
 				throw new NotificationException("Couldn't find task file to save: " + newTask.getPath());
 			}
-			ApplicationManager.getApplication().runWriteAction(
-					new Runnable() {
-						@Override
-						public void run() {
-							OutputWriter writer = FileUtils.getOutputWriter(taskFile, this);
-							newTask.saveTask(writer);
-							writer.flush();
-							writer.close();
-						}
-					}
-			);
+			TaskUtils.saveTaskFile(newTask, project);
 		}
 	}
 }
