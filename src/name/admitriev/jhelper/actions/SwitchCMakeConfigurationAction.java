@@ -10,18 +10,21 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import com.jetbrains.cidr.cpp.cmake.model.CMakeConfiguration;
-import com.jetbrains.cidr.cpp.cmake.model.CMakeTarget;
+import com.jetbrains.cidr.cpp.cmake.CMakeSettings;
+import com.jetbrains.cidr.cpp.cmake.CMakeSettingsKt;
+import com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace;
 import com.jetbrains.cidr.cpp.execution.CMakeAppRunConfiguration;
-import com.jetbrains.cidr.cpp.execution.CMakeBuildConfigurationHelper;
 import com.jetbrains.cidr.execution.BuildTargetAndConfigurationData;
+import com.jetbrains.cidr.execution.BuildTargetData;
 import name.admitriev.jhelper.configuration.TaskRunner;
 import name.admitriev.jhelper.ui.Notificator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Collections;
 import java.util.List;
 
 public class SwitchCMakeConfigurationAction extends ComboBoxAction {
@@ -30,10 +33,21 @@ public class SwitchCMakeConfigurationAction extends ComboBoxAction {
 	public DefaultActionGroup createPopupActionGroup(JComponent button) {
 		DefaultActionGroup actions = new DefaultActionGroup();
 
-		Project project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(button));
+		final Project project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(button));
 		if (!isProjectValid(project)) {
 			return actions;
 		}
+		final CMakeSettings cmakeSettings = CMakeSettings.Companion.getInstance(project);
+		List<CMakeSettings.Configuration> settings = cmakeSettings.getConfigurations();
+		if (settings.isEmpty()) {
+			Notificator.showNotification("here", NotificationType.ERROR);
+			return actions;
+		}
+		CMakeWorkspace workspace = CMakeWorkspace.getInstance(project);
+		final CMakeSettings.Configuration chosenCMakeConfiguration = getCurrentConfiguration(project);
+		String chosenCMakeConfigurationName = chosenCMakeConfiguration.getConfigName();
+
+		List<String> cmakeConfigurations = workspace.getRegisteredConfigurationsTypesFor(chosenCMakeConfigurationName);
 
 		final CMakeAppRunConfiguration testRunner = getTestRunner(project);
 		if (testRunner == null) {
@@ -43,60 +57,64 @@ public class SwitchCMakeConfigurationAction extends ComboBoxAction {
 			);
 			return actions;
 		}
-		final CMakeTarget target = testRunner.getBuildAndRunConfigurations().buildConfiguration.getTarget();
-		List<CMakeConfiguration> configurations = new CMakeBuildConfigurationHelper(project).getConfigurations(target);
-
-		for (final CMakeConfiguration configuration : configurations) {
-			actions.add(
-					new AnAction(configuration.getName()) {
+		for (final String cmakeConfiguration : cmakeConfigurations) {
+			actions.add(new AnAction(cmakeConfiguration) {
+				@Override
+				public void actionPerformed(AnActionEvent anActionEvent) {
+					final CMakeSettings.Configuration newCMakeConfiguration = new CMakeSettings.Configuration(
+							CMakeSettingsKt.normalizeConfigName(cmakeConfiguration),
+							chosenCMakeConfiguration.getGenerationOptions(),
+							chosenCMakeConfiguration.getGenerationPassSystemEnvironment(),
+							chosenCMakeConfiguration.getAdditionalGenerationEnvironment(),
+							null
+					);
+					ApplicationManager.getApplication().runWriteAction(new Runnable() {
 						@Override
-						public void actionPerformed(AnActionEvent e) {
-							testRunner.setTargetAndConfigurationData(
-									new BuildTargetAndConfigurationData(
-											target,
-											configuration
-									)
-							);
+						public void run() {
+							cmakeSettings.setConfigurations(Collections.singletonList(newCMakeConfiguration));
 						}
-					}
-			);
+					});
+					BuildTargetData targetData = testRunner.getTargetAndConfigurationData().target;
+					testRunner.setTargetAndConfigurationData(
+							new BuildTargetAndConfigurationData(
+									targetData,
+									cmakeConfiguration
+							)
+					);
+				}
+			});
 		}
-
 		return actions;
 	}
 
 	@Override
 	public void update(AnActionEvent e) {
-		Presentation presentation = e.getPresentation();
 		Project project = e.getProject();
-		String buildConfigurationName = getBuildConfigurationName(project);
-		if (buildConfigurationName == null) {
+		Presentation presentation = e.getPresentation();
+		CMakeSettings.Configuration configuration = getCurrentConfiguration(project);
+		if (configuration == null) {
 			presentation.setEnabled(false);
 			presentation.setText("");
-		} else {
+		}
+		else {
 			presentation.setEnabled(true);
-			presentation.setText(buildConfigurationName);
+			presentation.setText(configuration.getConfigName());
 		}
 	}
 
 	@Nullable
-	private String getBuildConfigurationName(@Nullable Project project) {
+	private CMakeSettings.Configuration getCurrentConfiguration(@Nullable Project project) {
 		if (!isProjectValid(project)) {
 			return null;
 		}
-		CMakeAppRunConfiguration testRunner = getTestRunner(project);
-		if (testRunner == null) {
+		CMakeSettings cmakeSettings = CMakeSettings.Companion.getInstance(project);
+		List<CMakeSettings.Configuration> settings = cmakeSettings.getConfigurations();
+		if (settings.size() == 1) {
+			return settings.get(0);
+		}
+		else {
 			return null;
 		}
-		CMakeAppRunConfiguration.BuildAndRunConfigurations configurations = testRunner.getBuildAndRunConfigurations();
-		if (configurations == null) {
-			return null;
-		}
-		CMakeConfiguration buildConfiguration = configurations.buildConfiguration;
-		if (buildConfiguration == null) {
-			return null;
-		}
-		return buildConfiguration.getName();
 	}
 
 	private static boolean isProjectValid(Project project) {
