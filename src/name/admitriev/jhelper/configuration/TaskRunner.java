@@ -1,17 +1,12 @@
 package name.admitriev.jhelper.configuration;
 
 import com.intellij.execution.ExecutionException;
-import com.intellij.execution.ExecutionTarget;
-import com.intellij.execution.ExecutionTargetManager;
-import com.intellij.execution.Executor;
 import com.intellij.execution.ProgramRunnerUtil;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.runners.DefaultProgramRunner;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.execution.ui.RunContentDescriptor;
-import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -22,8 +17,6 @@ import name.admitriev.jhelper.task.Task;
 import org.antlr.v4.runtime.misc.Nullable;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -73,41 +66,6 @@ public class TaskRunner extends DefaultProgramRunner {
 		if (outputSettings == null) {
 			throw new NotificationException("No run configuration found", "It should be called (" + RUN_CONFIGURATION_NAME + ")");
 		}
-
-		/*
-		 * Here we have RunnerAndConfigurationSettings and need to run it.
-		 * I don't have cross-IDE way to do that because
-		 *   running Application with default ExecutionTarget in AppCode doesn't work and
-		 *   it's impossible to specify ExecutionTarget in CLion
-		 */
-		try {
-			Class<ProgramRunnerUtil> clazz = ProgramRunnerUtil.class;
-			Method executionMethod = clazz.getMethod(
-					"executeConfiguration",
-					Project.class,
-					DataContext.class,
-					RunnerAndConfigurationSettings.class,
-					Executor.class,
-					ExecutionTarget.class,
-					RunContentDescriptor.class,
-					boolean.class
-			);
-			// Probably AppCode.
-
-			// get any ExecutionTarget to run RunConfiguration on
-			ExecutionTarget target = ExecutionTargetManager.getInstance(project).getTargetsFor(outputSettings).get(0);
-
-			executionMethod.invoke(null, project, null, outputSettings, environment.getExecutor(), target, null, false);
-			return;
-		}
-		catch (NoSuchMethodException ignore) {
-			// OK, not AppCode
-		}
-		catch (InvocationTargetException | IllegalAccessException e) {
-			throw new ExecutionException(e);
-		}
-
-		// Probably CLion, other IDEs are not supported.
 		ProgramRunnerUtil.executeConfiguration(project, outputSettings, environment.getExecutor());
 	}
 
