@@ -29,7 +29,7 @@ public class FileUtils {
 		}
 	}
 
-	public static VirtualFile findOrCreateByRelativePath(final VirtualFile file, final String localPath) {
+	public static VirtualFile findOrCreateByRelativePath(VirtualFile file, String localPath) {
 		return ApplicationManager.getApplication().runWriteAction(
 				new Computable<VirtualFile>() {
 					@Override
@@ -91,9 +91,9 @@ public class FileUtils {
 		return file.getName().endsWith(".cpp");
 	}
 
-	public static void writeToFile(PsiFile outputFile, final String... strings) {
-		final Project project = outputFile.getProject();
-		final Document document = PsiDocumentManager.getInstance(project).getDocument(outputFile);
+	public static void writeToFile(PsiFile outputFile, String... strings) {
+		Project project = outputFile.getProject();
+		Document document = PsiDocumentManager.getInstance(project).getDocument(outputFile);
 		if (document == null) {
 			throw new NotificationException("Couldn't open output file as document");
 		}
@@ -118,7 +118,7 @@ public class FileUtils {
 		if (!isChild(parentPath, childPath)) {
 			throw new IllegalArgumentException("childPath should be inside a parentPath");
 		}
-		//Minimum is needed for case when childPath = parentPath and there's no / at the end of childPath
+		// Minimum is needed for case when childPath = parentPath and there's no / at the end of childPath
 		return childPath.substring(Math.min(parentPath.length(), childPath.length()));
 	}
 

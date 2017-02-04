@@ -31,10 +31,10 @@ public class EditTestsAction extends BaseAction {
 			if (!dialog.isOK()) {
 				return;
 			}
-			final Task newTask = task.withTests(dialog.getTests());
+			Task newTask = task.withTests(dialog.getTests());
 			taskConfiguration.setTask(newTask);
 
-			final VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(newTask.getPath());
+			VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(newTask.getPath());
 			if (taskFile == null) {
 				throw new NotificationException("Couldn't find task file to save: " + newTask.getPath());
 			}

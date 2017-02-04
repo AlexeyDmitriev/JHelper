@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 public class CodeGenerationUtils {
 	private CodeGenerationUtils() {
@@ -87,10 +86,10 @@ public class CodeGenerationUtils {
 
 	private static String generateRunFileContent(Project project, Task task, String path) {
 		String template = TemplatesUtils.getTemplate(project, "run");
-		template = template.replace(TemplatesUtils.TASK_FILE, path);
-		template = template.replace(TemplatesUtils.TESTS, generateTestDeclaration(task.getTests()));
-		template = template.replace(TemplatesUtils.CLASS_NAME, task.getClassName());
-		template = template.replace(TemplatesUtils.SOLVER_CALL, generateSolverCall(task.getTestType()));
+		template = TemplatesUtils.replaceAll(template, TemplatesUtils.TASK_FILE, path);
+		template = TemplatesUtils.replaceAll(template, TemplatesUtils.TESTS, generateTestDeclaration(task.getTests()));
+		template = TemplatesUtils.replaceAll(template, TemplatesUtils.CLASS_NAME, task.getClassName());
+		template = TemplatesUtils.replaceAll(template, TemplatesUtils.SOLVER_CALL, generateSolverCall(task.getTestType()));
 		return template;
 	}
 
@@ -132,11 +131,11 @@ public class CodeGenerationUtils {
 		if (task.getInput().type == StreamConfiguration.StreamType.LOCAL_REGEXP) {
 			code = code + '\n' + generateFileNameGetter();
 		}
-		template = template.replace(TemplatesUtils.CODE, code);
-		template = template.replace(TemplatesUtils.CLASS_NAME, task.getClassName());
-		template = template.replace(TemplatesUtils.INPUT, getInputDeclaration(task));
-		template = template.replace(TemplatesUtils.OUTPUT, getOutputDeclaration(task));
-		template = template.replace(TemplatesUtils.SOLVER_CALL, generateSolverCall(task.getTestType()));
+		template = TemplatesUtils.replaceAll(template, TemplatesUtils.CODE, code);
+		template = TemplatesUtils.replaceAll(template, TemplatesUtils.CLASS_NAME, task.getClassName());
+		template = TemplatesUtils.replaceAll(template, TemplatesUtils.INPUT, getInputDeclaration(task));
+		template = TemplatesUtils.replaceAll(template, TemplatesUtils.OUTPUT, getOutputDeclaration(task));
+		template = TemplatesUtils.replaceAll(template, TemplatesUtils.SOLVER_CALL, generateSolverCall(task.getTestType()));
 		return template;
 	}
 
@@ -277,12 +276,9 @@ public class CodeGenerationUtils {
 
 	private static void removeUnusedCode(PsiFile file) {
 		while (true) {
-			final Collection<PsiElement> toDelete = new ArrayList<PsiElement>();
+			Collection<PsiElement> toDelete = new ArrayList<>();
 			Project project = file.getProject();
-			SearchScope scope = new GlobalSearchScope.FilesScope(
-					project,
-					Collections.singletonList(file.getVirtualFile())
-			);
+			SearchScope scope = GlobalSearchScope.fileScope(project, file.getVirtualFile());
 			file.acceptChildren(new DeletionMarkingVisitor(toDelete, scope));
 			if (toDelete.isEmpty()) {
 				break;

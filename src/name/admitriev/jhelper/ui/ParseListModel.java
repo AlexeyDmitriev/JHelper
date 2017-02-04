@@ -1,7 +1,5 @@
 package name.admitriev.jhelper.ui;
 
-import net.egork.chelper.parser.Description;
-
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,8 +9,8 @@ import java.util.List;
 /**
  * ListModel that allows adding an entire {@code Collection}
  */
-public class ParseListModel extends AbstractListModel {
-	private List<Description> list = new ArrayList<Description>();
+public class ParseListModel<T> extends AbstractListModel<T> {
+	private List<T> list = new ArrayList<>();
 
 	@Override
 	public int getSize() {
@@ -20,7 +18,7 @@ public class ParseListModel extends AbstractListModel {
 	}
 
 	@Override
-	public Object getElementAt(int index) {
+	public T getElementAt(int index) {
 		return list.get(index);
 	}
 
@@ -33,7 +31,7 @@ public class ParseListModel extends AbstractListModel {
 		fireIntervalRemoved(this, 0, size - 1);
 	}
 
-	public void addAll(Collection<Description> collection) {
+	public void addAll(Collection<T> collection) {
 		if (collection.isEmpty()) {
 			return;
 		}

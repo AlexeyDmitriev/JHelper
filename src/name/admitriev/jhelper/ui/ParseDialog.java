@@ -20,10 +20,6 @@ import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,11 +32,11 @@ public class ParseDialog extends DialogWrapper {
 
 	private JBList<Description> contestList;
 	private Receiver contestReceiver = new Receiver.Empty();
-	private ParseListModel contestModel = new ParseListModel();
+	private ParseListModel<Description> contestModel = new ParseListModel<>();
 
 	private JBList<Description> problemList;
 	private Receiver problemReceiver = new Receiver.Empty();
-	private ParseListModel problemModel = new ParseListModel();
+	private ParseListModel<Description> problemModel = new ParseListModel<>();
 
 	private Project project;
 
@@ -54,20 +50,14 @@ public class ParseDialog extends DialogWrapper {
 		parserComboBox.setRenderer(
 				new ListCellRendererWrapper<Parser>() {
 					@Override
-					public void customize(JList list, Parser value, int index, boolean selected, boolean hasFocus) {
-						Parser parser = (Parser) value;
+					public void customize(JList list, Parser parser, int index, boolean selected, boolean hasFocus) {
 						setText(parser.getName());
 						setIcon(parser.getIcon());
 					}
 				}
 		);
 		parserComboBox.addActionListener(
-				new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						refresh();
-					}
-				}
+				e -> refresh()
 		);
 
 		testType = new ComboBox<>(TestType.values());
@@ -75,22 +65,19 @@ public class ParseDialog extends DialogWrapper {
 		contestList = new JBList<>(contestModel);
 		contestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		contestList.addListSelectionListener(
-				new ListSelectionListener() {
-					@Override
-					public void valueChanged(ListSelectionEvent e) {
-						problemReceiver.stop();
-						problemModel.removeAll();
+				e -> {
+					problemReceiver.stop();
+					problemModel.removeAll();
 
-						Parser parser = (Parser) parserComboBox.getSelectedItem();
-						Description contest = contestList.getSelectedValue();
+					Parser parser = (Parser) parserComboBox.getSelectedItem();
+					Description contest = contestList.getSelectedValue();
 
-						problemReceiver = generateProblemReceiver();
+					problemReceiver = generateProblemReceiver();
 
-						if (contest != null) {
-							new ParserTask(
-									contest.id, problemReceiver, parser
-							);
-						}
+					if (contest != null) {
+						new ParserTask(
+								contest.id, problemReceiver, parser
+						);
 					}
 				}
 		);
@@ -140,21 +127,18 @@ public class ParseDialog extends DialogWrapper {
 	private Receiver generateProblemReceiver() {
 		return new Receiver() {
 			@Override
-			public void receiveDescriptions(final Collection<Description> descriptions) {
-				final Receiver thisReceiver = this;
+			public void receiveDescriptions(Collection<Description> descriptions) {
+				Receiver thisReceiver = this;
 				SwingUtilities.invokeLater(
-						new Runnable() {
-							@Override
-							public void run() {
-								//noinspection ObjectEquality
-								if (problemReceiver != thisReceiver) {
-									return;
-								}
-								boolean shouldMark = problemModel.getSize() == 0;
-								problemModel.addAll(descriptions);
-								if (shouldMark) {
-									problemList.setSelectionInterval(0, problemModel.getSize() - 1);
-								}
+						() -> {
+							//noinspection ObjectEquality
+							if (problemReceiver != thisReceiver) {
+								return;
+							}
+							boolean shouldMark = problemModel.getSize() == 0;
+							problemModel.addAll(descriptions);
+							if (shouldMark) {
+								problemList.setSelectionInterval(0, problemModel.getSize() - 1);
 							}
 						}
 				);
@@ -162,31 +146,28 @@ public class ParseDialog extends DialogWrapper {
 		};
 	}
 
-	private Receiver generateContestReceiver(final Description chosenDescription) {
+	private Receiver generateContestReceiver(Description chosenDescription) {
 		return new Receiver() {
 			@Override
-			public void receiveDescriptions(final Collection<Description> descriptions) {
-				final Receiver thisReceiver = this;
+			public void receiveDescriptions(Collection<Description> descriptions) {
+				Receiver thisReceiver = this;
 				SwingUtilities.invokeLater(
-						new Runnable() {
-							@Override
-							public void run() {
-								//noinspection ObjectEquality
-								if (contestReceiver != thisReceiver) {
-									return;
+						() -> {
+							//noinspection ObjectEquality
+							if (contestReceiver != thisReceiver) {
+								return;
+							}
+							boolean shouldMark = contestModel.getSize() == 0;
+							contestModel.addAll(descriptions);
+							if (shouldMark) {
+								for (Description contest : descriptions) {
+									if (chosenDescription != null && chosenDescription.id.equals(contest.id)) {
+										contestList.setSelectedValue(contest, true);
+										return;
+									}
 								}
-								boolean shouldMark = contestModel.getSize() == 0;
-								contestModel.addAll(descriptions);
-								if (shouldMark) {
-									for (Description contest : descriptions) {
-										if (chosenDescription != null && chosenDescription.id.equals(contest.id)) {
-											contestList.setSelectedValue(contest, true);
-											return;
-										}
-									}
-									if (contestModel.getSize() > 0) {
-										contestList.setSelectedIndex(0);
-									}
+								if (contestModel.getSize() > 0) {
+									contestList.setSelectedIndex(0);
 								}
 							}
 						}

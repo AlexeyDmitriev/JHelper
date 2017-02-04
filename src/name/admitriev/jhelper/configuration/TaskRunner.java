@@ -103,10 +103,7 @@ public class TaskRunner extends DefaultProgramRunner {
 		catch (NoSuchMethodException ignore) {
 			// OK, not AppCode
 		}
-		catch (InvocationTargetException e) {
-			throw new ExecutionException(e);
-		}
-		catch (IllegalAccessException e) {
+		catch (InvocationTargetException | IllegalAccessException e) {
 			throw new ExecutionException(e);
 		}
 

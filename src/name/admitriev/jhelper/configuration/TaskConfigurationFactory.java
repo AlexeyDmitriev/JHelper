@@ -11,8 +11,9 @@ public class TaskConfigurationFactory extends ConfigurationFactory {
 		super(type);
 	}
 
+	@NotNull
 	@Override
-	public TaskConfiguration createTemplateConfiguration(Project project) {
+	public TaskConfiguration createTemplateConfiguration(@NotNull Project project) {
 		return new TaskConfiguration(project, this, Task.emptyTask(project));
 	}
 

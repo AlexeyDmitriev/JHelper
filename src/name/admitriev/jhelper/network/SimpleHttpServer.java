@@ -33,8 +33,7 @@ public class SimpleHttpServer implements Runnable {
 				if (serverSocket.isClosed()) {
 					return;
 				}
-				Socket socket = serverSocket.accept();
-				try {
+				try (Socket socket = serverSocket.accept()) {
 					InputStream inputStream = socket.getInputStream();
 					String request = readFromStream(inputStream);
 					String[] strings = request.split("\n\n", 2);
@@ -48,20 +47,12 @@ public class SimpleHttpServer implements Runnable {
 						);
 						continue;
 					}
-					final String text = strings[1];
+					String text = strings[1];
 
 					ApplicationManager.getApplication().invokeLater(
-							new Runnable() {
-								@Override
-								public void run() {
-									consumer.consume(text);
-								}
-							},
+							() -> consumer.consume(text),
 							ModalityState.defaultModalityState()
 					);
-				}
-				finally {
-					socket.close();
 				}
 			}
 			catch (IOException ignored) {
@@ -70,19 +61,15 @@ public class SimpleHttpServer implements Runnable {
 	}
 
 	private static String readFromStream(InputStream inputStream) throws IOException {
-		BufferedReader reader = new BufferedReader(
+		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(inputStream, "UTF-8")
-		);
-		try {
+		)) {
 			StringBuilder builder = new StringBuilder();
 			String line;
 			//noinspection NestedAssignment
 			while ((line = reader.readLine()) != null)
 				builder.append(line).append('\n');
 			return builder.toString();
-		}
-		finally {
-			reader.close();
 		}
 	}
 

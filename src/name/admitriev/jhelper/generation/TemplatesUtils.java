@@ -13,23 +13,28 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for customizing templates of code
  */
 public class TemplatesUtils {
 
-	public static final String CLASS_NAME = "%ClassName%";
-	public static final String TASK_FILE = "%TaskFile%";
-	public static final String TESTS = "%Tests%";
-	public static final String SOLVER_CALL = "%SolverCall%";
-	public static final String INPUT = "%Input%";
-	public static final String OUTPUT = "%Output%";
-	public static final String CODE = "%Code%";
+	public static final Pattern CLASS_NAME = Pattern.compile("%ClassName%", Pattern.LITERAL);
+	public static final Pattern TASK_FILE = Pattern.compile("%TaskFile%", Pattern.LITERAL);
+	public static final Pattern TESTS = Pattern.compile("%Tests%", Pattern.LITERAL);
+	public static final Pattern SOLVER_CALL = Pattern.compile("%SolverCall%", Pattern.LITERAL);
+	public static final Pattern INPUT = Pattern.compile("%Input%", Pattern.LITERAL);
+	public static final Pattern OUTPUT = Pattern.compile("%Output%", Pattern.LITERAL);
+	public static final Pattern CODE = Pattern.compile("%Code%", Pattern.LITERAL);
 
 	private TemplatesUtils() {
 	}
 
+	public static String replaceAll(String text, Pattern pattern, String replacement) {
+		return pattern.matcher(text).replaceAll(Matcher.quoteReplacement(replacement));
+	}
 
 	public static String getTemplate(Project project, String name) {
 		String filename = name + ".template";
@@ -69,28 +74,18 @@ public class TemplatesUtils {
 	 * Returns content of resource file (from resource folder) as a string.
 	 */
 	private static String getResourceContent(String name) throws IOException {
-		InputStream stream = null;
-		BufferedReader reader = null;
-		try {
-			stream = TemplatesUtils.class.getResourceAsStream(name);
+		try (InputStream stream = TemplatesUtils.class.getResourceAsStream(name)) {
 			if (stream == null) {
 				throw new IOException("Couldn't open a stream to resource " + name);
 			}
-			reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-			StringBuilder sb = new StringBuilder();
-			String line;
-			//noinspection NestedAssignment
-			while ((line = reader.readLine()) != null) {
-				sb.append(line).append('\n');
-			}
-			return sb.toString();
-		}
-		finally {
-			if (stream != null) {
-				stream.close();
-			}
-			if (reader != null) {
-				reader.close();
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"))) {
+				StringBuilder sb = new StringBuilder();
+				String line;
+				//noinspection NestedAssignment
+				while ((line = reader.readLine()) != null) {
+					sb.append(line).append('\n');
+				}
+				return sb.toString();
 			}
 		}
 	}

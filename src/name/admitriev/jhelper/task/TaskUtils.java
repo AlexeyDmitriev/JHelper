@@ -30,7 +30,7 @@ public class TaskUtils {
 	 */
 	private static String getTaskContent(Project project, String className) {
 		String template = TemplatesUtils.getTemplate(project, "task");
-		template = template.replace(TemplatesUtils.CLASS_NAME, className);
+		template = TemplatesUtils.replaceAll(template, TemplatesUtils.CLASS_NAME, className);
 		return template;
 	}
 
@@ -44,8 +44,8 @@ public class TaskUtils {
 	 * @return generated CPP File
 	 */
 
-	public static VirtualFile saveTaskFile(final Task task, Project project) {
-		final VirtualFile taskFile = FileUtils.findOrCreateByRelativePath(project.getBaseDir(), task.getPath());
+	public static VirtualFile saveTaskFile(Task task, Project project) {
+		VirtualFile taskFile = FileUtils.findOrCreateByRelativePath(project.getBaseDir(), task.getPath());
 		if (taskFile == null) {
 			throw new NotificationException("Couldn't find task file to save: " + taskFile.getPath());
 		}
@@ -72,7 +72,7 @@ public class TaskUtils {
 
 	private static PsiElement generateCPP(Project project, Task task, VirtualFile newTaskFile) {
 		VirtualFile parent = newTaskFile.getParent();
-		final PsiDirectory psiParent = PsiManager.getInstance(project).findDirectory(parent);
+		PsiDirectory psiParent = PsiManager.getInstance(project).findDirectory(parent);
 		if (psiParent == null) {
 			throw new NotificationException("Couldn't open parent directory as PSI");
 		}
@@ -82,7 +82,7 @@ public class TaskUtils {
 			throw new NotificationException("Language not found");
 		}
 
-		final PsiFile file = PsiFileFactory.getInstance(project).createFileFromText(
+		PsiFile file = PsiFileFactory.getInstance(project).createFileFromText(
 				task.getClassName() + ".cpp",
 				objC,
 				getTaskContent(project, task.getClassName())
@@ -91,12 +91,7 @@ public class TaskUtils {
 			throw new NotificationException("Couldn't generate file");
 		}
 		return ApplicationManager.getApplication().runWriteAction(
-				new Computable<PsiElement>() {
-					@Override
-					public PsiElement compute() {
-						return psiParent.add(file);
-					}
-				}
+				(Computable<PsiElement>) () -> psiParent.add(file)
 		);
 
 	}

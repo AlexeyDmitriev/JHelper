@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class IncludesProcessor {
-	private Set<PsiFile> processedFiles = new HashSet<PsiFile>();
+	private Set<PsiFile> processedFiles = new HashSet<>();
 	@SuppressWarnings("StringBufferField")
 	private StringBuilder result = new StringBuilder();
 

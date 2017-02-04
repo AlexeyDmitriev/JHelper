@@ -59,7 +59,7 @@ public class Configurator extends AbstractProjectComponent implements Persistent
 				String outputFile,
 				String runFile,
 				boolean codeEliminationOn,
-		        boolean codeReformattingOn
+				boolean codeReformattingOn
 		) {
 			this.author = author;
 			this.tasksDirectory = tasksDirectory;
@@ -97,37 +97,31 @@ public class Configurator extends AbstractProjectComponent implements Persistent
 			return codeReformattingOn;
 		}
 
-		@SuppressWarnings("UnusedDeclaration")
 		@Deprecated
 		public void setAuthor(String author) {
 			this.author = author;
 		}
 
-		@SuppressWarnings("UnusedDeclaration")
 		@Deprecated
 		public void setTasksDirectory(String tasksDirectory) {
 			this.tasksDirectory = tasksDirectory;
 		}
 
-		@SuppressWarnings("UnusedDeclaration")
 		@Deprecated
 		public void setOutputFile(String outputFile) {
 			this.outputFile = outputFile;
 		}
 
-		@SuppressWarnings("UnusedDeclaration")
 		@Deprecated
 		public void setRunFile(String runFile) {
 			this.runFile = runFile;
 		}
 
-		@SuppressWarnings("UnusedDeclaration")
 		@Deprecated
 		public void setCodeEliminationOn(boolean codeEliminationOn) {
 			this.codeEliminationOn = codeEliminationOn;
 		}
 
-		@SuppressWarnings("UnusedDeclaration")
 		@Deprecated
 		public void setCodeReformattingOn(boolean codeReformattingOn) {
 			this.codeReformattingOn = codeReformattingOn;

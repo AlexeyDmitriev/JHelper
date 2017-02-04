@@ -70,7 +70,7 @@ public class ConfigurationDialog extends DialogWrapper {
 				outputFile.getText(),
 				runFile.getText(),
 				codeEliminationOn.isSelected(),
-		        codeReformattingOn.isSelected()
+				codeReformattingOn.isSelected()
 		);
 	}
 }

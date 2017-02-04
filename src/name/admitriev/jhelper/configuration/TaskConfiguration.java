@@ -8,8 +8,6 @@ import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.InvalidDataException;
-import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.jetbrains.cidr.execution.CidrCommandLineState;
 import name.admitriev.jhelper.exceptions.JHelperException;
@@ -45,14 +43,14 @@ public class TaskConfiguration extends RunConfigurationBase {
 			private TaskSettingsComponent component = new TaskSettingsComponent(getProject());
 
 			@Override
-			protected void resetEditorFrom(TaskConfiguration s) {
-				component.setTask(s.task);
+			protected void resetEditorFrom(@NotNull TaskConfiguration settings) {
+				component.setTask(settings.task);
 			}
 
 			@Override
-			protected void applyEditorTo(final TaskConfiguration s) {
-				s.task = component.getTask();
-				setName(s.task.getName());
+			protected void applyEditorTo(@NotNull TaskConfiguration settings) {
+				settings.task = component.getTask();
+				setName(settings.task.getName());
 			}
 
 			@NotNull
@@ -82,7 +80,7 @@ public class TaskConfiguration extends RunConfigurationBase {
 	}
 
 	@Override
-	public void readExternal(Element element) throws InvalidDataException {
+	public void readExternal(Element element) {
 		super.readExternal(element);
 		String path = element.getAttribute("task_path").getValue();
 		VirtualFile projectFile = getProject().getBaseDir();
@@ -90,19 +88,17 @@ public class TaskConfiguration extends RunConfigurationBase {
 		if (taskFile == null) {
 			return;
 		}
-		InputStream stream;
-		try {
-			stream = taskFile.getInputStream();
+		try (InputStream stream = taskFile.getInputStream()) {
+			task = Task.loadTask(new InputReader(stream));
 		}
 		catch (IOException ignored) {
-			return;
 		}
-		task = Task.loadTask(new InputReader(stream));
+
 		setName(task.getName());
 	}
 
 	@Override
-	public void writeExternal(Element element) throws WriteExternalException {
+	public void writeExternal(Element element) {
 		element.setAttribute("task_path", task.getPath());
 		super.writeExternal(element);
 		VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(task.getPath());

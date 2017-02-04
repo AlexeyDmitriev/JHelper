@@ -16,12 +16,7 @@ public class AddTaskDialog extends DialogWrapper {
 		setTitle("Add Task");
 		component = new TaskSettingsComponent(
 				project,
-				new StreamConfigurationPanel.SizeChangedListener() {
-					@Override
-					public void sizeChanged() {
-						pack();
-					}
-				}
+				this::pack
 		);
 		init();
 	}

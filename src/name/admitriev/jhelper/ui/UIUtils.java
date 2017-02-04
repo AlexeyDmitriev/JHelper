@@ -25,15 +25,15 @@ public class UIUtils {
 	 *
 	 * Does nothing if this equality is wrong when method is called.
 	 *
-	 * @param format format for {@link java.lang.String#format}. Should contain exactly one format specifier equal to %s
+	 * @param format format for {@link String#format}. Should contain exactly one format specifier equal to %s
 	 */
-	public static void mirrorFields(final JTextField main, final JTextField copy, final String format) {
+	public static void mirrorFields(JTextField main, JTextField copy, String format) {
 		if (!String.format(format, main.getText()).equals(copy.getText())) {
 			// The copy is already changed.
 			return;
 		}
-		final AtomicBoolean changingFirst = new AtomicBoolean(false);
-		final AtomicBoolean secondChanged = new AtomicBoolean(false);
+		AtomicBoolean changingFirst = new AtomicBoolean(false);
+		AtomicBoolean secondChanged = new AtomicBoolean(false);
 		main.getDocument().addDocumentListener(
 
 				new DocumentAdapter() {
@@ -87,8 +87,8 @@ public class UIUtils {
 		).navigate(true);
 	}
 
-	private static PsiElement findMethodBody(OCFile file, @NotNull final String method) {
-		final Ref<PsiElement> result = new Ref<PsiElement>();
+	private static PsiElement findMethodBody(OCFile file, @NotNull String method) {
+		Ref<PsiElement> result = new Ref<>();
 		file.accept(
 				new OCRecursiveVisitor() {
 					@Override

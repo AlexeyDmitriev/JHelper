@@ -14,7 +14,6 @@ import java.util.Arrays;
  * Represent problem from programing contest
  */
 public class Task {
-
 	private final String name;
 	private final String className;
 	private final String path;

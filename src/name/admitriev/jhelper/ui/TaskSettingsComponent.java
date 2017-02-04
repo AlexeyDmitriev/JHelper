@@ -13,13 +13,13 @@ import javax.swing.*;
 /**
  * Panel for task configuration.
  */
-public class TaskSettingsComponent extends JPanel {
+public final class TaskSettingsComponent extends JPanel {
 	private JTextField name = null;
 	private JTextField className = null;
 	private FileSelector path = null;
 	private StreamConfigurationPanel input = null;
 	private StreamConfigurationPanel output = null;
-	private ComboBox testType = null;
+	private ComboBox<TestType> testType = null;
 	private Task task = null;
 
 	private Project project;
@@ -34,7 +34,6 @@ public class TaskSettingsComponent extends JPanel {
 		super(new VerticalLayout());
 		this.project = project;
 		this.listener = listener;
-		//noinspection OverridableMethodCallDuringObjectConstruction
 		setTask(Task.emptyTask(project));
 	}
 
@@ -72,7 +71,7 @@ public class TaskSettingsComponent extends JPanel {
 				listener
 		);
 
-		testType = new ComboBox(TestType.values());
+		testType = new ComboBox<>(TestType.values());
 		testType.setSelectedItem(task.getTestType());
 
 		this.task = task;

@@ -42,10 +42,9 @@ public class DeleteTaskAction extends BaseAction {
 		}
 	}
 
-	private void removeFiles(final Project project, TaskConfiguration taskConfiguration) {
-
-		final String path = taskConfiguration.getTask().getPath();
-		final String className = taskConfiguration.getTask().getClassName();
+	private void removeFiles(Project project, TaskConfiguration taskConfiguration) {
+		String path = taskConfiguration.getTask().getPath();
+		String className = taskConfiguration.getTask().getClassName();
 
 		ApplicationManager.getApplication().runWriteAction(
 				new Runnable() {
@@ -82,7 +81,7 @@ public class DeleteTaskAction extends BaseAction {
 		);
 	}
 
-	private void selectSomeTaskConfiguration(RunManagerEx runManager) {
+	private static void selectSomeTaskConfiguration(RunManagerEx runManager) {
 		for (RunnerAndConfigurationSettings settings : runManager.getAllSettings()) {
 			if (settings.getConfiguration() instanceof TaskConfiguration) {
 				runManager.setSelectedConfiguration(settings);

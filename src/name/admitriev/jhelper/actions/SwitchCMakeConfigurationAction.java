@@ -35,7 +35,7 @@ public class SwitchCMakeConfigurationAction extends ComboBoxAction {
 			return actions;
 		}
 
-		final CMakeAppRunConfiguration testRunner = getTestRunner(project);
+		CMakeAppRunConfiguration testRunner = getTestRunner(project);
 		if (testRunner == null) {
 			Notificator.showNotification(
 					"No configuration named " + TaskRunner.RUN_CONFIGURATION_NAME + " found",
@@ -43,10 +43,10 @@ public class SwitchCMakeConfigurationAction extends ComboBoxAction {
 			);
 			return actions;
 		}
-		final CMakeTarget target = testRunner.getBuildAndRunConfigurations().buildConfiguration.getTarget();
+		CMakeTarget target = testRunner.getBuildAndRunConfigurations().buildConfiguration.getTarget();
 		List<CMakeConfiguration> configurations = new CMakeBuildConfigurationHelper(project).getConfigurations(target);
 
-		for (final CMakeConfiguration configuration : configurations) {
+		for (CMakeConfiguration configuration : configurations) {
 			actions.add(
 					new AnAction(configuration.getName()) {
 						@Override
@@ -80,7 +80,7 @@ public class SwitchCMakeConfigurationAction extends ComboBoxAction {
 	}
 
 	@Nullable
-	private String getBuildConfigurationName(@Nullable Project project) {
+	private static String getBuildConfigurationName(@Nullable Project project) {
 		if (!isProjectValid(project)) {
 			return null;
 		}
@@ -93,9 +93,6 @@ public class SwitchCMakeConfigurationAction extends ComboBoxAction {
 			return null;
 		}
 		CMakeConfiguration buildConfiguration = configurations.buildConfiguration;
-		if (buildConfiguration == null) {
-			return null;
-		}
 		return buildConfiguration.getName();
 	}
 

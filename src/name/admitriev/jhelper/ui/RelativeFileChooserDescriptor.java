@@ -7,7 +7,7 @@ import name.admitriev.jhelper.generation.FileUtils;
 public class RelativeFileChooserDescriptor extends FileChooserDescriptor {
 	private String basePath;
 
-	public RelativeFileChooserDescriptor(
+	private RelativeFileChooserDescriptor(
 			VirtualFile baseDir,
 			boolean chooseFiles,
 			boolean chooseFolders
