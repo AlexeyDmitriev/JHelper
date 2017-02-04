@@ -37,7 +37,7 @@ public class IncludesProcessor {
 			}
 			if (element instanceof OCPragma) {
 				OCPragma pragma = (OCPragma) element;
-				if (pragma.getContent().trim().equals("once")) {
+				if (pragma.getContent(true).first.equals("once")) {
 					continue;
 				}
 			}

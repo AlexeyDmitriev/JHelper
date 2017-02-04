@@ -31,14 +31,14 @@ import java.util.List;
 public class ParseDialog extends DialogWrapper {
 	private JComponent component;
 
-	private ComboBox parserComboBox;
-	private ComboBox testType;
+	private ComboBox<Parser> parserComboBox;
+	private ComboBox<TestType> testType;
 
-	private JBList contestList;
+	private JBList<Description> contestList;
 	private Receiver contestReceiver = new Receiver.Empty();
 	private ParseListModel contestModel = new ParseListModel();
 
-	private JBList problemList;
+	private JBList<Description> problemList;
 	private Receiver problemReceiver = new Receiver.Empty();
 	private ParseListModel problemModel = new ParseListModel();
 
@@ -50,11 +50,11 @@ public class ParseDialog extends DialogWrapper {
 		setTitle("Parse contest");
 		JPanel panel = new JPanel(new VerticalLayout());
 
-		parserComboBox = new ComboBox(Parser.PARSERS);
+		parserComboBox = new ComboBox<>(Parser.PARSERS);
 		parserComboBox.setRenderer(
-				new ListCellRendererWrapper() {
+				new ListCellRendererWrapper<Parser>() {
 					@Override
-					public void customize(JList list, Object value, int index, boolean selected, boolean hasFocus) {
+					public void customize(JList list, Parser value, int index, boolean selected, boolean hasFocus) {
 						Parser parser = (Parser) value;
 						setText(parser.getName());
 						setIcon(parser.getIcon());
@@ -70,9 +70,9 @@ public class ParseDialog extends DialogWrapper {
 				}
 		);
 
-		testType = new ComboBox(TestType.values());
+		testType = new ComboBox<>(TestType.values());
 
-		contestList = new JBList(contestModel);
+		contestList = new JBList<>(contestModel);
 		contestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		contestList.addListSelectionListener(
 				new ListSelectionListener() {
@@ -82,7 +82,7 @@ public class ParseDialog extends DialogWrapper {
 						problemModel.removeAll();
 
 						Parser parser = (Parser) parserComboBox.getSelectedItem();
-						Description contest = (Description) contestList.getSelectedValue();
+						Description contest = contestList.getSelectedValue();
 
 						problemReceiver = generateProblemReceiver();
 
@@ -95,7 +95,7 @@ public class ParseDialog extends DialogWrapper {
 				}
 		);
 
-		problemList = new JBList(problemModel);
+		problemList = new JBList<>(problemModel);
 		problemList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
 
@@ -126,7 +126,7 @@ public class ParseDialog extends DialogWrapper {
 
 	private void refresh() {
 		Parser parser = (Parser) parserComboBox.getSelectedItem();
-		Description chosenDescription = (Description) contestList.getSelectedValue();
+		Description chosenDescription = contestList.getSelectedValue();
 		contestReceiver.stop();
 		contestModel.removeAll();
 
@@ -203,8 +203,8 @@ public class ParseDialog extends DialogWrapper {
 	}
 
 	public Collection<Task> getResult() {
-		List<Task> list = new ArrayList<Task>();
-		Object[] selectedTasks = problemList.getSelectedValues();
+		List<Task> list = new ArrayList<>();
+		List<Description> selectedTasks = problemList.getSelectedValuesList();
 		Parser parser = (Parser) parserComboBox.getSelectedItem();
 
 		Configurator configurator = project.getComponent(Configurator.class);
