@@ -3,7 +3,6 @@ package name.admitriev.jhelper.configuration;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;
 import com.intellij.openapi.project.Project;
-import name.admitriev.jhelper.task.Task;
 import org.jetbrains.annotations.NotNull;
 
 public class TaskConfigurationFactory extends ConfigurationFactory {
@@ -14,7 +13,7 @@ public class TaskConfigurationFactory extends ConfigurationFactory {
 	@NotNull
 	@Override
 	public TaskConfiguration createTemplateConfiguration(@NotNull Project project) {
-		return new TaskConfiguration(project, this, Task.emptyTask(project));
+		return new TaskConfiguration(project, this);
 	}
 
 	@Override

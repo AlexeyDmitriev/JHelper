@@ -10,10 +10,11 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import name.admitriev.jhelper.components.Configurator;
 import name.admitriev.jhelper.parsing.Receiver;
-import name.admitriev.jhelper.task.Task;
+import name.admitriev.jhelper.task.TaskData;
 import net.egork.chelper.parser.Description;
 import net.egork.chelper.parser.Parser;
 import net.egork.chelper.parser.ParserTask;
+import net.egork.chelper.task.Task;
 import net.egork.chelper.task.TestType;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
@@ -183,8 +184,8 @@ public class ParseDialog extends DialogWrapper {
 		return component;
 	}
 
-	public Collection<Task> getResult() {
-		List<Task> list = new ArrayList<>();
+	public Collection<TaskData> getResult() {
+		List<TaskData> list = new ArrayList<>();
 		List<Description> selectedTasks = problemList.getSelectedValuesList();
 		Parser parser = (Parser) parserComboBox.getSelectedItem();
 
@@ -195,7 +196,7 @@ public class ParseDialog extends DialogWrapper {
 
 		for (Object taskDescription : selectedTasks) {
 			Description description = (Description) taskDescription;
-			net.egork.chelper.task.Task rawTask = parser.parseTask(description);
+			Task rawTask = parser.parseTask(description);
 			if (rawTask == null) {
 				Notificator.showNotification(
 						"Unable to parse task " + description.description,
@@ -204,10 +205,10 @@ public class ParseDialog extends DialogWrapper {
 				);
 				continue;
 			}
-			Task myTask = new Task(
+			TaskData myTask = new TaskData(
 					rawTask.name,
 					rawTask.taskClass,
-					String.format("%s/%s.task", path, rawTask.name),
+					String.format("%s/%s.cpp", path, rawTask.taskClass),
 					rawTask.input,
 					rawTask.output,
 					(TestType) testType.getSelectedItem(),

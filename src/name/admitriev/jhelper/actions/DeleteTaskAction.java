@@ -43,16 +43,13 @@ public class DeleteTaskAction extends BaseAction {
 	}
 
 	private void removeFiles(Project project, TaskConfiguration taskConfiguration) {
-		String path = taskConfiguration.getTask().getPath();
-		String className = taskConfiguration.getTask().getClassName();
+		String cppPath = taskConfiguration.getCppPath();
 
 		ApplicationManager.getApplication().runWriteAction(
 				new Runnable() {
 					@Override
 					public void run() {
-						VirtualFile classFile = project.getBaseDir().findFileByRelativePath(
-								path + "/../" + className + ".cpp"
-						);
+						VirtualFile classFile = project.getBaseDir().findFileByRelativePath(cppPath);
 						if (classFile != null) {
 							try {
 								classFile.delete(this);
@@ -60,18 +57,6 @@ public class DeleteTaskAction extends BaseAction {
 							catch (IOException ignored) {
 								Notificator.showNotification(
 										"Couldn't delete class file",
-										NotificationType.WARNING
-								);
-							}
-						}
-						VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(path);
-						if (taskFile != null) {
-							try {
-								taskFile.delete(this);
-							}
-							catch (IOException ignored) {
-								Notificator.showNotification(
-										"Couldn't delete task file",
 										NotificationType.WARNING
 								);
 							}

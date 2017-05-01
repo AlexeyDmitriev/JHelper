@@ -3,8 +3,9 @@ package name.admitriev.jhelper.ui;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.LabeledComponent;
-import name.admitriev.jhelper.task.Task;
+import name.admitriev.jhelper.task.TaskData;
 import net.egork.chelper.task.StreamConfiguration;
+import net.egork.chelper.task.Test;
 import net.egork.chelper.task.TestType;
 import org.jdesktop.swingx.VerticalLayout;
 
@@ -16,75 +17,77 @@ import javax.swing.*;
 public final class TaskSettingsComponent extends JPanel {
 	private JTextField name = null;
 	private JTextField className = null;
-	private FileSelector path = null;
+	private FileSelector cppPath = null;
 	private StreamConfigurationPanel input = null;
 	private StreamConfigurationPanel output = null;
 	private ComboBox<TestType> testType = null;
-	private Task task = null;
+	private final boolean canChangeName;
 
 	private Project project;
 
 	private StreamConfigurationPanel.SizeChangedListener listener;
 
-	public TaskSettingsComponent(Project project) {
-		this(project, null);
+	public TaskSettingsComponent(Project project, boolean canChangeName) {
+		this(project, canChangeName, null);
 	}
 
-	public TaskSettingsComponent(Project project, StreamConfigurationPanel.SizeChangedListener listener) {
+	public TaskSettingsComponent(Project project, boolean canChangeName, StreamConfigurationPanel.SizeChangedListener listener) {
 		super(new VerticalLayout());
 		this.project = project;
 		this.listener = listener;
-		setTask(Task.emptyTask(project));
+		this.canChangeName = canChangeName;
+
+		setTaskData(TaskData.emptyTaskData(project));
 	}
 
-	public Task getTask() {
-		return new Task(
-				name.getText(),
-				className.getText(),
-				path.getText(),
-				input.getStreamConfiguration(),
-				output.getStreamConfiguration(),
-				(TestType) testType.getSelectedItem(),
-				task.getTests()
-		);
-	}
-
-	public void setTask(Task task) {
+	public void setTaskData(TaskData taskData) {
 		removeAll();
-		name = new JTextField(task.getName());
-		className = new JTextField(task.getClassName());
-		path = new FileSelector(
+		name = new JTextField(taskData.getName());
+		name.setEnabled(canChangeName);
+
+		className = new JTextField(taskData.getClassName());
+		cppPath = new FileSelector(
 				project,
-				task.getPath(),
+				taskData.getCppPath(),
 				RelativeFileChooserDescriptor.fileChooser(project.getBaseDir())
 		);
 		input = new StreamConfigurationPanel(
-				task.getInput(),
+				taskData.getInput(),
 				StreamConfiguration.StreamType.values(),
 				"input.txt",
 				listener
 		);
 		output = new StreamConfigurationPanel(
-				task.getOutput(),
+				taskData.getOutput(),
 				StreamConfiguration.OUTPUT_TYPES,
 				"output.txt",
 				listener
 		);
 
 		testType = new ComboBox<>(TestType.values());
-		testType.setSelectedItem(task.getTestType());
-
-		this.task = task;
+		testType.setSelectedItem(taskData.getTestType());
 
 		add(LabeledComponent.create(name, "Task name"));
 		add(LabeledComponent.create(className, "Class name"));
-		add(LabeledComponent.create(path, "Path"));
+		add(LabeledComponent.create(cppPath, "Path"));
 		add(LabeledComponent.create(input, "Input"));
 		add(LabeledComponent.create(output, "Output"));
 		add(LabeledComponent.create(testType, "Test type"));
 
 		UIUtils.mirrorFields(name, className);
-		UIUtils.mirrorFields(name, path.getTextField(), Task.defaultPathFormat(project));
+		UIUtils.mirrorFields(name, cppPath.getTextField(), TaskData.defaultCppPathFormat(project));
+	}
+
+	public TaskData getTask() {
+		return new TaskData(
+				name.getText(),
+				className.getText(),
+				cppPath.getText(),
+				input.getStreamConfiguration(),
+				output.getStreamConfiguration(),
+				(TestType) testType.getSelectedItem(),
+				new Test[0]
+		);
 	}
 
 

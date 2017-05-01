@@ -5,12 +5,9 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.impl.RunManagerImpl;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import name.admitriev.jhelper.configuration.TaskConfiguration;
-import name.admitriev.jhelper.exceptions.NotificationException;
-import name.admitriev.jhelper.task.Task;
-import name.admitriev.jhelper.task.TaskUtils;
 import name.admitriev.jhelper.ui.EditTestsDialog;
+import net.egork.chelper.task.Test;
 
 public class EditTestsAction extends BaseAction {
 
@@ -25,20 +22,16 @@ public class EditTestsAction extends BaseAction {
 		RunConfiguration configuration = selectedConfiguration.getConfiguration();
 		if (configuration instanceof TaskConfiguration) {
 			TaskConfiguration taskConfiguration = (TaskConfiguration) configuration;
-			Task task = taskConfiguration.getTask();
-			EditTestsDialog dialog = new EditTestsDialog(task.getTests(), project);
+			Test[] originalTests = taskConfiguration.getTests();
+			EditTestsDialog dialog = new EditTestsDialog(originalTests, project);
 			dialog.show();
 			if (!dialog.isOK()) {
 				return;
 			}
-			Task newTask = task.withTests(dialog.getTests());
-			taskConfiguration.setTask(newTask);
+			Test[] newTests = dialog.getTests();
+			taskConfiguration.setTests(newTests);
 
-			VirtualFile taskFile = project.getBaseDir().findFileByRelativePath(newTask.getPath());
-			if (taskFile == null) {
-				throw new NotificationException("Couldn't find task file to save: " + newTask.getPath());
-			}
-			TaskUtils.saveTaskFile(newTask, project);
+			// @todo: save configuration
 		}
 	}
 }

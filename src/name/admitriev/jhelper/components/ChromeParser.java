@@ -8,7 +8,7 @@ import com.intellij.util.text.StringTokenizer;
 import com.jetbrains.cidr.lang.psi.OCFile;
 import name.admitriev.jhelper.IDEUtils;
 import name.admitriev.jhelper.network.SimpleHttpServer;
-import name.admitriev.jhelper.task.Task;
+import name.admitriev.jhelper.task.TaskData;
 import name.admitriev.jhelper.task.TaskUtils;
 import name.admitriev.jhelper.ui.Notificator;
 import name.admitriev.jhelper.ui.UIUtils;
@@ -25,6 +25,7 @@ import net.egork.chelper.parser.KattisParser;
 import net.egork.chelper.parser.Parser;
 import net.egork.chelper.parser.UsacoParser;
 import net.egork.chelper.parser.YandexParser;
+import net.egork.chelper.task.Task;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -85,7 +86,7 @@ public class ChromeParser extends AbstractProjectComponent {
 							return;
 						}
 						String page = request.substring(st.getCurrentPosition());
-						Collection<net.egork.chelper.task.Task> tasks = parser.parseTaskFromHTML(page);
+						Collection<Task> tasks = parser.parseTaskFromHTML(page);
 						if (tasks.isEmpty()) {
 							Notificator.showNotification(
 									"Couldn't parse any task",
@@ -93,17 +94,17 @@ public class ChromeParser extends AbstractProjectComponent {
 									NotificationType.WARNING
 							);
 						}
-						for (net.egork.chelper.task.Task rawTask : tasks) {
-							Task task = new Task(
+						for (Task rawTask : tasks) {
+							TaskData task = new TaskData(
 									rawTask.name,
 									rawTask.taskClass,
-									String.format("%s/%s.task", path, rawTask.name),
+									String.format("%s/%s.cpp", path, rawTask.taskClass),
 									rawTask.input,
 									rawTask.output,
 									rawTask.testType,
 									rawTask.tests
 							);
-							PsiElement generatedFile = TaskUtils.saveTask(task, myProject);
+							PsiElement generatedFile = TaskUtils.saveNewTask(task, myProject);
 							UIUtils.openMethodInEditor(myProject, (OCFile) generatedFile, "solve");
 						}
 

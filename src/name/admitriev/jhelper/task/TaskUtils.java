@@ -18,7 +18,6 @@ import name.admitriev.jhelper.configuration.TaskConfigurationType;
 import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.generation.FileUtils;
 import name.admitriev.jhelper.generation.TemplatesUtils;
-import net.egork.chelper.util.OutputWriter;
 
 public class TaskUtils {
 
@@ -34,44 +33,13 @@ public class TaskUtils {
 		return template;
 	}
 
-	/**
-	 * Save information about task in Project.
-	 *
-	 * Creates run configuration
-	 * Creates class file
-	 * Creates task file
-	 *
-	 * @return generated CPP File
-	 */
-
-	public static VirtualFile saveTaskFile(Task task, Project project) {
-		VirtualFile taskFile = FileUtils.findOrCreateByRelativePath(project.getBaseDir(), task.getPath());
-		if (taskFile == null) {
-			throw new NotificationException("Couldn't find task file to save: " + taskFile.getPath());
-		}
-		ApplicationManager.getApplication().runWriteAction(
-				new Runnable() {
-					@Override
-					public void run() {
-						OutputWriter writer = FileUtils.getOutputWriter(taskFile, this);
-						task.saveTask(writer);
-						writer.flush();
-						writer.close();
-					}
-				}
-		);
-		return taskFile;
-	}
-	public static PsiElement saveTask(Task task, Project project) {
-		VirtualFile taskFile = saveTaskFile(task, project);
-
-		createConfigurationForTask(project, task);
-
-		return generateCPP(project, task, taskFile);
+	public static PsiElement saveNewTask(TaskData taskData, Project project) {
+		createConfigurationForTask(project, taskData);
+		return generateCPP(project, taskData);
 	}
 
-	private static PsiElement generateCPP(Project project, Task task, VirtualFile newTaskFile) {
-		VirtualFile parent = newTaskFile.getParent();
+	private static PsiElement generateCPP(Project project, TaskData taskData) {
+		VirtualFile parent = FileUtils.findOrCreateByRelativePath(project.getBaseDir(), FileUtils.getDirectory(taskData.getCppPath()));
 		PsiDirectory psiParent = PsiManager.getInstance(project).findDirectory(parent);
 		if (psiParent == null) {
 			throw new NotificationException("Couldn't open parent directory as PSI");
@@ -83,9 +51,9 @@ public class TaskUtils {
 		}
 
 		PsiFile file = PsiFileFactory.getInstance(project).createFileFromText(
-				task.getClassName() + ".cpp",
+				FileUtils.getFilename(taskData.getCppPath()),
 				objC,
-				getTaskContent(project, task.getClassName())
+				getTaskContent(project, taskData.getClassName())
 		);
 		if (file == null) {
 			throw new NotificationException("Couldn't generate file");
@@ -96,17 +64,18 @@ public class TaskUtils {
 
 	}
 
-	private static void createConfigurationForTask(Project project, Task task) {
+	private static void createConfigurationForTask(Project project, TaskData taskData) {
 		TaskConfigurationType configurationType = new TaskConfigurationType();
 		ConfigurationFactory factory = configurationType.getConfigurationFactories()[0];
 
 		RunManager manager = RunManager.getInstance(project);
+		TaskConfiguration taskConfiguration = new TaskConfiguration(
+				project,
+				factory
+		);
+		taskConfiguration.setFromTaskData(taskData);
 		RunnerAndConfigurationSettings configuration = manager.createConfiguration(
-				new TaskConfiguration(
-						project,
-						factory,
-						task
-				),
+				taskConfiguration,
 				factory
 		);
 		manager.addConfiguration(configuration, true);

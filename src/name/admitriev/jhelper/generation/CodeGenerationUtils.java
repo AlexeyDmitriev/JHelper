@@ -10,8 +10,8 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.SearchScope;
 import name.admitriev.jhelper.components.Configurator;
+import name.admitriev.jhelper.configuration.TaskConfiguration;
 import name.admitriev.jhelper.exceptions.NotificationException;
-import name.admitriev.jhelper.task.Task;
 import net.egork.chelper.task.StreamConfiguration;
 import net.egork.chelper.task.Test;
 import net.egork.chelper.task.TestType;
@@ -29,7 +29,7 @@ public class CodeGenerationUtils {
 	 *
 	 * @param project Project to get configuration from
 	 */
-	public static void generateRunFile(Project project, @NotNull PsiFile inputFile, Task task) {
+	public static void generateRunFile(Project project, @NotNull PsiFile inputFile, TaskConfiguration task) {
 		if (!FileUtils.isCppFile(inputFile)) {
 			throw new NotificationException("Not a cpp file", "Only cpp files are currently supported");
 		}
@@ -52,7 +52,7 @@ public class CodeGenerationUtils {
 	 *
 	 * @param project Project to get configuration from
 	 */
-	public static void generateSubmissionFile(Project project, @NotNull PsiFile inputFile, Task task) {
+	public static void generateSubmissionFile(Project project, @NotNull PsiFile inputFile, TaskConfiguration task) {
 
 		if (!FileUtils.isCppFile(inputFile)) {
 			throw new NotificationException("Not a cpp file", "Only cpp files are currently supported");
@@ -84,7 +84,7 @@ public class CodeGenerationUtils {
 	}
 
 
-	private static String generateRunFileContent(Project project, Task task, String path) {
+	private static String generateRunFileContent(Project project, TaskConfiguration task, String path) {
 		String template = TemplatesUtils.getTemplate(project, "run");
 		template = TemplatesUtils.replaceAll(template, TemplatesUtils.TASK_FILE, path);
 		template = TemplatesUtils.replaceAll(template, TemplatesUtils.TESTS, generateTestDeclaration(task.getTests()));
@@ -126,7 +126,7 @@ public class CodeGenerationUtils {
 		return sb;
 	}
 
-	private static String generateSubmissionFileContent(Project project, String code, Task task) {
+	private static String generateSubmissionFileContent(Project project, String code, TaskConfiguration task) {
 		String template = TemplatesUtils.getTemplate(project, "submission");
 		if (task.getInput().type == StreamConfiguration.StreamType.LOCAL_REGEXP) {
 			code = code + '\n' + generateFileNameGetter();
@@ -196,7 +196,7 @@ public class CodeGenerationUtils {
 		}
 	}
 
-	private static String getOutputDeclaration(Task task) {
+	private static String getOutputDeclaration(TaskConfiguration task) {
 		String outputFileName = task.getOutput().getFileName(task.getName(), ".out");
 		if (outputFileName == null) {
 			return "std::ostream& out(std::cout);";
@@ -209,7 +209,7 @@ public class CodeGenerationUtils {
 		}
 	}
 
-	private static String getInputDeclaration(Task task) {
+	private static String getInputDeclaration(TaskConfiguration task) {
 		if (task.getInput().type == StreamConfiguration.StreamType.LOCAL_REGEXP) {
 			return "std::ifstream in(getLastFileName(" + quote(task.getInput().fileName) + "));";
 		}

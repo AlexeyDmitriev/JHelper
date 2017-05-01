@@ -1,16 +1,16 @@
-<idea-plugin version="2">
+<idea-plugin>
 	<id>name.admitriev.jhelper</id>
 	<name>JHelper</name>
-	<version>0.12</version>
+	<version>0.13</version>
 	<vendor>Alexey Dmitriev</vendor>
 
 	<description>Sport programming tool to inline library code and provide testing framework.</description>
 
 	<change-notes>
-		Now includes are inlined iff file is inside the project
+		In 0.13 Compatibility of old tasks is broken. Please delete all the tasks before upgrading.
 	</change-notes>
 
-	<idea-version since-build="171.2822.8"/>
+	<idea-version since-build="171.4073.41"/>
 
 	<depends>com.intellij.modules.cidr.lang</depends>
 

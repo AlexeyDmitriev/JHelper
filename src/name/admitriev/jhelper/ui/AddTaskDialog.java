@@ -2,7 +2,7 @@ package name.admitriev.jhelper.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import name.admitriev.jhelper.task.Task;
+import name.admitriev.jhelper.task.TaskData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,6 +16,7 @@ public class AddTaskDialog extends DialogWrapper {
 		setTitle("Add Task");
 		component = new TaskSettingsComponent(
 				project,
+				true,
 				this::pack
 		);
 		init();
@@ -27,7 +28,7 @@ public class AddTaskDialog extends DialogWrapper {
 		return component;
 	}
 
-	public Task getTask() {
+	public TaskData getTask() {
 		return component.getTask();
 	}
 }

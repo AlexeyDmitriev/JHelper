@@ -12,6 +12,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import name.admitriev.jhelper.exceptions.NotificationException;
 import net.egork.chelper.util.OutputWriter;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -29,49 +30,50 @@ public class FileUtils {
 		}
 	}
 
-	public static VirtualFile findOrCreateByRelativePath(VirtualFile file, String localPath) {
+	@Nullable
+	private static VirtualFile findChild(VirtualFile file, @NotNull String child) {
+		if (child.equals(".")) {
+			return file;
+		}
+		if (child.equals("..")) {
+			return file.getParent();
+		}
+		return file.findChild(child);
+	}
+
+	public static VirtualFile findOrCreateByRelativePath(VirtualFile root, String localPath) {
 		return ApplicationManager.getApplication().runWriteAction(
 				new Computable<VirtualFile>() {
 					@Override
 					public VirtualFile compute() {
 						String path = localPath;
-						if (path.isEmpty()) {
-							return file;
-						}
 						path = StringUtil.trimStart(path, "/");
+						if (path.isEmpty()) {
+							return root;
+						}
 						int index = path.indexOf('/');
 						if (index < 0) {
 							index = path.length();
 						}
 						String name = path.substring(0, index);
 
-						@Nullable VirtualFile child;
-						if (name.equals(".")) {
-							child = file;
-						}
-						else if (name.equals("..")) {
-							child = file.getParent();
-						}
-						else {
-							child = file.findChild(name);
-							if (child == null) {
-								try {
-									if (index == path.length()) {
-										child = file.createChildData(this, name);
-									}
-									else {
-										child = file.createChildDirectory(this, name);
-									}
+						@Nullable VirtualFile child = findChild(root, name);
+						if (child == null) {
+							try {
+								if (index == path.length()) {
+									child = root.createChildData(this, name);
 								}
-								catch (IOException e) {
-									throw new NotificationException(
-											"Couldn't create directory: " + file.getPath() + '/' + name,
-											e
-									);
+								else {
+									child = root.createChildDirectory(this, name);
 								}
 							}
+							catch (IOException e) {
+								throw new NotificationException(
+										"Couldn't create directory: " + root.getPath() + '/' + name,
+										e
+								);
+							}
 						}
-
 						assert child != null;
 
 						if (index < path.length()) {
@@ -130,5 +132,21 @@ public class FileUtils {
 			childPath += "/";
 		}
 		return childPath.startsWith(parentPath);
+	}
+
+	public static String getDirectory(String filePath) {
+		int index = filePath.indexOf('/');
+		if (index < 0) {
+			return ".";
+		}
+		return filePath.substring(0, index);
+	}
+
+	public static String getFilename(String filePath) {
+		int index = filePath.indexOf('/');
+		if (index < 0) {
+			return filePath;
+		}
+		return filePath.substring(index + 1);
 	}
 }

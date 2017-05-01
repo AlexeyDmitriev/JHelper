@@ -13,7 +13,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.generation.CodeGenerationUtils;
-import name.admitriev.jhelper.task.Task;
 import org.antlr.v4.runtime.misc.Nullable;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,9 +69,7 @@ public class TaskRunner extends DefaultProgramRunner {
 	}
 
 	private static void generateRunFileForTask(Project project, TaskConfiguration taskConfiguration) {
-		Task task = taskConfiguration.getTask();
-		String pathToTaskFile = task.getPath();
-		String pathToClassFile = pathToTaskFile + "/../" + task.getClassName() + ".cpp";
+		String pathToClassFile = taskConfiguration.getCppPath();
 		VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
 		if (virtualFile == null) {
 			throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
@@ -83,14 +80,12 @@ public class TaskRunner extends DefaultProgramRunner {
 			throw new NotificationException("Couldn't get PSI file for input file");
 		}
 
-		CodeGenerationUtils.generateRunFile(project, psiFile, task);
+		CodeGenerationUtils.generateRunFile(project, psiFile, taskConfiguration);
 
 	}
 
 	private static void generateSubmissionFileForTask(Project project, TaskConfiguration taskConfiguration) {
-		Task task = taskConfiguration.getTask();
-		String pathToTaskFile = task.getPath();
-		String pathToClassFile = pathToTaskFile + "/../" + task.getClassName() + ".cpp";
+		String pathToClassFile = taskConfiguration.getCppPath();
 		VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
 		if (virtualFile == null) {
 			throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
@@ -100,6 +95,6 @@ public class TaskRunner extends DefaultProgramRunner {
 		if (psiFile == null) {
 			throw new NotificationException("Couldn't get PSI file for input file");
 		}
-		CodeGenerationUtils.generateSubmissionFile(project, psiFile, task);
+		CodeGenerationUtils.generateSubmissionFile(project, psiFile, taskConfiguration);
 	}
 }
