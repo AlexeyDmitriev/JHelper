@@ -12,19 +12,7 @@ import name.admitriev.jhelper.task.TaskData;
 import name.admitriev.jhelper.task.TaskUtils;
 import name.admitriev.jhelper.ui.Notificator;
 import name.admitriev.jhelper.ui.UIUtils;
-import net.egork.chelper.parser.AtCoderParser;
-import net.egork.chelper.parser.BayanParser;
-import net.egork.chelper.parser.CSAcademyParser;
-import net.egork.chelper.parser.CodeChefParser;
-import net.egork.chelper.parser.CodeforcesParser;
-import net.egork.chelper.parser.FacebookParser;
-import net.egork.chelper.parser.GCJParser;
-import net.egork.chelper.parser.HackerEarthParser;
-import net.egork.chelper.parser.HackerRankParser;
-import net.egork.chelper.parser.KattisParser;
-import net.egork.chelper.parser.Parser;
-import net.egork.chelper.parser.UsacoParser;
-import net.egork.chelper.parser.YandexParser;
+import net.egork.chelper.parser.*;
 import net.egork.chelper.task.Task;
 
 import java.io.IOException;
@@ -54,6 +42,8 @@ public class ChromeParser extends AbstractProjectComponent {
 		taskParsers.put("hackerearth", new HackerEarthParser());
 		taskParsers.put("atcoder", new AtCoderParser());
 		taskParsers.put("csacademy", new CSAcademyParser());
+		taskParsers.put("new-gcj", new NewGCJParser());
+		taskParsers.put("json", new JSONParser());
 		PARSERS = Collections.unmodifiableMap(taskParsers);
 	}
 

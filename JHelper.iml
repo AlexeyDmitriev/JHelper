@@ -13,6 +13,11 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/chelper.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/cojac.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/jackson-annotations-2.7.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/jackson-core-2.7.4.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/jackson-databind-2.7.4.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/json-20180130.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
