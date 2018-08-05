@@ -4,21 +4,11 @@ import com.intellij.openapi.components.AbstractProjectComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.components.StoragePathMacros;
-import com.intellij.openapi.components.StorageScheme;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 
-@State(
-		name = "Configurator",
-		storages = {
-				@Storage(id = "default", file = StoragePathMacros.PROJECT_FILE, scheme = StorageScheme.DEFAULT),
-				@Storage(id = "dir",
-						file = StoragePathMacros.PROJECT_CONFIG_DIR + "/JHelper.xml",
-						scheme = StorageScheme.DIRECTORY_BASED)
-		}
-)
+@State(name = "Configurator", storages = @Storage("/JHelper.xml"))
 public class Configurator extends AbstractProjectComponent implements PersistentStateComponent<Configurator.State> {
 	public Configurator(Project project) {
 		super(project);
@@ -26,20 +16,18 @@ public class Configurator extends AbstractProjectComponent implements Persistent
 	}
 
 	@Override
-	@NotNull
-	public String getComponentName() {
+	public @NotNull String getComponentName() {
 		return "Configurator";
 	}
 
-	@NotNull
 	@Override
-	public Configurator.State getState() {
+	public @NotNull Configurator.State getState() {
 		return state;
 	}
 
 	@SuppressWarnings("ParameterHidesMemberVariable")
 	@Override
-	public void loadState(Configurator.State state) {
+	public void loadState(@NotNull Configurator.State state) {
 		this.state = state;
 	}
 

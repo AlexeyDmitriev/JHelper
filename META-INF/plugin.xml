@@ -1,22 +1,24 @@
 <idea-plugin>
 	<id>name.admitriev.jhelper</id>
 	<name>JHelper</name>
-	<version>0.14</version>
+	<version>0.15</version>
 	<vendor>Alexey Dmitriev</vendor>
 
 	<description>Sport programming tool to inline library code and provide testing framework.</description>
 
 	<change-notes>
-		In 0.13 Compatibility of old tasks is broken. Please delete all the tasks before upgrading.
+		In 0.15 selecting configuration type (Debug/Release) is removed. Please, remove the control from
+		the toolbar before updating.
 	</change-notes>
 
-	<idea-version since-build="171.4073.41"/>
+	<idea-version since-build="182.3684.76"/>
 
 	<depends>com.intellij.modules.cidr.lang</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<configurationType implementation="name.admitriev.jhelper.configuration.TaskConfigurationType"/>
 		<programRunner implementation="name.admitriev.jhelper.configuration.TaskRunner"/>
+		<executionTargetProvider implementation="name.admitriev.jhelper.configuration.TaskConfigurationTargetProvider"/>
 	</extensions>
 
 	<application-components>
@@ -74,13 +76,6 @@
 			text="Delete task"
 			description="Deletes selected configuration, its task file and class file"
 			icon="/name/admitriev/jhelper/icons/delete.png"
-		/>
-		<action
-			id="name.admitriev.jhelper.actions.SwitchCMakeConfigurationAction"
-			class="name.admitriev.jhelper.actions.SwitchCMakeConfigurationAction"
-			text="Change CMake configuration of test runner"
-			description="Allows to change CMake configuration (debug/release) of test runner"
-			icon="/name/admitriev/jhelper/icons/speed.png"
 		/>
 	</actions>
 </idea-plugin>

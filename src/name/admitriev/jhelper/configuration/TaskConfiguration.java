@@ -1,5 +1,6 @@
 package name.admitriev.jhelper.configuration;
 
+import com.intellij.execution.ExecutionTarget;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -34,6 +35,11 @@ public class TaskConfiguration extends RunConfigurationBase {
 	private StreamConfiguration output;
 	private TestType testType;
 	private Test[] tests;
+
+	@Override
+	public boolean canRunOn(@NotNull ExecutionTarget target) {
+		return target instanceof TaskConfigurationExecutionTarget;
+	}
 
 	public TaskConfiguration(Project project, ConfigurationFactory factory) {
 		super(project, factory, "");
