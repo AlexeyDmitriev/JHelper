@@ -100,17 +100,16 @@ public class FileUtils {
 			throw new NotificationException("Couldn't open output file as document");
 		}
 
-		new WriteCommandAction.Simple<Object>(outputFile.getProject(), outputFile) {
-			@Override
-			public void run() {
-				document.deleteString(0, document.getTextLength());
-				for (String string : strings) {
-					document.insertString(document.getTextLength(), string);
+		WriteCommandAction.writeCommandAction(project).run(
+				() -> {
+					document.deleteString(0, document.getTextLength());
+					for (String string : strings) {
+						document.insertString(document.getTextLength(), string);
+					}
+					FileDocumentManager.getInstance().saveDocument(document);
+					PsiDocumentManager.getInstance(project).commitDocument(document);
 				}
-				FileDocumentManager.getInstance().saveDocument(document);
-				PsiDocumentManager.getInstance(project).commitDocument(document);
-			}
-		}.execute();
+		);
 	}
 
 	public static String relativePath(String parentPath, String childPath) {
