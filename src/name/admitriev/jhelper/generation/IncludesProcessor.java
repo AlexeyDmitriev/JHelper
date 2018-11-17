@@ -59,8 +59,7 @@ public class IncludesProcessor {
 		result.append(include.getText());
 	}
 
-	@NotNull
-	public static String process(PsiFile file) {
+	public static @NotNull String process(PsiFile file) {
 		IncludesProcessor processor = new IncludesProcessor();
 		processor.processFile(file);
 		return processor.result.toString();

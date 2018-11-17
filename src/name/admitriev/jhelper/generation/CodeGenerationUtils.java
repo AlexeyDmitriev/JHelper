@@ -97,8 +97,7 @@ public class CodeGenerationUtils {
 		return template;
 	}
 
-	@NotNull
-	private static String generateTestDeclaration(Test[] tests) {
+	private static @NotNull String generateTestDeclaration(Test[] tests) {
 		StringBuilder result = new StringBuilder();
 		for (Test test : tests) {
 			result.append(
@@ -230,8 +229,7 @@ public class CodeGenerationUtils {
 		}
 	}
 
-	@NotNull
-	private static PsiFile getOutputFile(Project project) {
+	private static @NotNull PsiFile getOutputFile(Project project) {
 		Configurator configurator = project.getComponent(Configurator.class);
 		Configurator.State configuration = configurator.getState();
 

@@ -80,9 +80,8 @@ public class TaskConfiguration extends RunConfigurationBase {
 				settings.testType = data.getTestType();
 			}
 
-			@NotNull
 			@Override
-			protected JComponent createEditor() {
+			protected @NotNull JComponent createEditor() {
 				return component;
 			}
 		};
@@ -92,9 +91,8 @@ public class TaskConfiguration extends RunConfigurationBase {
 	public void checkConfiguration() throws RuntimeConfigurationException {
 	}
 
-	@Nullable
 	@Override
-	public CidrCommandLineState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
+	public @Nullable CidrCommandLineState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
 		throw new JHelperException("This method is not expected to be used");
 	}
 

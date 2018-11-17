@@ -17,6 +17,7 @@
         <JAVADOC />
         <SOURCES>
           <root url="file://$LIB_SOURCES$/idea-chelper/src" />
+          <root url="file://$USER_HOME$/opensource/chelper/src" />
         </SOURCES>
       </library>
     </orderEntry>
