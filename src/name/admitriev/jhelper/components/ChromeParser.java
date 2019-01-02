@@ -1,7 +1,7 @@
 package name.admitriev.jhelper.components;
 
 import com.intellij.notification.NotificationType;
-import com.intellij.openapi.components.AbstractProjectComponent;
+import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.text.StringTokenizer;
@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * A Component to monitor request from CHelper Chrome Extension and parse them to Tasks
  */
-public class ChromeParser extends AbstractProjectComponent {
+public class ChromeParser implements ProjectComponent {
 	private static final int PORT = 4243;
 	private static final Map<String, Parser> PARSERS;
 
@@ -48,15 +48,16 @@ public class ChromeParser extends AbstractProjectComponent {
 	}
 
 	private SimpleHttpServer server = null;
+	private Project project;
 
 	public ChromeParser(Project project) {
-		super(project);
+		this.project = project;
 	}
 
 	@Override
 	public void projectOpened() {
 		try {
-			Configurator configurator = myProject.getComponent(Configurator.class);
+			Configurator configurator = project.getComponent(Configurator.class);
 			Configurator.State configuration = configurator.getState();
 
 			String path = configuration.getTasksDirectory();
@@ -94,11 +95,11 @@ public class ChromeParser extends AbstractProjectComponent {
 									rawTask.testType,
 									rawTask.tests
 							);
-							PsiElement generatedFile = TaskUtils.saveNewTask(task, myProject);
-							UIUtils.openMethodInEditor(myProject, (OCFile) generatedFile, "solve");
+							PsiElement generatedFile = TaskUtils.saveNewTask(task, project);
+							UIUtils.openMethodInEditor(project, (OCFile) generatedFile, "solve");
 						}
 
-						IDEUtils.reloadProject(myProject);
+						IDEUtils.reloadProject(project);
 					}
 			);
 
