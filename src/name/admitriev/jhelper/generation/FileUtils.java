@@ -134,15 +134,15 @@ public class FileUtils {
 	}
 
 	public static String getDirectory(String filePath) {
-		int index = filePath.indexOf('/');
+		int index = filePath.lastIndexOf('/');
 		if (index < 0) {
 			return ".";
 		}
-		return filePath.substring(0, index);
+		return filePath.substring(0, index + 1);
 	}
 
 	public static String getFilename(String filePath) {
-		int index = filePath.indexOf('/');
+		int index = filePath.lastIndexOf('/');
 		if (index < 0) {
 			return filePath;
 		}
