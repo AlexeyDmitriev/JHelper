@@ -91,9 +91,7 @@ public class AutoSwitcher implements ProjectComponent {
 	private void addSelectedConfigurationListener() {
 		RunManagerImpl.getInstanceImpl(project).addRunManagerListener(new RunManagerListener() {
 			@Override
-			public void runConfigurationSelected() {
-				RunnerAndConfigurationSettings selectedConfiguration =
-						RunManagerImpl.getInstanceImpl(project).getSelectedConfiguration();
+			public void runConfigurationSelected(RunnerAndConfigurationSettings selectedConfiguration) {
 				if (selectedConfiguration == null) {
 					return;
 				}
