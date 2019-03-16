@@ -1,7 +1,7 @@
 package name.admitriev.jhelper.configuration;
 
 import com.intellij.execution.ExecutionTarget;
-import com.intellij.execution.RunnerAndConfigurationSettings;
+import com.intellij.execution.configurations.RunConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,8 +30,8 @@ public class TaskConfigurationExecutionTarget extends ExecutionTarget {
 	}
 
 	@Override
-	public boolean canRun(@NotNull RunnerAndConfigurationSettings runnerAndConfigurationSettings) {
-		return runnerAndConfigurationSettings.getConfiguration() instanceof TaskConfiguration;
+	public boolean canRun(@NotNull RunConfiguration runConfiguration) {
+		return runConfiguration instanceof TaskConfiguration;
 	}
 
 	public ExecutionTarget getOriginalTarget() {

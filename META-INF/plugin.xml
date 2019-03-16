@@ -1,7 +1,7 @@
 <idea-plugin>
 	<id>name.admitriev.jhelper</id>
 	<name>JHelper</name>
-	<version>0.16.1</version>
+	<version>0.16.2</version>
 	<vendor>Alexey Dmitriev</vendor>
 
 	<description>Sport programming tool to inline library code and provide testing framework.</description>
@@ -11,7 +11,7 @@
 		the toolbar before updating.
 	</change-notes>
 
-	<idea-version since-build="182.3684.76"/>
+	<idea-version since-build="191.6183.6"/>
 
 	<depends>com.intellij.modules.cidr.lang</depends>
 
