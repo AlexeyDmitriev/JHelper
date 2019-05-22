@@ -57,11 +57,6 @@ public class ChromeParser implements ProjectComponent {
 	@Override
 	public void projectOpened() {
 		try {
-			Configurator configurator = project.getComponent(Configurator.class);
-			Configurator.State configuration = configurator.getState();
-
-			String path = configuration.getTasksDirectory();
-
 			server = new SimpleHttpServer(
 					PORT,
 					request -> {
@@ -85,6 +80,10 @@ public class ChromeParser implements ProjectComponent {
 									NotificationType.WARNING
 							);
 						}
+
+						Configurator configurator = project.getComponent(Configurator.class);
+						Configurator.State configuration = configurator.getState();
+						String path = configuration.getTasksDirectory();
 						for (Task rawTask : tasks) {
 							TaskData task = new TaskData(
 									rawTask.name,
