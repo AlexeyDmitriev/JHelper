@@ -6,10 +6,7 @@ import com.intellij.openapi.application.ModalityState;
 import com.intellij.util.Consumer;
 import name.admitriev.jhelper.ui.Notificator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -18,6 +15,10 @@ import java.net.Socket;
  * Passes every request without headers to given Consumer
  */
 public class SimpleHttpServer implements Runnable {
+	private static final String RESPONSE_CONTENT = "OK";
+	private static final String RESPONSE_HEADERS = "HTTP/1.1 200 OK\r\n" + "Content-Type: text/plain\r\n" + "Content-Length: ";
+	private static final String RESPONSE_END_OF_HEADERS = "\r\n\r\n";
+
 	private Consumer<String> consumer;
 	private ServerSocket serverSocket = null;
 
@@ -33,8 +34,14 @@ public class SimpleHttpServer implements Runnable {
 				if (serverSocket.isClosed()) {
 					return;
 				}
-				try (Socket socket = serverSocket.accept()) {
+				try (Socket socket = serverSocket.accept();
+					 PrintWriter serverOut = new PrintWriter(
+							 new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true)) {
+
 					InputStream inputStream = socket.getInputStream();
+					// Make a response
+					serverOut.println(RESPONSE_HEADERS + RESPONSE_CONTENT.length() + RESPONSE_END_OF_HEADERS + RESPONSE_CONTENT);
+
 					String request = readFromStream(inputStream);
 					String[] strings = request.split("\n\n", 2);
 
