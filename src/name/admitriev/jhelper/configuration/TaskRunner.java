@@ -5,8 +5,9 @@ import com.intellij.execution.ProgramRunnerUtil;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunProfile;
-import com.intellij.execution.runners.DefaultProgramRunner;
+import com.intellij.execution.configurations.RunnerSettings;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -21,14 +22,15 @@ import java.util.List;
 
 /**
  * Class for Running TaskConfiguration
- * It isn't fully compliant with {@link com.intellij.execution.runners.ProgramRunner} Interface because {@link #execute} doesn't call {@link RunProfile#getState}
+ * It isn't fully compliant with {@link ProgramRunner} Interface because {@link #execute} doesn't call {@link RunProfile#getState}
  * as described in <a href="http://confluence.jetbrains.com/display/IDEADEV/Run+Configurations#RunConfigurations-RunningaProcess">IDEA DEV Confluence</a>
  */
-public class TaskRunner extends DefaultProgramRunner {
+public class TaskRunner implements ProgramRunner<RunnerSettings> {
 	private static final String RUN_CONFIGURATION_NAME = "testrunner";
 
+	@NotNull
 	@Override
-	public @NotNull String getRunnerId() {
+	public String getRunnerId() {
 		return "name.admitriev.jhelper.configuration.TaskRunner";
 	}
 
@@ -76,7 +78,8 @@ public class TaskRunner extends DefaultProgramRunner {
 		IDEUtils.chooseConfigurationAndTarget(project, originalSettings, originalExecutionTarget);
 	}
 
-	public static @Nullable RunnerAndConfigurationSettings getRunnerSettings(@NotNull Project project) {
+	@Nullable
+	public static RunnerAndConfigurationSettings getRunnerSettings(@NotNull Project project) {
 		return getSettingsByName(project, RUN_CONFIGURATION_NAME);
 	}
 
@@ -109,7 +112,8 @@ public class TaskRunner extends DefaultProgramRunner {
 		CodeGenerationUtils.generateSubmissionFile(project, psiFile, taskConfiguration);
 	}
 
-	private static @Nullable RunnerAndConfigurationSettings getSettingsByName(@NotNull Project project, String name) {
+	@Nullable
+	private static RunnerAndConfigurationSettings getSettingsByName(@NotNull Project project, String name) {
 		for (RunnerAndConfigurationSettings configuration : RunManager.getInstance(project).getAllSettings()) {
 			if (configuration.getName().equals(name)) {
 				return configuration;
