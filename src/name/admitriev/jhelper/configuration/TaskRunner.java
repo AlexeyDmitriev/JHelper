@@ -44,7 +44,7 @@ public class TaskRunner extends DefaultProgramRunner {
 	 * @see ExecutionEnvironment#getRunProfile()
 	 */
 	@Override
-	public void execute(@NotNull ExecutionEnvironment environment, @Nullable Callback callback) {
+	public void execute(@NotNull ExecutionEnvironment environment) {
 		Project project = environment.getProject();
 
 		TaskConfiguration taskConfiguration = (TaskConfiguration) environment.getRunProfile();
