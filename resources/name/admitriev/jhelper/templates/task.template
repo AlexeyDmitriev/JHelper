@@ -2,7 +2,7 @@
 
 class %ClassName% {
 public:
-	void solve(std::istream& in, std::ostream& out) {
+	void solve(int caseNumber, std::istream& in, std::ostream& out) {
 
 	}
 };
