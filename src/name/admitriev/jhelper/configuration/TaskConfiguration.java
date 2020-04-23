@@ -93,6 +93,8 @@ public class TaskConfiguration extends RunConfigurationBase {
 
 	@Override
 	public @Nullable CidrCommandLineState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
+		//		RunConfiguration configuration = TaskRunner.getRunnerSettings(getProject()).getConfiguration();
+//		return new CidrCommandLineState(environment, new CMakeLauncher(environment, (CMakeAppRunConfiguration)configuration));th
 		throw new JHelperException("This method is not expected to be used");
 	}
 

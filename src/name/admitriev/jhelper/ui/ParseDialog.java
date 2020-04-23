@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.ui.ListCellRendererWrapper;
+import com.intellij.ui.SimpleListCellRenderer;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import name.admitriev.jhelper.components.Configurator;
@@ -49,7 +49,7 @@ public class ParseDialog extends DialogWrapper {
 
 		parserComboBox = new ComboBox<>(Parser.PARSERS);
 		parserComboBox.setRenderer(
-				new ListCellRendererWrapper<Parser>() {
+				new SimpleListCellRenderer<Parser>() {
 					@Override
 					public void customize(JList list, Parser parser, int index, boolean selected, boolean hasFocus) {
 						setText(parser.getName());
