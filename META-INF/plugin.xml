@@ -80,5 +80,12 @@
 			description="Deletes selected configuration, its task file and class file"
 			icon="/name/admitriev/jhelper/icons/delete.png"
 		/>
+		<action
+			id="name.admitriev.jhelper.actions.ProcessAction"
+			class="name.admitriev.jhelper.actions.ProcessAction"
+			text="Process file"
+			description="Inlines includes from the current file"
+			icon="/name/admitriev/jhelper/icons/task.png"
+		/>
 	</actions>
 </idea-plugin>
