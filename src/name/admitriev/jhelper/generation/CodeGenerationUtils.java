@@ -3,6 +3,7 @@ package name.admitriev.jhelper.generation;
 import com.intellij.codeInsight.actions.ReformatCodeProcessor;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -42,7 +43,8 @@ public class CodeGenerationUtils {
 
 		FileUtils.writeToFile(
 				psiOutputFile,
-				generateRunFileContent(project, task, inputFile.getVirtualFile().getPath())
+				generateRunFileContent(project, task, FileUtil.getRelativePath(
+						psiOutputFile.getVirtualFile().getParent().getPath(), inputFile.getVirtualFile().getPath(),'/'))
 		);
 	}
 
