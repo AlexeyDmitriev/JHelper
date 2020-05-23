@@ -1,7 +1,7 @@
 <idea-plugin>
 	<id>name.admitriev.jhelper</id>
 	<name>JHelper</name>
-	<version>0.16.4</version>
+	<version>0.17</version>
 	<vendor>Alexey Dmitriev</vendor>
 
 	<description>Sport programming tool to inline library code and provide testing framework.</description>
@@ -79,6 +79,13 @@
 			text="Delete task"
 			description="Deletes selected configuration, its task file and class file"
 			icon="/name/admitriev/jhelper/icons/delete.png"
+		/>
+		<action
+			id="name.admitriev.jhelper.actions.ProcessAction"
+			class="name.admitriev.jhelper.actions.ProcessAction"
+			text="Process file"
+			description="Inlines includes from the current file"
+			icon="/name/admitriev/jhelper/icons/task.png"
 		/>
 	</actions>
 </idea-plugin>
