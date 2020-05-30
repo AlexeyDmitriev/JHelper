@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.21'
+}
+
+group 'name.admitriev.jhelper'
+version '0.17.1'
+
+repositories {
+    mavenCentral()
+}
+
+
+sourceSets {
+    main.java.srcDirs = ['src']
+    main.resources.srcDirs = ['resources']
+}
+
+runIde {
+    jvmArgs '--add-exports', 'java.base/jdk.internal.vm=ALL-UNNAMED'
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile fileTree(dir: 'lib', include: 'chelper.jar')
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    version '2020.1.1'
+    updateSinceUntilBuild false
+    type 'CL'
+}
