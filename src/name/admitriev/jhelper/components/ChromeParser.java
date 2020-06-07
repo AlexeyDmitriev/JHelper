@@ -16,6 +16,7 @@ import net.egork.chelper.parser.*;
 import net.egork.chelper.task.Task;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,7 +59,7 @@ public class ChromeParser implements ProjectComponent {
 	public void projectOpened() {
 		try {
 			server = new SimpleHttpServer(
-					PORT,
+					new InetSocketAddress("localhost", PORT),
 					request -> {
 						StringTokenizer st = new StringTokenizer(request);
 						String type = st.nextToken();
