@@ -30,13 +30,13 @@ public class CodeGenerationUtils {
 	 *
 	 * @param project Project to get configuration from
 	 */
-	public static void generateRunFile(Project project, @NotNull PsiFile inputFile, TaskConfiguration task) {
+	public static void generateRunFile(
+			@NotNull Project project,
+			@NotNull PsiFile inputFile,
+			@NotNull TaskConfiguration task
+	) {
 		if (!FileUtils.isCppFile(inputFile)) {
 			throw new NotificationException("Not a cpp file", "Only cpp files are currently supported");
-		}
-
-		if (project == null) {
-			throw new NotificationException("No project found", "Are you in any project?");
 		}
 
 		PsiFile psiOutputFile = getRunFile(project);
@@ -55,20 +55,13 @@ public class CodeGenerationUtils {
 		);
 	}
 
-	/**
-	 * Generates code for submission.
-	 * Adds main function, inlines all used code except standard library and puts it to output file from configuration
-	 *
-	 * @param project Project to get configuration from
-	 */
-	public static void generateSubmissionFile(Project project, @NotNull PsiFile inputFile, TaskConfiguration task) {
-
+	private static void generateSubmissionFile(
+			@NotNull Project project,
+			@NotNull PsiFile inputFile,
+			@NotNull TaskConfiguration task
+	) {
 		if (!FileUtils.isCppFile(inputFile)) {
 			throw new NotificationException("Not a cpp file", "Only cpp files are currently supported");
-		}
-
-		if (project == null) {
-			throw new NotificationException("No project found", "Are you in any project?");
 		}
 
 		String result = IncludesProcessor.process(inputFile);
@@ -307,5 +300,28 @@ public class CodeGenerationUtils {
 			);
 
 		}
+	}
+
+	/**
+	 * Generates code for submission.
+	 * Adds main function, inlines all used code except standard library and puts it to output file from configuration
+	 *
+	 * @param project Project to get configuration from
+	 */
+	public static void generateSubmissionFileForTask(
+			@NotNull Project project,
+			@NotNull TaskConfiguration taskConfiguration
+	) {
+		String pathToClassFile = taskConfiguration.getCppPath();
+		VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
+		if (virtualFile == null) {
+			throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
+		}
+
+		PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
+		if (psiFile == null) {
+			throw new NotificationException("Couldn't get PSI file for input file");
+		}
+		generateSubmissionFile(project, psiFile, taskConfiguration);
 	}
 }

@@ -7,8 +7,7 @@
     <description>Sport programming tool to inline library code and provide testing framework.</description>
 
     <change-notes>
-        In 0.15 selecting configuration type (Debug/Release) is removed. Please, remove the control from
-        the toolbar before updating.
+        In 0.18 Copy Output Action now (re)generates the output files.
     </change-notes>
 
     <idea-version since-build="201.6487.17"/>

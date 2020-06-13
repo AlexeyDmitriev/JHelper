@@ -50,7 +50,7 @@ public class TaskRunner implements ProgramRunner<RunnerSettings> {
 		Project project = environment.getProject();
 
 		TaskConfiguration taskConfiguration = (TaskConfiguration) environment.getRunProfile();
-		generateSubmissionFileForTask(project, taskConfiguration);
+		CodeGenerationUtils.generateSubmissionFileForTask(project, taskConfiguration);
 
 		generateRunFileForTask(project, taskConfiguration);
 
@@ -96,20 +96,6 @@ public class TaskRunner implements ProgramRunner<RunnerSettings> {
 		}
 
 		CodeGenerationUtils.generateRunFile(project, psiFile, taskConfiguration);
-	}
-
-	private static void generateSubmissionFileForTask(Project project, TaskConfiguration taskConfiguration) {
-		String pathToClassFile = taskConfiguration.getCppPath();
-		VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
-		if (virtualFile == null) {
-			throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
-		}
-
-		PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
-		if (psiFile == null) {
-			throw new NotificationException("Couldn't get PSI file for input file");
-		}
-		CodeGenerationUtils.generateSubmissionFile(project, psiFile, taskConfiguration);
 	}
 
 	@Nullable
