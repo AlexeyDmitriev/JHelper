@@ -14,6 +14,7 @@ public class ConfigurationDialog extends DialogWrapper {
 	private final JComponent component;
 	private JTextField author;
 	private FileSelector tasksDirectory;
+	private FileSelector archiveDirectory;
 	private FileSelector outputFile;
 	private FileSelector runFile;
 	private JCheckBox codeEliminationOn;
@@ -28,6 +29,11 @@ public class ConfigurationDialog extends DialogWrapper {
 		tasksDirectory = new FileSelector(
 				project,
 				configuration.getTasksDirectory(),
+				RelativeFileChooserDescriptor.directoryChooser(project.getBaseDir())
+		);
+		archiveDirectory = new FileSelector(
+				project,
+				configuration.getArchiveDirectory(),
 				RelativeFileChooserDescriptor.directoryChooser(project.getBaseDir())
 		);
 		outputFile = new FileSelector(
@@ -47,6 +53,7 @@ public class ConfigurationDialog extends DialogWrapper {
 		JPanel panel = new JPanel(new VerticalLayout());
 		panel.add(LabeledComponent.create(author, "Author"));
 		panel.add(LabeledComponent.create(tasksDirectory, "Tasks directory"));
+		panel.add(LabeledComponent.create(archiveDirectory, "Archive directory"));
 		panel.add(LabeledComponent.create(outputFile, "Output file"));
 		panel.add(LabeledComponent.create(runFile, "Run File"));
 		panel.add(codeEliminationOn);
@@ -67,6 +74,7 @@ public class ConfigurationDialog extends DialogWrapper {
 		return new Configurator.State(
 				author.getText(),
 				tasksDirectory.getText(),
+				archiveDirectory.getText(),
 				outputFile.getText(),
 				runFile.getText(),
 				codeEliminationOn.isSelected(),

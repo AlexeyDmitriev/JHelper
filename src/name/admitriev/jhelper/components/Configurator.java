@@ -34,6 +34,7 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 	public static class State {
 		private String author;
 		private String tasksDirectory;
+		private String archiveDirectory;
 		private String outputFile;
 		private String runFile;
 		private boolean codeEliminationOn;
@@ -42,6 +43,7 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 		public State(
 				String author,
 				String tasksDirectory,
+				String archiveDirectory,
 				String outputFile,
 				String runFile,
 				boolean codeEliminationOn,
@@ -49,6 +51,7 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 		) {
 			this.author = author;
 			this.tasksDirectory = tasksDirectory;
+			this.archiveDirectory = archiveDirectory;
 			this.outputFile = outputFile;
 			this.runFile = runFile;
 			this.codeEliminationOn = codeEliminationOn;
@@ -56,7 +59,14 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 		}
 
 		public State() {
-			this("", "tasks", "output/main.cpp", "testrunner/main.cpp", false, false);
+			this("",
+                    "tasks",
+                    "archive",
+                    "output/main.cpp",
+                    "testrunner/main.cpp",
+                    false,
+                    false
+            );
 		}
 
 		public String getAuthor() {
@@ -65,6 +75,10 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 
 		public String getTasksDirectory() {
 			return tasksDirectory;
+		}
+
+		public String getArchiveDirectory(){
+			return archiveDirectory;
 		}
 
 		public String getOutputFile() {

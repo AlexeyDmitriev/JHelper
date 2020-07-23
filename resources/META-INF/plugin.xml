@@ -46,6 +46,13 @@
                 icon="/name/admitriev/jhelper/icons/settings.png"
         />
         <action
+                id="name.admitriev.jhelper.actions.ArchiveAction"
+                class="name.admitriev.jhelper.actions.ArchiveAction"
+                text="Archive Task"
+                description="Archive this task."
+                icon="/name/admitriev/jhelper/icons/archive.png"
+        />
+        <action
                 id="name.admitriev.jhelper.actions.AddTaskAction"
                 class="name.admitriev.jhelper.actions.AddTaskAction"
                 text="Add Task"
