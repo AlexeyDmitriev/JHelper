@@ -7,7 +7,7 @@
     <description>Sport programming tool to inline library code and provide testing framework.</description>
 
     <change-notes>
-        In 0.18 Copy Output Action now (re)generates the output files.
+        In 0.19 Update for archive select a directory to which you want to archive your files
     </change-notes>
 
     <idea-version since-build="201.6487.17"/>
