@@ -18,6 +18,7 @@ import net.egork.chelper.task.Task;
 import net.egork.chelper.task.TestType;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.VerticalLayout;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -26,198 +27,197 @@ import java.util.Collection;
 import java.util.List;
 
 public class ParseDialog extends DialogWrapper {
-	private JComponent component;
+    private final JComponent component;
 
-	private ComboBox<Parser> parserComboBox;
-	private ComboBox<TestType> testType;
+    private final ComboBox<Parser> parserComboBox;
+    private final ComboBox<TestType> testType;
 
-	private JBList<Description> contestList;
-	private Receiver contestReceiver = new Receiver.Empty();
-	private ParseListModel<Description> contestModel = new ParseListModel<>();
+    private final JBList<Description> contestList;
+    private Receiver contestReceiver = new Receiver.Empty();
+    private final ParseListModel<Description> contestModel = new ParseListModel<>();
 
-	private JBList<Description> problemList;
-	private Receiver problemReceiver = new Receiver.Empty();
-	private ParseListModel<Description> problemModel = new ParseListModel<>();
+    private final JBList<Description> problemList;
+    private Receiver problemReceiver = new Receiver.Empty();
+    private final ParseListModel<Description> problemModel = new ParseListModel<>();
 
-	private Project project;
+    private final Project project;
 
-	public ParseDialog(@Nullable Project project) {
-		super(project);
-		this.project = project;
-		setTitle("Parse contest");
-		JPanel panel = new JPanel(new VerticalLayout());
+    public ParseDialog(@Nullable Project project) {
+        super(project);
+        this.project = project;
+        setTitle("Parse Contest");
+        JPanel panel = new JPanel(new VerticalLayout());
 
-		parserComboBox = new ComboBox<>(Parser.PARSERS);
-		parserComboBox.setRenderer(
-				new SimpleListCellRenderer<Parser>() {
-					@Override
-					public void customize(JList list, Parser parser, int index, boolean selected, boolean hasFocus) {
-						setText(parser.getName());
-						setIcon(parser.getIcon());
-					}
-				}
-		);
-		parserComboBox.addActionListener(
-				e -> refresh()
-		);
+        parserComboBox = new ComboBox<>(Parser.PARSERS);
+        parserComboBox.setRenderer(
+            new SimpleListCellRenderer<Parser>() {
+                @Override
+                public void customize(@NotNull JList list, Parser parser, int index, boolean selected, boolean hasFocus) {
+                    setText(parser.getName());
+                    setIcon(parser.getIcon());
+                }
+            }
+        );
+        parserComboBox.addActionListener(e -> refresh());
 
-		testType = new ComboBox<>(TestType.values());
+        testType = new ComboBox<>(TestType.values());
 
-		contestList = new JBList<>(contestModel);
-		contestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		contestList.addListSelectionListener(
-				e -> {
-					problemReceiver.stop();
-					problemModel.removeAll();
+        contestList = new JBList<>(contestModel);
+        contestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        contestList.addListSelectionListener(
+            e -> {
+                problemReceiver.stop();
+                problemModel.removeAll();
 
-					Parser parser = (Parser) parserComboBox.getSelectedItem();
-					Description contest = contestList.getSelectedValue();
+                Parser parser = (Parser) parserComboBox.getSelectedItem();
+                Description contest = contestList.getSelectedValue();
 
-					problemReceiver = generateProblemReceiver();
+                problemReceiver = generateProblemReceiver();
 
-					if (contest != null) {
-						new ParserTask(
-								contest.id, problemReceiver, parser
-						);
-					}
-				}
-		);
+                if (contest != null) {
+                    new ParserTask(
+                        contest.id, problemReceiver, parser
+                    );
+                }
+            }
+        );
 
-		problemList = new JBList<>(problemModel);
-		problemList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        problemList = new JBList<>(problemModel);
+        problemList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
 
-		JPanel contestsTasksPanel = new JPanel(new HorizontalLayout());
-		contestsTasksPanel.add(
-				new JBScrollPane(
-						contestList,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-				)
-		);
-		contestsTasksPanel.add(
-				new JBScrollPane(
-						problemList,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-				)
-		);
+        JPanel contestsTasksPanel = new JPanel(new HorizontalLayout());
+        contestsTasksPanel.add(
+            new JBScrollPane(
+                contestList,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+            )
+        );
+        contestsTasksPanel.add(
+            new JBScrollPane(
+                problemList,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+            )
+        );
 
-		panel.add(LabeledComponent.create(parserComboBox, "Parser"));
-		panel.add(contestsTasksPanel);
-		panel.add(LabeledComponent.create(testType, "Test type"));
+        panel.add(LabeledComponent.create(parserComboBox, "Parser"));
+        panel.add(contestsTasksPanel);
+        panel.add(LabeledComponent.create(testType, "Test type"));
 
-		component = panel;
+        component = panel;
 
-		init();
-	}
+        init();
+    }
 
-	private void refresh() {
-		Parser parser = (Parser) parserComboBox.getSelectedItem();
-		Description chosenDescription = contestList.getSelectedValue();
-		contestReceiver.stop();
-		contestModel.removeAll();
+    private void refresh() {
+        Parser parser = (Parser) parserComboBox.getSelectedItem();
+        Description chosenDescription = contestList.getSelectedValue();
+        contestReceiver.stop();
+        contestModel.removeAll();
 
-		contestReceiver = generateContestReceiver(chosenDescription);
+        contestReceiver = generateContestReceiver(chosenDescription);
 
-		new ParserTask(
-				null, contestReceiver, parser
-		);
-	}
+        new ParserTask(
+            null, contestReceiver, parser
+        );
+    }
 
-	private Receiver generateProblemReceiver() {
-		return new Receiver() {
-			@Override
-			public void receiveDescriptions(Collection<Description> descriptions) {
-				Receiver thisReceiver = this;
-				SwingUtilities.invokeLater(
-						() -> {
-							//noinspection ObjectEquality
-							if (problemReceiver != thisReceiver) {
-								return;
-							}
-							boolean shouldMark = problemModel.getSize() == 0;
-							problemModel.addAll(descriptions);
-							if (shouldMark) {
-								problemList.setSelectionInterval(0, problemModel.getSize() - 1);
-							}
-						}
-				);
-			}
-		};
-	}
+    private Receiver generateProblemReceiver() {
+        return new Receiver() {
+            @Override
+            public void receiveDescriptions(Collection<Description> descriptions) {
+                Receiver thisReceiver = this;
+                SwingUtilities.invokeLater(
+                    () -> {
+                        //noinspection ObjectEquality
+                        if (problemReceiver != thisReceiver) {
+                            return;
+                        }
+                        boolean shouldMark = problemModel.getSize() == 0;
+                        problemModel.addAll(descriptions);
+                        if (shouldMark) {
+                            problemList.setSelectionInterval(0, problemModel.getSize() - 1);
+                        }
+                    }
+                );
+            }
+        };
+    }
 
-	private Receiver generateContestReceiver(Description chosenDescription) {
-		return new Receiver() {
-			@Override
-			public void receiveDescriptions(Collection<Description> descriptions) {
-				Receiver thisReceiver = this;
-				SwingUtilities.invokeLater(
-						() -> {
-							//noinspection ObjectEquality
-							if (contestReceiver != thisReceiver) {
-								return;
-							}
-							boolean shouldMark = contestModel.getSize() == 0;
-							contestModel.addAll(descriptions);
-							if (shouldMark) {
-								for (Description contest : descriptions) {
-									if (chosenDescription != null && chosenDescription.id.equals(contest.id)) {
-										contestList.setSelectedValue(contest, true);
-										return;
-									}
-								}
-								if (contestModel.getSize() > 0) {
-									contestList.setSelectedIndex(0);
-								}
-							}
-						}
-				);
-			}
-		};
-	}
+    private Receiver generateContestReceiver(Description chosenDescription) {
+        return new Receiver() {
+            @Override
+            public void receiveDescriptions(Collection<Description> descriptions) {
+                Receiver thisReceiver = this;
+                SwingUtilities.invokeLater(
+                    () -> {
+                        //noinspection ObjectEquality
+                        if (contestReceiver != thisReceiver) {
+                            return;
+                        }
+                        boolean shouldMark = contestModel.getSize() == 0;
+                        contestModel.addAll(descriptions);
+                        if (shouldMark) {
+                            for (Description contest : descriptions) {
+                                if (chosenDescription != null && chosenDescription.id.equals(contest.id)) {
+                                    contestList.setSelectedValue(contest, true);
+                                    return;
+                                }
+                            }
+                            if (contestModel.getSize() > 0) {
+                                contestList.setSelectedIndex(0);
+                            }
+                        }
+                    }
+                );
+            }
+        };
+    }
 
-	@Nullable
-	@Override
-	protected JComponent createCenterPanel() {
-		refresh();
-		return component;
-	}
+    @Nullable
+    @Override
+    protected JComponent createCenterPanel() {
+        refresh();
+        return component;
+    }
 
-	public Collection<TaskData> getResult() {
-		List<TaskData> list = new ArrayList<>();
-		List<Description> selectedTasks = problemList.getSelectedValuesList();
-		Parser parser = (Parser) parserComboBox.getSelectedItem();
+    public Collection<TaskData> getResult() {
+        List<TaskData> list = new ArrayList<>();
+        List<Description> selectedTasks = problemList.getSelectedValuesList();
+        Parser parser = (Parser) parserComboBox.getSelectedItem();
 
-		Configurator configurator = project.getComponent(Configurator.class);
-		Configurator.State configuration = configurator.getState();
+        Configurator configurator = project.getComponent(Configurator.class);
+        Configurator.State configuration = configurator.getState();
 
-		String path = configuration.getTasksDirectory();
+        String path = configuration.getTasksDirectory();
 
-		for (Object taskDescription : selectedTasks) {
-			Description description = (Description) taskDescription;
-			Task rawTask = parser.parseTask(description);
-			if (rawTask == null) {
-				Notificator.showNotification(
-						"Unable to parse task " + description.description,
-						"Connection problems or format change",
-						NotificationType.ERROR
-				);
-				continue;
-			}
-			TaskData myTask = new TaskData(
-					rawTask.name,
-					rawTask.taskClass,
-					String.format("%s/%s.cpp", path, rawTask.taskClass),
-					rawTask.input,
-					rawTask.output,
-					(TestType) testType.getSelectedItem(),
-					rawTask.tests
-			);
-			list.add(myTask);
-		}
-		return list;
-	}
+        for (Object taskDescription : selectedTasks) {
+            Description description = (Description) taskDescription;
+            assert parser != null;
+            Task rawTask = parser.parseTask(description);
+            if (rawTask == null) {
+                Notificator.showNotification(
+                    "Unable to parse task " + description.description,
+                    "Connection problems or format change",
+                    NotificationType.ERROR
+                );
+                continue;
+            }
+            TaskData myTask = new TaskData(
+                rawTask.name,
+                rawTask.taskClass,
+                String.format("%s/%s.cpp", path, rawTask.taskClass),
+                rawTask.input,
+                rawTask.output,
+                (TestType) testType.getSelectedItem(),
+                rawTask.tests
+            );
+            list.add(myTask);
+        }
+        return list;
+    }
 }
 
 

@@ -49,7 +49,7 @@ public class ChromeParser implements ProjectComponent {
 	}
 
 	private SimpleHttpServer server = null;
-	private Project project;
+	private final Project project;
 
 	public ChromeParser(Project project) {
 		this.project = project;

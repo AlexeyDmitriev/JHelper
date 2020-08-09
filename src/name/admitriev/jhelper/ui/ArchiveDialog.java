@@ -24,9 +24,9 @@ public class ArchiveDialog extends DialogWrapper {
         setTitle("Archive Task");
         baseFile = new File(project.getBasePath());
         archiveDirectory = new FileSelector(
-                project,
-                configuration.getArchiveDirectory(),
-                RelativeFileChooserDescriptor.directoryChooser(project.getBaseDir())
+            project,
+            configuration.getArchiveDirectory(),
+            RelativeFileChooserDescriptor.directoryChooser(project.getBaseDir())
         );
         archiveFileName = new JTextField(runConfiguration.getName());
 

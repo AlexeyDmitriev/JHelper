@@ -40,9 +40,9 @@ public class ArchiveAction extends BaseAction {
         RunConfiguration runConfiguration = selectedConfiguration.getConfiguration();
         if (!(runConfiguration instanceof TaskConfiguration)) {
             Notificator.showNotification(
-                    "Not a JHelper configuration",
-                    "You have to choose JHelper Task to copy",
-                    NotificationType.WARNING
+                "Not a JHelper configuration",
+                "You have to choose JHelper Task to copy",
+                NotificationType.WARNING
             );
             return;
         }
@@ -59,7 +59,7 @@ public class ArchiveAction extends BaseAction {
             if (document == null) throw new NotificationException("Cannot create Document");
             try {
                 String fileName = archiveDialog.getArchiveFile();
-                PrintWriter writer = new PrintWriter(fileName, StandardCharsets.UTF_8);
+                PrintWriter writer = new PrintWriter(fileName, String.valueOf(StandardCharsets.UTF_8));
                 writer.write(document.getText());
                 writer.close();
             } catch (IOException exception) {
