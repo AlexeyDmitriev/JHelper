@@ -1,8 +1,18 @@
-#include <iostream>
+#include "../library/IO.hpp"
 
 class %ClassName% {
 public:
-	void solve(std::istream& in, std::ostream& out) {
 
-	}
+  void solveOne(istream& cin, ostream& cout) {
+
+  }
+
+  void solve(std::istream& cin, std::ostream& cout) {
+    int t = 1;
+    cin >> t;
+    for (int tc = 1; tc <= t; ++tc) {
+      //	cout << "Case #" << tc << ": ";
+      solveOne(cin, cout);
+    }
+  }
 };

@@ -8,72 +8,109 @@
 #include <cctype>
 #include <ctime>
 
+namespace Color {
+enum Code {
+  FG_RED = 31,
+  FG_GREEN = 32,
+  FG_YELLOW = 33,
+  FG_BLUE = 34,
+  FG_ORANGE = 208,
+  FG_DEFAULT = 39,
+  BG_RED = 41,
+  BG_GREEN = 42,
+  BG_BLUE = 44,
+  BG_DEFAULT = 49
+};
+class Modifier {
+  Code code;
+public:
+  Modifier(Code pCode) : code(pCode) {}
+  friend std::ostream&
+  operator<<(std::ostream& os, const Modifier& mod) {
+    return os << "\033[" << mod.code << "m";
+  }
+};
+}
+Color::Modifier red(Color::FG_RED);
+Color::Modifier green(Color::FG_GREEN);
+Color::Modifier yellow(Color::FG_YELLOW);
+Color::Modifier blue(Color::FG_BLUE);
+Color::Modifier orange(Color::FG_ORANGE);
+Color::Modifier def(Color::FG_DEFAULT);
+
 namespace jhelper {
 
 struct Test {
-	std::string input;
-	std::string output;
-	bool active;
-	bool has_output;
+  std::string input;
+  std::string output;
+  bool active;
+  bool has_output;
 };
 
 bool check(std::string expected, std::string actual) {
-	while(!expected.empty() && isspace(*--expected.end()))
-		expected.erase(--expected.end());
-	while(!actual.empty() && isspace(*--actual.end()))
-		actual.erase(--actual.end());
-	return expected == actual;
+  while(!expected.empty() && isspace(*--expected.end()))
+    expected.erase(--expected.end());
+  while(!actual.empty() && isspace(*--actual.end()))
+    actual.erase(--actual.end());
+  return expected == actual;
 }
 
 } // namespace jhelper
 
 int main() {
-	std::vector<jhelper::Test> tests = {
-		%Tests%
-	};
-	bool allOK = true;
-	int testID = 0;
-	std::cout << std::fixed;
-	double maxTime = 0.0;
-	for(const jhelper::Test& test: tests ) {
-		std::cout << "Test #" << ++testID << std::endl;
-		std::cout << "Input: \n" << test.input << std::endl;
-		if (test.has_output) {
-			std::cout << "Expected output: \n" << test.output << std::endl;
-		}
-		else {
-			std::cout << "Expected output: \n" << "N/A" << std::endl;
-		}
-		if (test.active) {
-			std::stringstream in(test.input);
-			std::ostringstream out;
-			std::clock_t start = std::clock();
-			%ClassName% solver;
-			%SolverCall%
-			std::clock_t finish = std::clock();
-			double currentTime = double(finish - start) / CLOCKS_PER_SEC;
-			maxTime = std::max(currentTime, maxTime);
-			std::cout << "Actual output: \n" << out.str() << std::endl;
-			if (test.has_output) {
-				bool result = jhelper::check(test.output, out.str());
-				allOK = allOK && result;
-				std::cout << "Result: " << (result ? "OK" : "Wrong answer") << std::endl;
-			}
-			std::cout << "Time: " << currentTime << std::endl;
-		}
-		else {
-			std::cout << "SKIPPED\n";
-		}
-
-		std::cout << std::endl;
-
-	}
-	if(allOK) {
-		std::cout << "All OK" << std::endl;
-	}
-	else {
-		std::cout << "Some cases failed" << std::endl;
-	}
-	std::cout << "Maximal time: " << maxTime << "s." << std::endl;
-	return 0;
+  std::vector<jhelper::Test> tests = {
+      %Tests%
+  };
+  bool allOK = true;
+  int testID = 0;
+  std::cout << std::fixed;
+  double maxTime = 0.0;
+  int test_cnt = (int) tests.size();
+  //test_cnt = %ClassName%::stressTest;
+  for(int i = 0; i < test_cnt; ++i) {
+    //std::ostringstream generated_test;
+    //%ClassName%::generateTest(generated_test);
+    //jhelper::Test test{generated_test.str(), "", true, false};
+    const jhelper::Test& test = tests[i];
+    std::cout << "Test #" << ++testID << std::endl;
+    if (!test.active){
+      std::cout << yellow << "SKIPPED" << def << std::endl;
+      continue;
+    }
+    std::cout << "Input: \n" << test.input << std::endl;
+    if (test.has_output) {
+      std::cout << blue << "Expected output: \n" << def << test.output << std::endl;
+    } else {
+      std::cout << blue << "Expected output: \n" << yellow << "N/A" << std::endl;
+    }
+    if (test.active) {
+      std::stringstream in(test.input);
+      std::ostringstream out;
+      std::clock_t start = std::clock();
+      %ClassName% solver;
+      %SolverCall%
+      std::clock_t finish = std::clock();
+      double currentTime = double(finish - start) / CLOCKS_PER_SEC;
+      maxTime = std::max(currentTime, maxTime);
+      std::cout <<blue << "Actual output: \n" << def << out.str() << std::endl;
+      if (test.has_output) {
+        bool result = jhelper::check(test.output, out.str());
+        allOK = allOK && result;
+        if(result){
+          std::cout << green << "OK" << def << std::endl;
+        } else {
+          std::cout << red << "Wrong Answer" << def << std::endl;
+        }
+      }
+      std::cout << blue << "Time: " << currentTime << def << std::endl;
+    }
+    std::cout << std::endl;
+  }
+  if(allOK) {
+    std::cout << green << "All OK" << def << std::endl;
+  } else {
+    std::cout << red << "Some cases failed" << def << std::endl;
+  }
+  std::cout << "Maximal time: " << maxTime << "s." << std::endl;
+  return 0;
 }

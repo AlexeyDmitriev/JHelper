@@ -8,19 +8,19 @@ import com.intellij.openapi.project.Project;
 import com.jetbrains.cidr.cpp.cmake.workspace.CMakeWorkspace;
 
 public class IDEUtils {
-	private IDEUtils() {
-	}
+    private IDEUtils() {
+    }
 
-	public static void reloadProject(Project project) {
-		CMakeWorkspace.getInstance(project).scheduleReload(true);
-	}
+    public static void reloadProject(Project project) {
+        CMakeWorkspace.getInstance(project).scheduleReload(true);
+    }
 
-	public static void chooseConfigurationAndTarget(
-			Project project,
-			RunnerAndConfigurationSettings runConfiguration,
-			ExecutionTarget target
-	) {
-		RunManager.getInstance(project).setSelectedConfiguration(runConfiguration);
-		ExecutionTargetManager.getInstance(project).setActiveTarget(target);
-	}
+    public static void chooseConfigurationAndTarget(
+        Project project,
+        RunnerAndConfigurationSettings runConfiguration,
+        ExecutionTarget target
+    ) {
+        RunManager.getInstance(project).setSelectedConfiguration(runConfiguration);
+        ExecutionTargetManager.getInstance(project).setActiveTarget(target);
+    }
 }
