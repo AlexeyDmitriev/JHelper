@@ -12,7 +12,6 @@ import javax.swing.*;
 
 public class ConfigurationDialog extends DialogWrapper {
     private final JComponent component;
-    private JTextField author;
     private FileSelector tasksDirectory;
     private FileSelector archiveDirectory;
     private FileSelector outputFile;
@@ -23,8 +22,6 @@ public class ConfigurationDialog extends DialogWrapper {
     public ConfigurationDialog(@NotNull Project project, Configurator.State configuration) {
         super(project);
         setTitle("JHelper configuration for " + project.getName());
-
-        author = new JTextField(configuration.getAuthor());
 
         tasksDirectory = new FileSelector(
             project,
@@ -51,7 +48,6 @@ public class ConfigurationDialog extends DialogWrapper {
         codeReformattingOn = new JCheckBox("Reformat code?", configuration.isCodeReformattingOn());
 
         JPanel panel = new JPanel(new VerticalLayout());
-        panel.add(LabeledComponent.create(author, "Author"));
         panel.add(LabeledComponent.create(tasksDirectory, "Tasks directory"));
         panel.add(LabeledComponent.create(archiveDirectory, "Archive directory"));
         panel.add(LabeledComponent.create(outputFile, "Output file"));
@@ -72,7 +68,6 @@ public class ConfigurationDialog extends DialogWrapper {
 
     public Configurator.State getConfiguration() {
         return new Configurator.State(
-            author.getText(),
             tasksDirectory.getText(),
             archiveDirectory.getText(),
             outputFile.getText(),

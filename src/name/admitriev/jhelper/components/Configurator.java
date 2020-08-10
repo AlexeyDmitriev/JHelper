@@ -32,7 +32,6 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
     private Configurator.State state;
 
     public static class State {
-        private String author;
         private String tasksDirectory;
         private String archiveDirectory;
         private String outputFile;
@@ -41,7 +40,6 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
         private boolean codeReformattingOn;
 
         public State(
-            String author,
             String tasksDirectory,
             String archiveDirectory,
             String outputFile,
@@ -49,7 +47,6 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
             boolean codeEliminationOn,
             boolean codeReformattingOn
         ) {
-            this.author = author;
             this.tasksDirectory = tasksDirectory;
             this.archiveDirectory = archiveDirectory;
             this.outputFile = outputFile;
@@ -59,18 +56,13 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
         }
 
         public State() {
-            this("",
-                "tasks",
+            this("tasks",
                 "archive",
                 "output/main.cpp",
                 "testrunner/main.cpp",
                 false,
                 false
             );
-        }
-
-        public String getAuthor() {
-            return author;
         }
 
         public String getTasksDirectory() {
@@ -95,11 +87,6 @@ public class Configurator implements ProjectComponent, PersistentStateComponent<
 
         public boolean isCodeReformattingOn() {
             return codeReformattingOn;
-        }
-
-        @Deprecated
-        public void setAuthor(String author) {
-            this.author = author;
         }
 
         @Deprecated
