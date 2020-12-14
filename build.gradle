@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.21'
+    id 'org.jetbrains.intellij' version '0.6.5'
 }
 
 group 'name.admitriev.jhelper'
@@ -27,7 +27,8 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2020.1.1'
+    version '2020.3'
     updateSinceUntilBuild false
     type 'CL'
+    setPlugins('com.intellij.clion', 'com.intellij.cidr.lang')
 }
