@@ -13,7 +13,7 @@
     <idea-version since-build="201.6487.17"/>
 
     <depends>com.intellij.modules.cidr.lang</depends>
-    <depends>com.intellij.modules.clion</depends>
+    <depends>com.intellij.clion</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <configurationType implementation="name.admitriev.jhelper.configuration.TaskConfigurationType"/>
