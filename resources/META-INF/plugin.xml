@@ -10,10 +10,10 @@
         In 0.18 Copy Output Action now (re)generates the output files.
     </change-notes>
 
-    <idea-version since-build="201.6487.17"/>
+    <idea-version since-build="203.5981"/>
 
     <depends>com.intellij.modules.cidr.lang</depends>
-    <depends>com.intellij.modules.clion</depends>
+    <depends>com.intellij.clion</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <configurationType implementation="name.admitriev.jhelper.configuration.TaskConfigurationType"/>
