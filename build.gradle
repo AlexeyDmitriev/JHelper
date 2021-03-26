@@ -1,10 +1,15 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.21'
+    id 'org.jetbrains.intellij' version '0.6.5'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 group 'name.admitriev.jhelper'
-version '0.18'
+version '0.18.1'
 
 repositories {
     mavenCentral()
@@ -27,7 +32,8 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2020.1.1'
+    version '2020.3'
     updateSinceUntilBuild false
     type 'CL'
+    setPlugins('com.intellij.clion', 'com.intellij.cidr.lang')
 }
