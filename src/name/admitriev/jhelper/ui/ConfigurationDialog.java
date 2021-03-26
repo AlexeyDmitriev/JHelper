@@ -11,66 +11,69 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class ConfigurationDialog extends DialogWrapper {
-	private final JComponent component;
-	private JTextField author;
-	private FileSelector tasksDirectory;
-	private FileSelector outputFile;
-	private FileSelector runFile;
-	private JCheckBox codeEliminationOn;
-	private JCheckBox codeReformattingOn;
+    private final JComponent component;
+    private FileSelector tasksDirectory;
+    private FileSelector archiveDirectory;
+    private FileSelector outputFile;
+    private FileSelector runFile;
+    private JCheckBox codeEliminationOn;
+    private JCheckBox codeReformattingOn;
 
-	public ConfigurationDialog(@NotNull Project project, Configurator.State configuration) {
-		super(project);
-		setTitle("JHelper configuration for " + project.getName());
+    public ConfigurationDialog(@NotNull Project project, Configurator.State configuration) {
+        super(project);
+        setTitle("JHelper configuration for " + project.getName());
 
-		author = new JTextField(configuration.getAuthor());
+        tasksDirectory = new FileSelector(
+            project,
+            configuration.getTasksDirectory(),
+            RelativeFileChooserDescriptor.directoryChooser(project.getBaseDir())
+        );
+        archiveDirectory = new FileSelector(
+            project,
+            configuration.getArchiveDirectory(),
+            RelativeFileChooserDescriptor.directoryChooser(project.getBaseDir())
+        );
+        outputFile = new FileSelector(
+            project,
+            configuration.getOutputFile(),
+            RelativeFileChooserDescriptor.fileChooser(project.getBaseDir())
+        );
+        runFile = new FileSelector(
+            project,
+            configuration.getRunFile(),
+            RelativeFileChooserDescriptor.fileChooser(project.getBaseDir())
+        );
 
-		tasksDirectory = new FileSelector(
-				project,
-				configuration.getTasksDirectory(),
-				RelativeFileChooserDescriptor.directoryChooser(project.getBaseDir())
-		);
-		outputFile = new FileSelector(
-				project,
-				configuration.getOutputFile(),
-				RelativeFileChooserDescriptor.fileChooser(project.getBaseDir())
-		);
-		runFile = new FileSelector(
-				project,
-				configuration.getRunFile(),
-				RelativeFileChooserDescriptor.fileChooser(project.getBaseDir())
-		);
+        codeEliminationOn = new JCheckBox("Eliminate code?", configuration.isCodeEliminationOn());
+        codeReformattingOn = new JCheckBox("Reformat code?", configuration.isCodeReformattingOn());
 
-		codeEliminationOn = new JCheckBox("Eliminate code?", configuration.isCodeEliminationOn());
-		codeReformattingOn = new JCheckBox("Reformat code?", configuration.isCodeReformattingOn());
+        JPanel panel = new JPanel(new VerticalLayout());
+        panel.add(LabeledComponent.create(tasksDirectory, "Tasks directory"));
+        panel.add(LabeledComponent.create(archiveDirectory, "Archive directory"));
+        panel.add(LabeledComponent.create(outputFile, "Output file"));
+        panel.add(LabeledComponent.create(runFile, "Run File"));
+        panel.add(codeEliminationOn);
+        panel.add(codeReformattingOn);
 
-		JPanel panel = new JPanel(new VerticalLayout());
-		panel.add(LabeledComponent.create(author, "Author"));
-		panel.add(LabeledComponent.create(tasksDirectory, "Tasks directory"));
-		panel.add(LabeledComponent.create(outputFile, "Output file"));
-		panel.add(LabeledComponent.create(runFile, "Run File"));
-		panel.add(codeEliminationOn);
-		panel.add(codeReformattingOn);
+        component = panel;
 
-		component = panel;
+        init();
+    }
 
-		init();
-	}
+    @Nullable
+    @Override
+    protected JComponent createCenterPanel() {
+        return component;
+    }
 
-	@Nullable
-	@Override
-	protected JComponent createCenterPanel() {
-		return component;
-	}
-
-	public Configurator.State getConfiguration() {
-		return new Configurator.State(
-				author.getText(),
-				tasksDirectory.getText(),
-				outputFile.getText(),
-				runFile.getText(),
-				codeEliminationOn.isSelected(),
-				codeReformattingOn.isSelected()
-		);
-	}
+    public Configurator.State getConfiguration() {
+        return new Configurator.State(
+            tasksDirectory.getText(),
+            archiveDirectory.getText(),
+            outputFile.getText(),
+            runFile.getText(),
+            codeEliminationOn.isSelected(),
+            codeReformattingOn.isSelected()
+        );
+    }
 }

@@ -9,26 +9,26 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class AddTaskDialog extends DialogWrapper {
-	private TaskSettingsComponent component;
+    private TaskSettingsComponent component;
 
-	public AddTaskDialog(@NotNull Project project) {
-		super(project);
-		setTitle("Add Task");
-		component = new TaskSettingsComponent(
-				project,
-				true,
-				this::pack
-		);
-		init();
-	}
+    public AddTaskDialog(@NotNull Project project) {
+        super(project);
+        setTitle("Add Task");
+        component = new TaskSettingsComponent(
+            project,
+            true,
+            this::pack
+        );
+        init();
+    }
 
-	@Nullable
-	@Override
-	protected JComponent createCenterPanel() {
-		return component;
-	}
+    @Nullable
+    @Override
+    protected JComponent createCenterPanel() {
+        return component;
+    }
 
-	public TaskData getTask() {
-		return component.getTask();
-	}
+    public TaskData getTask() {
+        return component.getTask();
+    }
 }

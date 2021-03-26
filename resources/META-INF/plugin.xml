@@ -7,7 +7,7 @@
     <description>Sport programming tool to inline library code and provide testing framework.</description>
 
     <change-notes>
-        In 0.18 Copy Output Action now (re)generates the output files.
+        In 0.19 Update for archive select a directory to which you want to archive your files
     </change-notes>
 
     <idea-version since-build="203.5981"/>
@@ -46,6 +46,13 @@
                 icon="/name/admitriev/jhelper/icons/settings.png"
         />
         <action
+                id="name.admitriev.jhelper.actions.ArchiveAction"
+                class="name.admitriev.jhelper.actions.ArchiveAction"
+                text="Archive Task"
+                description="Archive this task."
+                icon="/name/admitriev/jhelper/icons/archive.png"
+        />
+        <action
                 id="name.admitriev.jhelper.actions.AddTaskAction"
                 class="name.admitriev.jhelper.actions.AddTaskAction"
                 text="Add Task"
@@ -55,35 +62,35 @@
         <action
                 id="name.admitriev.jhelper.actions.EditTestsAction"
                 class="name.admitriev.jhelper.actions.EditTestsAction"
-                text="Edit tests"
+                text="Edit Tests"
                 description="Edit tests for a current task"
                 icon="/name/admitriev/jhelper/icons/editTests.png"
         />
         <action
                 id="name.admitriev.jhelper.actions.CopySourceAction"
                 class="name.admitriev.jhelper.actions.CopySourceAction"
-                text="Copy source"
+                text="Copy Source"
                 description="Copies source of output file"
                 icon="/name/admitriev/jhelper/icons/copy.png"
         />
         <action
                 id="name.admitriev.jhelper.actions.ParseContestAction"
                 class="name.admitriev.jhelper.actions.ParseContestAction"
-                text="Parse contest"
+                text="Parse Contest"
                 description="Creates a task for each problem in a contest"
                 icon="/name/admitriev/jhelper/icons/parseContest.png"
         />
         <action
                 id="name.admitriev.jhelper.actions.DeleteTaskAction"
                 class="name.admitriev.jhelper.actions.DeleteTaskAction"
-                text="Delete task"
+                text="Delete Task"
                 description="Deletes selected configuration, its task file and class file"
                 icon="/name/admitriev/jhelper/icons/delete.png"
         />
         <action
                 id="name.admitriev.jhelper.actions.ProcessAction"
                 class="name.admitriev.jhelper.actions.ProcessAction"
-                text="Process file"
+                text="Process File"
                 description="Inlines includes from the current file"
                 icon="/name/admitriev/jhelper/icons/task.png"
         />

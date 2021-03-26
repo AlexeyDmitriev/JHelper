@@ -5,7 +5,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import name.admitriev.jhelper.generation.FileUtils;
 
 public class RelativeFileChooserDescriptor extends FileChooserDescriptor {
-	private String basePath;
+	private final String basePath;
 
 	private RelativeFileChooserDescriptor(
 			VirtualFile baseDir,
