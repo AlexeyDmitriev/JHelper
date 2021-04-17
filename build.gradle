@@ -9,12 +9,11 @@ java {
 }
 
 group 'name.admitriev.jhelper'
-version '0.21'
+version '0.22'
 
 repositories {
     mavenCentral()
 }
-
 
 sourceSets {
     main.java.srcDirs = ['src']
