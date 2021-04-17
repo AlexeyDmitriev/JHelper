@@ -28,204 +28,203 @@ import java.util.Objects;
  * Run Configuration for running JHelper tasks
  */
 public class TaskConfiguration extends RunConfigurationBase {
-    private String className;
-    private String cppPath;
-    private StreamConfiguration input;
-    private StreamConfiguration output;
-    private TestType testType;
-    private Test[] tests;
+	private String className;
+	private String cppPath;
+	private StreamConfiguration input;
+	private StreamConfiguration output;
+	private TestType testType;
+	private Test[] tests;
 
-    @Override
-    public boolean canRunOn(@NotNull ExecutionTarget target) {
-        return target instanceof TaskConfigurationExecutionTarget;
-    }
+	@Override
+	public boolean canRunOn(@NotNull ExecutionTarget target) {
+		return target instanceof TaskConfigurationExecutionTarget;
+	}
 
-    public TaskConfiguration(Project project, ConfigurationFactory factory) {
-        super(project, factory, "");
-        className = "";
-        cppPath = "";
-        input = new StreamConfiguration(StreamConfiguration.StreamType.STANDARD);
-        output = new StreamConfiguration(StreamConfiguration.StreamType.STANDARD);
-        testType = TestType.SINGLE;
-        tests = new Test[0];
-    }
+	public TaskConfiguration(Project project, ConfigurationFactory factory) {
+		super(project, factory, "");
+		className = "";
+		cppPath = "";
+		input = new StreamConfiguration(StreamConfiguration.StreamType.STANDARD);
+		output = new StreamConfiguration(StreamConfiguration.StreamType.STANDARD);
+		testType = TestType.SINGLE;
+		tests = new Test[0];
+	}
 
-    @NotNull
-    @Override
-    public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        return new SettingsEditor<TaskConfiguration>() {
-            private final TaskSettingsComponent component = new TaskSettingsComponent(getProject(), false);
+	@NotNull
+	@Override
+	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
+		return new SettingsEditor<TaskConfiguration>() {
+			private final TaskSettingsComponent component = new TaskSettingsComponent(getProject(), false);
 
-            @Override
-            protected void resetEditorFrom(@NotNull TaskConfiguration settings) {
-                component.setTaskData(new TaskData(
-                    getName(),
-                    className,
-                    cppPath,
-                    input,
-                    output,
-                    testType,
-                    new Test[0]
-                ));
-            }
+			@Override
+			protected void resetEditorFrom(@NotNull TaskConfiguration settings) {
+				component.setTaskData(new TaskData(
+					getName(),
+					className,
+					cppPath,
+					input,
+					output,
+					testType,
+					new Test[0]
+				));
+			}
 
-            @Override
-            protected void applyEditorTo(@NotNull TaskConfiguration settings) {
-                TaskData data = component.getTask();
-                settings.className = data.getClassName();
-                settings.cppPath = data.getCppPath();
-                settings.input = data.getInput();
-                settings.output = data.getOutput();
-                settings.testType = data.getTestType();
-            }
+			@Override
+			protected void applyEditorTo(@NotNull TaskConfiguration settings) {
+				TaskData data = component.getTask();
+				settings.className = data.getClassName();
+				settings.cppPath = data.getCppPath();
+				settings.input = data.getInput();
+				settings.output = data.getOutput();
+				settings.testType = data.getTestType();
+			}
 
-            @Override
-            protected @NotNull JComponent createEditor() {
-                return component;
-            }
-        };
-    }
+			@Override
+			protected @NotNull JComponent createEditor() {
+				return component;
+			}
+		};
+	}
 
-    @Override
-    public void checkConfiguration() {
-    }
+	@Override
+	public void checkConfiguration() {
+	}
 
-    @Override
-    public @Nullable CidrCommandLineState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
+	@Override
+	public @Nullable CidrCommandLineState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
 //        RunConfiguration configuration = TaskRunner.getRunnerSettings(getProject()).getConfiguration();
 //		return new CidrCommandLineState(environment, new CMakeLauncher(environment, (CMakeAppRunConfiguration)configuration));
-        throw new JHelperException("This method is not expected to be used");
-    }
+		throw new JHelperException("This method is not expected to be used");
+	}
 
-    @Override
-    public TaskConfiguration clone() {
-        TaskConfiguration newConfiguration = (TaskConfiguration) super.clone();
-        newConfiguration.className = className;
-        newConfiguration.cppPath = cppPath;
-        newConfiguration.input = input;
-        newConfiguration.output = output;
-        newConfiguration.testType = testType;
-        newConfiguration.tests = tests.clone();
-        return newConfiguration;
-    }
+	@Override
+	public TaskConfiguration clone() {
+		TaskConfiguration newConfiguration = (TaskConfiguration) super.clone();
+		newConfiguration.className = className;
+		newConfiguration.cppPath = cppPath;
+		newConfiguration.input = input;
+		newConfiguration.output = output;
+		newConfiguration.testType = testType;
+		newConfiguration.tests = tests.clone();
+		return newConfiguration;
+	}
 
-    private static StreamConfiguration readStreamConfiguration(
-        Element element,
-        String typeAttribute,
-        String filenameAttribute
-    ) {
-        try {
-            StreamConfiguration.StreamType inputType = StreamConfiguration.StreamType.valueOf(
-                element.getAttribute(typeAttribute).getValue()
-            );
-            if (inputType.hasStringParameter) {
-                String filename = element.getAttributeValue(filenameAttribute);
-                return new StreamConfiguration(inputType, filename);
-            } else {
-                return new StreamConfiguration(inputType);
-            }
-        } catch (RuntimeException ignored) {
-            return StreamConfiguration.STANDARD;
-        }
-    }
+	private static StreamConfiguration readStreamConfiguration(
+		Element element,
+		String typeAttribute,
+		String filenameAttribute
+	) {
+		try {
+			StreamConfiguration.StreamType inputType = StreamConfiguration.StreamType.valueOf(
+				element.getAttribute(typeAttribute).getValue()
+			);
+			if (inputType.hasStringParameter) {
+				return new StreamConfiguration(inputType, element.getAttributeValue(filenameAttribute));
+			} else {
+				return new StreamConfiguration(inputType);
+			}
+		} catch (RuntimeException ignored) {
+			return StreamConfiguration.STANDARD;
+		}
+	}
 
-    @Override
-    public void readExternal(@NotNull Element element) {
-        super.readExternal(element);
-        className = element.getAttributeValue("className", "");
-        cppPath = element.getAttributeValue("cppPath", "");
-        input = readStreamConfiguration(element, "inputPath", "inputFile");
-        output = readStreamConfiguration(element, "outputPath", "outputFile");
-        try {
-            testType = TestType.valueOf(element.getAttributeValue("testType", "SINGLE"));
-        } catch (IllegalArgumentException ignored) {
-            testType = TestType.SINGLE;
-        }
+	@Override
+	public void readExternal(@NotNull Element element) {
+		super.readExternal(element);
+		className = element.getAttributeValue("className", "");
+		cppPath = element.getAttributeValue("cppPath", "");
+		input = readStreamConfiguration(element, "inputPath", "inputFile");
+		output = readStreamConfiguration(element, "outputPath", "outputFile");
+		try {
+			testType = TestType.valueOf(element.getAttributeValue("testType", "SINGLE"));
+		} catch (IllegalArgumentException ignored) {
+			testType = TestType.SINGLE;
+		}
 
-        List<Element> children = element.getChildren();
-        for (Element child : children) {
-            if (Objects.equals(child.getName(), "tests")) {
-                List<Element> testChildren = child.getChildren();
-                tests = new Test[testChildren.size()];
-                for (int i = 0; i < testChildren.size(); ++i) {
-                    tests[i] = readTest(testChildren.get(i));
-                }
-            }
-        }
-    }
+		List<Element> children = element.getChildren();
+		for (Element child : children) {
+			if (Objects.equals(child.getName(), "tests")) {
+				List<Element> testChildren = child.getChildren();
+				tests = new Test[testChildren.size()];
+				for (int i = 0; i < testChildren.size(); ++i) {
+					tests[i] = readTest(testChildren.get(i));
+				}
+			}
+		}
+	}
 
-    private static Test readTest(Element element) {
-        assert element.getName().equals("test");
-        String input = element.getAttributeValue("input");
-        String output = element.getAttributeValue("output");
-        boolean active = element.getAttributeValue("active").equals("true");
-        return new Test(input, output, 0, active);
-    }
+	private static Test readTest(Element element) {
+		assert element.getName().equals("test");
+		String input = element.getAttributeValue("input");
+		String output = element.getAttributeValue("output");
+		boolean active = element.getAttributeValue("active").equals("true");
+		return new Test(input, output, 0, active);
+	}
 
-    @Override
-    public void writeExternal(Element element) {
-        element.setAttribute("className", className);
-        element.setAttribute("cppPath", cppPath);
-        element.setAttribute("inputType", input.type.name());
-        if (input.fileName != null) {
-            element.setAttribute("inputFile", input.fileName);
-        }
-        element.setAttribute("outputType", output.type.name());
-        if (output.fileName != null) {
-            element.setAttribute("outputFile", output.fileName);
-        }
-        element.setAttribute("testType", testType.name());
+	@Override
+	public void writeExternal(Element element) {
+		element.setAttribute("className", className);
+		element.setAttribute("cppPath", cppPath);
+		element.setAttribute("inputType", input.type.name());
+		if (input.fileName != null) {
+			element.setAttribute("inputFile", input.fileName);
+		}
+		element.setAttribute("outputType", output.type.name());
+		if (output.fileName != null) {
+			element.setAttribute("outputFile", output.fileName);
+		}
+		element.setAttribute("testType", testType.name());
 
-        Element testsElements = new Element("tests");
-        for (Test test : tests) {
-            Element testElement = new Element("test");
-            testElement.setAttribute("input", test.input);
-            if (test.output != null) {
-                testElement.setAttribute("output", test.output);
-            }
-            testElement.setAttribute("active", String.valueOf(test.active));
-            testsElements.addContent(testElement);
-        }
-        element.addContent(testsElements);
+		Element testsElements = new Element("tests");
+		for (Test test : tests) {
+			Element testElement = new Element("test");
+			testElement.setAttribute("input", test.input);
+			if (test.output != null) {
+				testElement.setAttribute("output", test.output);
+			}
+			testElement.setAttribute("active", String.valueOf(test.active));
+			testsElements.addContent(testElement);
+		}
+		element.addContent(testsElements);
 
-        super.writeExternal(element);
-    }
+		super.writeExternal(element);
+	}
 
-    public void setFromTaskData(TaskData data) {
-        setName(data.getName());
-        className = data.getClassName();
-        cppPath = data.getCppPath();
-        input = data.getInput();
-        output = data.getOutput();
-        testType = data.getTestType();
-        tests = data.getTests();
-    }
+	public void setFromTaskData(TaskData data) {
+		setName(data.getName());
+		className = data.getClassName();
+		cppPath = data.getCppPath();
+		input = data.getInput();
+		output = data.getOutput();
+		testType = data.getTestType();
+		tests = data.getTests();
+	}
 
-    public void setTests(Test[] tests) {
-        this.tests = Arrays.copyOf(tests, tests.length);
-    }
+	public void setTests(Test[] tests) {
+		this.tests = Arrays.copyOf(tests, tests.length);
+	}
 
-    public Test[] getTests() {
-        return Arrays.copyOf(tests, tests.length);
-    }
+	public Test[] getTests() {
+		return Arrays.copyOf(tests, tests.length);
+	}
 
-    public String getCppPath() {
-        return cppPath;
-    }
+	public String getCppPath() {
+		return cppPath;
+	}
 
-    public String getClassName() {
-        return className;
-    }
+	public String getClassName() {
+		return className;
+	}
 
-    public TestType getTestType() {
-        return testType;
-    }
+	public TestType getTestType() {
+		return testType;
+	}
 
-    public StreamConfiguration getInput() {
-        return input;
-    }
+	public StreamConfiguration getInput() {
+		return input;
+	}
 
-    public StreamConfiguration getOutput() {
-        return output;
-    }
+	public StreamConfiguration getOutput() {
+		return output;
+	}
 }

@@ -32,7 +32,7 @@ public class ProcessAction extends BaseAction {
 		if (file == null) {
 			throw new NotificationException("This is unexpected", "No associated PsiFile");
 		}
-		if (!FileUtils.isCppFile(file)) {
+		if (FileUtils.isNotCppFile(file)) {
 			throw new NotificationException("Not a cpp file", "Only cpp files are currently supported");
 		}
 		String result = IncludesProcessor.process(file);
