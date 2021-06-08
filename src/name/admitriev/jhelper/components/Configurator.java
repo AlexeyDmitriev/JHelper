@@ -1,21 +1,17 @@
 package name.admitriev.jhelper.components;
 
 import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import org.jetbrains.annotations.NotNull;
 
 
-@State(name = "Configurator", storages = @Storage("/JHelper.xml"))
-public class Configurator implements ProjectComponent, PersistentStateComponent<Configurator.State> {
+@State(name = "Configurator", storages = @Storage("JHelper.xml"))
+@Service(Service.Level.PROJECT)
+public final class Configurator implements PersistentStateComponent<Configurator.State> {
 	public Configurator() {
 		state = new Configurator.State();
-	}
-
-	@Override
-	public @NotNull String getComponentName() {
-		return "Configurator";
 	}
 
 	@Override

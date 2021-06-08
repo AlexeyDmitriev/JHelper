@@ -73,7 +73,7 @@ public class CodeGenerationUtils {
 				generateSubmissionFileContent(project, result, task)
 		);
 
-		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator configurator = project.getService(Configurator.class);
 		Configurator.State configuration = configurator.getState();
 
 		if (configuration.isCodeEliminationOn()) {
@@ -232,7 +232,7 @@ public class CodeGenerationUtils {
 	}
 
 	private static @NotNull PsiFile getOutputFile(Project project) {
-		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator configurator = project.getService(Configurator.class);
 		Configurator.State configuration = configurator.getState();
 
 		VirtualFile outputFile = project.getBaseDir().findFileByRelativePath(configuration.getOutputFile());
@@ -253,7 +253,7 @@ public class CodeGenerationUtils {
 
 	@NotNull
 	private static PsiFile getRunFile(Project project) {
-		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator configurator = project.getService(Configurator.class);
 		Configurator.State configuration = configurator.getState();
 
 		VirtualFile outputFile = project.getBaseDir().findFileByRelativePath(configuration.getRunFile());
@@ -272,7 +272,7 @@ public class CodeGenerationUtils {
 	}
 
 	private static String authorComment(Project project) {
-		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator configurator = project.getService(Configurator.class);
 		Configurator.State configuration = configurator.getState();
 
 		return "/**\n" +

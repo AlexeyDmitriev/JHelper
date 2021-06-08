@@ -189,7 +189,7 @@ public class ParseDialog extends DialogWrapper {
 		List<Description> selectedTasks = problemList.getSelectedValuesList();
 		Parser parser = (Parser) parserComboBox.getSelectedItem();
 
-		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator configurator = project.getService(Configurator.class);
 		Configurator.State configuration = configurator.getState();
 
 		String path = configuration.getTasksDirectory();

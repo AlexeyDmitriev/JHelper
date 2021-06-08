@@ -19,7 +19,10 @@ public class TaskConfigurationType extends SimpleConfigurationType {
 					@NotNull
 					@Override
 					protected Icon compute() {
-						return IconLoader.getIcon("/name/admitriev/jhelper/icons/task.png");
+						return IconLoader.getIcon(
+								"/name/admitriev/jhelper/icons/task.png",
+								TaskConfigurationType.class
+						);
 					}
 				}
 		);

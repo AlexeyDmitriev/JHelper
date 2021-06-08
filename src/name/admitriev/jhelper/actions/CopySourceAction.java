@@ -25,7 +25,7 @@ public class CopySourceAction extends BaseAction {
 		if (project == null)
 			throw new NotificationException("No project found", "Are you in any project?");
 
-		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator configurator = project.getService(Configurator.class);
 		Configurator.State configuration = configurator.getState();
 
 		RunManagerEx runManager = RunManagerEx.getInstanceEx(project);

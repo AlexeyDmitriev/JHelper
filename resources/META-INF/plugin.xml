@@ -7,10 +7,11 @@
     <description>Sport programming tool to inline library code and provide testing framework.</description>
 
     <change-notes>
-        In 0.18 Copy Output Action now (re)generates the output files.
+        In 0.19 fixed configuration saving.
+        You may need to resave your configuration.
     </change-notes>
 
-    <idea-version since-build="203.5981"/>
+    <idea-version since-build="211.7142.21"/>
 
     <depends>com.intellij.modules.cidr.lang</depends>
     <depends>com.intellij.clion</depends>
@@ -19,21 +20,23 @@
         <configurationType implementation="name.admitriev.jhelper.configuration.TaskConfigurationType"/>
         <programRunner implementation="name.admitriev.jhelper.configuration.TaskRunner"/>
         <executionTargetProvider implementation="name.admitriev.jhelper.configuration.TaskConfigurationTargetProvider"/>
+        <notificationGroup id="JHelper" displayType="BALLOON"/>
     </extensions>
 
     <application-components>
         <!-- Add your application components here -->
     </application-components>
 
+    <projectListeners>
+        <listener class="name.admitriev.jhelper.components.AutoSwitcher"
+                  topic="com.intellij.execution.RunManagerListener" />
+        <listener class="name.admitriev.jhelper.components.AutoSwitcher"
+                  topic="com.intellij.openapi.fileEditor.FileEditorManagerListener" />
+    </projectListeners>
+
     <project-components>
         <component>
-            <implementation-class>name.admitriev.jhelper.components.Configurator</implementation-class>
-        </component>
-        <component>
             <implementation-class>name.admitriev.jhelper.components.ChromeParser</implementation-class>
-        </component>
-        <component>
-            <implementation-class>name.admitriev.jhelper.components.AutoSwitcher</implementation-class>
         </component>
     </project-components>
 

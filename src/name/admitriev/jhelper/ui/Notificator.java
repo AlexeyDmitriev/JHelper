@@ -1,11 +1,11 @@
 package name.admitriev.jhelper.ui;
 
 import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 
 public class Notificator {
-
-	private static final NotificationGroup GROUP = NotificationGroup.balloonGroup("JHelper");
+	private static final NotificationGroup GROUP = NotificationGroupManager.getInstance().getNotificationGroup("name.admitriev.jhelper.Notificator");
 
 	private Notificator() {
 	}

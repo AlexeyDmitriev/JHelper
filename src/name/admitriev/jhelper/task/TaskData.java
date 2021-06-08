@@ -79,7 +79,7 @@ public class TaskData {
 	}
 
 	public static String defaultCppPathFormat(Project project) {
-		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator configurator = project.getService(Configurator.class);
 		Configurator.State configuration = configurator.getState();
 		String path = configuration.getTasksDirectory();
 		return path + "/%s.cpp";

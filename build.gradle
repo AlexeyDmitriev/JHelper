@@ -9,7 +9,7 @@ java {
 }
 
 group 'name.admitriev.jhelper'
-version '0.18.1'
+version '0.19'
 
 repositories {
     mavenCentral()
@@ -32,7 +32,7 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2020.3'
+    version '2021.1'
     updateSinceUntilBuild false
     type 'CL'
     setPlugins('com.intellij.clion', 'com.intellij.cidr.lang')
