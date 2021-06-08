@@ -32,7 +32,7 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2021.1'
+    version '2021.1.2'
     updateSinceUntilBuild false
     type 'CL'
     setPlugins('com.intellij.clion', 'com.intellij.cidr.lang')
