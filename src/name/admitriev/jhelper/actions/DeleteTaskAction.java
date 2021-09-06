@@ -66,7 +66,7 @@ public class DeleteTaskAction extends BaseAction {
 		);
 	}
 
-	private static void selectSomeTaskConfiguration(RunManagerEx runManager) {
+	public static void selectSomeTaskConfiguration(RunManagerEx runManager) {
 		for (RunnerAndConfigurationSettings settings : runManager.getAllSettings()) {
 			if (settings.getConfiguration() instanceof TaskConfiguration) {
 				runManager.setSelectedConfiguration(settings);
