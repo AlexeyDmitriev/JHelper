@@ -134,6 +134,7 @@ public class TaskConfiguration extends RunConfigurationBase {
 	@Override
 	public void readExternal(Element element) {
 		super.readExternal(element);
+		setName(element.getAttributeValue("name",""));
 		className = element.getAttributeValue("className", "");
 		cppPath = element.getAttributeValue("cppPath", "");
 		input = readStreamConfiguration(element, "inputPath", "inputFile");
@@ -166,6 +167,7 @@ public class TaskConfiguration extends RunConfigurationBase {
 
 	@Override
 	public void writeExternal(Element element) {
+		element.setAttribute("name", getName());
 		element.setAttribute("className", className);
 		element.setAttribute("cppPath", cppPath);
 		element.setAttribute("inputType", String.valueOf(input.type.name()));
