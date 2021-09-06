@@ -5,7 +5,7 @@ import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 
 public class Notificator {
-	private static final NotificationGroup GROUP = NotificationGroupManager.getInstance().getNotificationGroup("name.admitriev.jhelper.Notificator");
+	private static final NotificationGroup GROUP = NotificationGroupManager.getInstance().getNotificationGroup("JHelper");
 
 	private Notificator() {
 	}
