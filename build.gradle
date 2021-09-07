@@ -9,7 +9,7 @@ java {
 }
 
 group 'name.admitriev.jhelper'
-version '0.19'
+version '0.19.1'
 
 repositories {
     mavenCentral()
