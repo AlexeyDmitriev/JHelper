@@ -16,6 +16,7 @@ public class ConfigurationDialog extends DialogWrapper {
 	private FileSelector tasksDirectory;
 	private FileSelector outputFile;
 	private FileSelector runFile;
+	private FileSelector archiveDirectory;
 	private JCheckBox codeEliminationOn;
 	private JCheckBox codeReformattingOn;
 
@@ -40,6 +41,11 @@ public class ConfigurationDialog extends DialogWrapper {
 				configuration.getRunFile(),
 				RelativeFileChooserDescriptor.fileChooser(project.getBaseDir())
 		);
+		archiveDirectory = new FileSelector(
+				project,
+				configuration.getArchiveDirectory(),
+				RelativeFileChooserDescriptor.fileChooser(project.getBaseDir())
+		);
 
 		codeEliminationOn = new JCheckBox("Eliminate code?", configuration.isCodeEliminationOn());
 		codeReformattingOn = new JCheckBox("Reformat code?", configuration.isCodeReformattingOn());
@@ -49,6 +55,7 @@ public class ConfigurationDialog extends DialogWrapper {
 		panel.add(LabeledComponent.create(tasksDirectory, "Tasks directory"));
 		panel.add(LabeledComponent.create(outputFile, "Output file"));
 		panel.add(LabeledComponent.create(runFile, "Run File"));
+		panel.add(LabeledComponent.create(archiveDirectory, "Archive Directory"));
 		panel.add(codeEliminationOn);
 		panel.add(codeReformattingOn);
 
@@ -69,6 +76,7 @@ public class ConfigurationDialog extends DialogWrapper {
 				tasksDirectory.getText(),
 				outputFile.getText(),
 				runFile.getText(),
+				archiveDirectory.getText(),
 				codeEliminationOn.isSelected(),
 				codeReformattingOn.isSelected()
 		);

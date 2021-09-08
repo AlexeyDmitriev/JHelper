@@ -48,6 +48,20 @@
                 description="Configure JHelper"
                 icon="/name/admitriev/jhelper/icons/settings.png"
         />
+        <action id="name.admitriev.jhelper.actions.UnarchiveTaskAction"
+                class="name.admitriev.jhelper.actions.UnarchiveTaskAction"
+                text="Restore Tasks"
+                icon="/name/admitriev/jhelper/icons/unarchive.png"
+                description="Restore directory with tasks or a single task back to the former place">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </action>
+        <action id="name.admitriev.jhelper.actions.ArchiveTaskAction"
+                class="name.admitriev.jhelper.actions.ArchiveTaskAction"
+                text="Archive Tasks"
+                icon="/name/admitriev/jhelper/icons/archive.png"
+                description="Archives all tasks in directory recursively or a single task if selected">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </action>
         <action
                 id="name.admitriev.jhelper.actions.AddTaskAction"
                 class="name.admitriev.jhelper.actions.AddTaskAction"
