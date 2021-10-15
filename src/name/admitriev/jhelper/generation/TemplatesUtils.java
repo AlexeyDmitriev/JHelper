@@ -6,14 +6,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import name.admitriev.jhelper.common.CommonUtils;
 import name.admitriev.jhelper.exceptions.JHelperException;
 import name.admitriev.jhelper.exceptions.NotificationException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,26 +65,19 @@ public class TemplatesUtils {
 			throw new NotificationException("Couldn't open default template " + filename, e);
 		}
 
+		assert psiFile != null;
 		FileUtils.writeToFile(psiFile, defaultTemplate);
 	}
 
 	/**
 	 * Returns content of resource file (from resource folder) as a string.
 	 */
-	private static String getResourceContent(String name) throws IOException {
-		try (InputStream stream = TemplatesUtils.class.getResourceAsStream(name)) {
+	private static String getResourceContent(String filePath) throws IOException {
+		try (InputStream stream = TemplatesUtils.class.getResourceAsStream(filePath)) {
 			if (stream == null) {
-				throw new IOException("Couldn't open a stream to resource " + name);
+				throw new IOException("Couldn't open a stream to resource " + filePath);
 			}
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-				StringBuilder sb = new StringBuilder();
-				String line;
-				while ((line = reader.readLine()) != null) {
-					sb.append(line).append('\n');
-				}
-				return sb.toString();
-			}
+			return CommonUtils.getStringFromInputStream(stream);
 		}
 	}
-
 }

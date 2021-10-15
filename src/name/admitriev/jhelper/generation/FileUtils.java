@@ -16,10 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class FileUtils {
-	private FileUtils() {
-	}
+	private FileUtils() {}
 
 	public static OutputWriter getOutputWriter(VirtualFile virtualFile, Object requester) {
 		try {
@@ -56,7 +56,7 @@ public class FileUtils {
 					}
 					String name = path.substring(0, index);
 
-					@Nullable VirtualFile child = findChild(root, name);
+					var child = findChild(root, name);
 					if (child == null) {
 						try {
 							if (index == path.length()) {
@@ -96,9 +96,7 @@ public class FileUtils {
 		WriteCommandAction.writeCommandAction(project).run(
 			() -> {
 				document.deleteString(0, document.getTextLength());
-				for (String string : strings) {
-					document.insertString(document.getTextLength(), string);
-				}
+				Arrays.stream(strings).forEach(string -> document.insertString(document.getTextLength(), string));
 				FileDocumentManager.getInstance().saveDocument(document);
 				PsiDocumentManager.getInstance(project).commitDocument(document);
 			}

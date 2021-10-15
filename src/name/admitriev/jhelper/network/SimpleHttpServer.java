@@ -4,16 +4,14 @@ import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.util.Consumer;
+import name.admitriev.jhelper.common.CommonUtils;
 import name.admitriev.jhelper.ui.Notificator;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Simple HTTP Server.
@@ -38,7 +36,7 @@ public class SimpleHttpServer implements Runnable {
 				}
 				try (Socket socket = serverSocket.accept()) {
 					InputStream inputStream = socket.getInputStream();
-					String request = readFromStream(inputStream);
+					String request = CommonUtils.getStringFromInputStream(inputStream);
 					String[] strings = request.split("\n\n", 2);
 
 					//ignore headers
@@ -59,17 +57,6 @@ public class SimpleHttpServer implements Runnable {
 				}
 			} catch (IOException ignored) {
 			}
-		}
-	}
-
-	private static String readFromStream(InputStream inputStream) throws IOException {
-		try (var reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-			StringBuilder builder = new StringBuilder();
-			String line;
-			//noinspection NestedAssignment
-			while ((line = reader.readLine()) != null)
-				builder.append(line).append('\n');
-			return builder.toString();
 		}
 	}
 

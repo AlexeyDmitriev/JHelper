@@ -115,9 +115,7 @@ public class ParseDialog extends DialogWrapper {
 
 		contestReceiver = generateContestReceiver(chosenDescription);
 
-		new ParserTask(
-			null, contestReceiver, parser
-		);
+		new ParserTask(null, contestReceiver, parser);
 	}
 
 	private Receiver generateContestReceiver(Description chosenDescription) {

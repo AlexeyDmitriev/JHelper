@@ -1,13 +1,15 @@
-#include "../library/IO.hpp"
+#include<bits/stdc++.h>
+
+using namespace std;
 
 class %ClassName% {
 public:
 
-  void solveOne(istream& cin, ostream& cout) {
+  void solveOne() {
 
   }
 
-  void solve(std::istream& cin, std::ostream& cout) {
+  void solve() {
     int t = 1;
     cin >> t;
     for (int tc = 1; tc <= t; ++tc) {
