@@ -49,15 +49,11 @@ public class DeleteTaskAction extends BaseAction {
 				@Override
 				public void run() {
 					VirtualFile classFile = project.getBaseDir().findFileByRelativePath(cppPath);
-					if (classFile != null) {
-						try {
-							classFile.delete(this);
-						} catch (IOException ignored) {
-							Notificator.showNotification(
-								"Couldn't delete class file",
-								NotificationType.WARNING
-							);
-						}
+					if (classFile == null) return;
+					try {
+						classFile.delete(this);
+					} catch (IOException ignored) {
+						Notificator.showNotification("Couldn't delete class file", NotificationType.WARNING);
 					}
 				}
 			}

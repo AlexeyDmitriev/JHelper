@@ -7,14 +7,20 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.NotNullLazyValue;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
+
 public class TaskConfigurationType extends SimpleConfigurationType {
 	public TaskConfigurationType() {
 		super(
 			"name.admitriev.jhelper.configuration.TaskConfigurationType",
 			"Task",
 			"Task for JHelper",
-			NotNullLazyValue.createValue(() ->
-				IconLoader.getIcon("/name/admitriev/jhelper/icons/task.png"))
+			new NotNullLazyValue<>() {
+				@Override
+				protected @NotNull Icon compute() {
+					return IconLoader.getIcon("/name/admitriev/jhelper/icons/task.png");
+				}
+			}
 		);
 	}
 

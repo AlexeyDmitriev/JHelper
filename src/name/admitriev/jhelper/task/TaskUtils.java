@@ -56,8 +56,7 @@ public class TaskUtils {
 	 */
 	private static String getTaskContent(Project project, String className) {
 		String template = TemplatesUtils.getTemplate(project, "task");
-		template = TemplatesUtils.replaceAll(template, TemplatesUtils.CLASS_NAME, className);
-		return template;
+		return TemplatesUtils.replaceAll(template, TemplatesUtils.CLASS_NAME, className);
 	}
 
 	private static void createConfigurationForTask(Project project, TaskData taskData) {
@@ -65,16 +64,13 @@ public class TaskUtils {
 		ConfigurationFactory factory = configurationType.getConfigurationFactories()[0];
 
 		RunManager manager = RunManager.getInstance(project);
-		TaskConfiguration taskConfiguration = new TaskConfiguration(
-			project,
-			factory
-		);
+		TaskConfiguration taskConfiguration = new TaskConfiguration(project, factory);
 		taskConfiguration.setFromTaskData(taskData);
 		RunnerAndConfigurationSettings configuration = manager.createConfiguration(
 			taskConfiguration,
 			factory
 		);
-		configuration.storeInDotIdeaFolder();
+		manager.addConfiguration(configuration, true);
 
 		manager.setSelectedConfiguration(configuration);
 	}
