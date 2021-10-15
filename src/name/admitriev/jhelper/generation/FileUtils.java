@@ -18,7 +18,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class FileUtils {
-	private FileUtils() {}
+	private FileUtils() {
+	}
 
 	@Nullable
 	private static VirtualFile findChild(VirtualFile file, @NotNull String child) {
@@ -32,41 +33,39 @@ public class FileUtils {
 	}
 
 	public static VirtualFile findOrCreateByRelativePath(VirtualFile root, String localPath) {
-		return ApplicationManager.getApplication().runWriteAction(
-			new Computable<>() {
-				@Override
-				public VirtualFile compute() {
-					String path = localPath;
-					path = StringUtil.trimStart(path, "/");
-					if (path.isEmpty()) {
-						return root;
-					}
-					int index = path.indexOf('/');
-					if (index < 0) {
-						index = path.length();
-					}
-					String name = path.substring(0, index);
-
-					var child = findChild(root, name);
-					if (child == null) {
-						try {
-							if (index == path.length()) {
-								child = root.createChildData(this, name);
-							} else {
-								child = root.createChildDirectory(this, name);
-							}
-						} catch (IOException e) {
-							throw new NotificationException("Couldn't create directory: " + root.getPath() + '/' + name, e);
-						}
-					}
-
-					if (index < path.length()) {
-						return findOrCreateByRelativePath(child, path.substring(index + 1));
-					}
-					return child;
+		return ApplicationManager.getApplication().runWriteAction(new Computable<>() {
+			@Override
+			public VirtualFile compute() {
+				String path = localPath;
+				path = StringUtil.trimStart(path, "/");
+				if (path.isEmpty()) {
+					return root;
 				}
+				int index = path.indexOf('/');
+				if (index < 0) {
+					index = path.length();
+				}
+				String name = path.substring(0, index);
+
+				var child = findChild(root, name);
+				if (child == null) {
+					try {
+						if (index == path.length()) {
+							child = root.createChildData(this, name);
+						} else {
+							child = root.createChildDirectory(this, name);
+						}
+					} catch (IOException e) {
+						throw new NotificationException("Couldn't create directory: " + root.getPath() + '/' + name, e);
+					}
+				}
+
+				if (index < path.length()) {
+					return findOrCreateByRelativePath(child, path.substring(index + 1));
+				}
+				return child;
 			}
-		);
+		});
 	}
 
 	/**
@@ -84,14 +83,12 @@ public class FileUtils {
 			throw new NotificationException("Couldn't open output file as document");
 		}
 
-		WriteCommandAction.writeCommandAction(project).run(
-			() -> {
-				document.deleteString(0, document.getTextLength());
-				Arrays.stream(strings).forEach(string -> document.insertString(document.getTextLength(), string));
-				FileDocumentManager.getInstance().saveDocument(document);
-				PsiDocumentManager.getInstance(project).commitDocument(document);
-			}
-		);
+		WriteCommandAction.writeCommandAction(project).run(() -> {
+			document.deleteString(0, document.getTextLength());
+			Arrays.stream(strings).forEach(string -> document.insertString(document.getTextLength(), string));
+			FileDocumentManager.getInstance().saveDocument(document);
+			PsiDocumentManager.getInstance(project).commitDocument(document);
+		});
 	}
 
 	public static String relativePath(String parentPath, String childPath) {

@@ -14,23 +14,16 @@ public class StreamConfigurationPanel extends JPanel {
 	private final ComboBox<StreamConfiguration.StreamType> type;
 	private JTextField fileName;
 
-	public StreamConfigurationPanel(
-		StreamConfiguration configuration,
-		StreamConfiguration.StreamType[] allowedTypes,
-		String defaultFileName,
-		SizeChangedListener listener
-	) {
+	public StreamConfigurationPanel(StreamConfiguration configuration, StreamConfiguration.StreamType[] allowedTypes, String defaultFileName, SizeChangedListener listener) {
 		super(new VerticalLayout());
 		type = new ComboBox<>(allowedTypes);
 		type.setSelectedItem(configuration.type);
-		type.addActionListener(
-			e -> {
-				fileName.setVisible(((StreamConfiguration.StreamType) Objects.requireNonNull(type.getSelectedItem())).hasStringParameter);
-				if (listener != null) {
-					listener.sizeChanged();
-				}
+		type.addActionListener(e -> {
+			fileName.setVisible(((StreamConfiguration.StreamType) Objects.requireNonNull(type.getSelectedItem())).hasStringParameter);
+			if (listener != null) {
+				listener.sizeChanged();
 			}
-		);
+		});
 		fileName = new JTextField(configuration.type.hasStringParameter ? configuration.fileName : defaultFileName);
 		fileName.setVisible(((StreamConfiguration.StreamType) Objects.requireNonNull(type.getSelectedItem())).hasStringParameter);
 

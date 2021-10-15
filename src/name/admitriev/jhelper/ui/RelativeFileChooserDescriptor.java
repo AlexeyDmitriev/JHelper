@@ -29,16 +29,13 @@ public class RelativeFileChooserDescriptor extends FileChooserDescriptor {
 
 	@Override
 	public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
-		return super.isFileVisible(file, showHiddenFiles) && (
-			FileUtils.isChild(basePath, file.getPath()) || FileUtils.isChild(file.getPath(), basePath)
+		return super.isFileVisible(file, showHiddenFiles)
+			&& (FileUtils.isChild(basePath, file.getPath()) || FileUtils.isChild(file.getPath(), basePath)
 		);
 	}
 
 	@Override
 	public boolean isFileSelectable(VirtualFile file) {
-		return super.isFileSelectable(file) && FileUtils.isChild(
-			basePath,
-			file.getPath()
-		);
+		return super.isFileSelectable(file) && FileUtils.isChild(basePath, file.getPath());
 	}
 }

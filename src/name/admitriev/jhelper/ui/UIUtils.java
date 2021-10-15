@@ -44,67 +44,52 @@ public class UIUtils {
 		}
 		AtomicBoolean changingFirst = new AtomicBoolean(false);
 		AtomicBoolean secondChanged = new AtomicBoolean(false);
-		main.getDocument().addDocumentListener(
+		main.getDocument().addDocumentListener(new DocumentAdapter() {
+			@Override
+			protected void textChanged(@NotNull DocumentEvent e) {
+				if (secondChanged.get()) return;
+				while (!changingFirst.compareAndSet(false, true)) {
+					// intentionally empty
+				}
 
-			new DocumentAdapter() {
+				copy.setText(String.format(format, main.getText()));
+				changingFirst.set(false);
+			}
+		});
 
-				@Override
-				protected void textChanged(@NotNull DocumentEvent e) {
-					if (secondChanged.get()) {
-						return;
-					}
-					while (!changingFirst.compareAndSet(false, true)) {
-						// intentionally empty
-					}
-
-					copy.setText(String.format(format, main.getText()));
-
-					changingFirst.set(false);
+		copy.getDocument().addDocumentListener(new DocumentAdapter() {
+			@Override
+			protected void textChanged(@NotNull DocumentEvent e) {
+				if (!changingFirst.get()) {
+					secondChanged.set(true);
 				}
 			}
-		);
-
-		copy.getDocument().addDocumentListener(
-			new DocumentAdapter() {
-				@Override
-				protected void textChanged(@NotNull DocumentEvent e) {
-					if (!changingFirst.get()) {
-						secondChanged.set(true);
-					}
-				}
-			}
-		);
+		});
 	}
 
 	/**
 	 * Finds method @{code methodName} in @{code file} and opens it in an editor.
 	 */
 	public static void openMethodInEditor(Project project, OCFile file, String methodName) {
-		new OpenFileDescriptor(
-			project,
-			file.getVirtualFile(),
-			findMethodBody(file, methodName).getTextOffset()
-		).navigate(true);
+		new OpenFileDescriptor(project, file.getVirtualFile(), findMethodBody(file, methodName).getTextOffset()).navigate(true);
 	}
 
 	private static PsiElement findMethodBody(OCFile file, @NotNull String method) {
 		Ref<PsiElement> result = new Ref<>();
-		file.accept(
-			new OCRecursiveVisitor() {
-				@Override
-				public void visitBlockStatement(OCBlockStatement ocBlockStatement) {
-					result.set(ocBlockStatement.getOpeningBrace().getNextSibling());
-				}
+		file.accept(new OCRecursiveVisitor() {
+			@Override
+			public void visitBlockStatement(OCBlockStatement ocBlockStatement) {
+				result.set(ocBlockStatement.getOpeningBrace().getNextSibling());
+			}
 
-				@Override
-				public void visitFunctionDefinition(OCFunctionDefinition ocFunctionDefinition) {
-					if (method.equals(ocFunctionDefinition.getName())) {
-						// continue recursion
-						super.visitFunctionDefinition(ocFunctionDefinition);
-					}
+			@Override
+			public void visitFunctionDefinition(OCFunctionDefinition ocFunctionDefinition) {
+				if (method.equals(ocFunctionDefinition.getName())) {
+					// continue recursion
+					super.visitFunctionDefinition(ocFunctionDefinition);
 				}
 			}
-		);
+		});
 		return result.get();
 	}
 }

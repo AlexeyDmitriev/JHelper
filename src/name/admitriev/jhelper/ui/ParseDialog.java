@@ -47,56 +47,40 @@ public class ParseDialog extends DialogWrapper {
 		JPanel panel = new JPanel(new VerticalLayout());
 
 		parserComboBox = new ComboBox<>(Parser.PARSERS);
-		parserComboBox.setRenderer(
-			new SimpleListCellRenderer<>() {
-				@Override
-				public void customize(@NotNull JList list, Parser parser, int index, boolean selected, boolean hasFocus) {
-					setText(parser.getName());
-					setIcon(parser.getIcon());
-				}
+		parserComboBox.setRenderer(new SimpleListCellRenderer<>() {
+			@Override
+			public void customize(@NotNull JList list, Parser parser, int index, boolean selected, boolean hasFocus) {
+				setText(parser.getName());
+				setIcon(parser.getIcon());
 			}
-		);
+		});
 		parserComboBox.addActionListener(e -> refresh());
 
 		testType = new ComboBox<>(TestType.values());
 
 		contestList = new JBList<>(contestModel);
 		contestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		contestList.addListSelectionListener(
-			e -> {
-				problemReceiver.stop();
-				problemModel.removeAll();
+		contestList.addListSelectionListener(e -> {
+			problemReceiver.stop();
+			problemModel.removeAll();
 
-				Parser parser = (Parser) parserComboBox.getSelectedItem();
-				Description contest = contestList.getSelectedValue();
+			Parser parser = (Parser) parserComboBox.getSelectedItem();
+			Description contest = contestList.getSelectedValue();
 
-				problemReceiver = generateProblemReceiver();
+			problemReceiver = generateProblemReceiver();
 
-				if (contest != null) {
-					new ParserTask(contest.id, problemReceiver, parser);
-				}
+			if (contest != null) {
+				new ParserTask(contest.id, problemReceiver, parser);
 			}
-		);
+		});
 
 		problemList = new JBList<>(problemModel);
 		problemList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
 
 		JPanel contestsTasksPanel = new JPanel(new HorizontalLayout());
-		contestsTasksPanel.add(
-			new JBScrollPane(
-				contestList,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-			)
-		);
-		contestsTasksPanel.add(
-			new JBScrollPane(
-				problemList,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-			)
-		);
+		contestsTasksPanel.add(new JBScrollPane(contestList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
+		contestsTasksPanel.add(new JBScrollPane(problemList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
 
 		panel.add(LabeledComponent.create(parserComboBox, "Parser"));
 		panel.add(contestsTasksPanel);
@@ -123,27 +107,25 @@ public class ParseDialog extends DialogWrapper {
 			@Override
 			public void receiveDescriptions(Collection<Description> descriptions) {
 				Receiver thisReceiver = this;
-				SwingUtilities.invokeLater(
-					() -> {
-						//noinspection ObjectEquality
-						if (contestReceiver != thisReceiver) {
-							return;
+				SwingUtilities.invokeLater(() -> {
+					//noinspection ObjectEquality
+					if (contestReceiver != thisReceiver) {
+						return;
+					}
+					boolean shouldMark = contestModel.getSize() == 0;
+					contestModel.addAll(descriptions);
+					if (shouldMark) {
+						for (Description contest : descriptions) {
+							if (chosenDescription != null && chosenDescription.id.equals(contest.id)) {
+								contestList.setSelectedValue(contest, true);
+								return;
+							}
 						}
-						boolean shouldMark = contestModel.getSize() == 0;
-						contestModel.addAll(descriptions);
-						if (shouldMark) {
-							for (Description contest : descriptions) {
-								if (chosenDescription != null && chosenDescription.id.equals(contest.id)) {
-									contestList.setSelectedValue(contest, true);
-									return;
-								}
-							}
-							if (contestModel.getSize() > 0) {
-								contestList.setSelectedIndex(0);
-							}
+						if (contestModel.getSize() > 0) {
+							contestList.setSelectedIndex(0);
 						}
 					}
-				);
+				});
 			}
 		};
 	}
@@ -153,19 +135,17 @@ public class ParseDialog extends DialogWrapper {
 			@Override
 			public void receiveDescriptions(Collection<Description> descriptions) {
 				Receiver thisReceiver = this;
-				SwingUtilities.invokeLater(
-					() -> {
-						//noinspection ObjectEquality
-						if (problemReceiver != thisReceiver) {
-							return;
-						}
-						boolean shouldMark = problemModel.getSize() == 0;
-						problemModel.addAll(descriptions);
-						if (shouldMark) {
-							problemList.setSelectionInterval(0, problemModel.getSize() - 1);
-						}
+				SwingUtilities.invokeLater(() -> {
+					//noinspection ObjectEquality
+					if (problemReceiver != thisReceiver) {
+						return;
 					}
-				);
+					boolean shouldMark = problemModel.getSize() == 0;
+					problemModel.addAll(descriptions);
+					if (shouldMark) {
+						problemList.setSelectionInterval(0, problemModel.getSize() - 1);
+					}
+				});
 			}
 		};
 	}
@@ -191,22 +171,10 @@ public class ParseDialog extends DialogWrapper {
 			assert parser != null;
 			Task rawTask = parser.parseTask(taskDescription);
 			if (rawTask == null) {
-				Notificator.showNotification(
-					"Unable to parse task " + taskDescription.description,
-					"Connection problems or format change",
-					NotificationType.ERROR
-				);
+				Notificator.showNotification("Unable to parse task " + taskDescription.description, "Connection problems or format change", NotificationType.ERROR);
 				continue;
 			}
-			TaskData myTask = new TaskData(
-				rawTask.name,
-				rawTask.taskClass,
-				String.format("%s/%s.cpp", path, rawTask.taskClass),
-				rawTask.input,
-				rawTask.output,
-				(TestType) testType.getSelectedItem(),
-				rawTask.tests
-			);
+			TaskData myTask = new TaskData(rawTask.name, rawTask.taskClass, String.format("%s/%s.cpp", path, rawTask.taskClass), rawTask.input, rawTask.output, (TestType) testType.getSelectedItem(), rawTask.tests);
 			list.add(myTask);
 		}
 		return list;
