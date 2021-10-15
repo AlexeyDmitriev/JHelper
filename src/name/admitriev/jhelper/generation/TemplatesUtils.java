@@ -7,7 +7,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import name.admitriev.jhelper.common.CommonUtils;
-import name.admitriev.jhelper.exceptions.JHelperException;
 import name.admitriev.jhelper.exceptions.NotificationException;
 
 import java.io.IOException;
@@ -42,7 +41,7 @@ public class TemplatesUtils {
 			createTemplateFromDefault(project, name);
 			file = project.getBaseDir().findFileByRelativePath(filename);
 			if (file == null) {
-				throw new JHelperException("Can't open template file(" + filename + ") after its creation");
+				throw new RuntimeException("Can't open template file(" + filename + ") after its creation");
 			}
 
 		}

@@ -35,7 +35,7 @@ public final class TaskSettingsComponent extends JPanel {
 		this.listener = listener;
 		this.canChangeName = canChangeName;
 
-		setTaskData(TaskData.emptyTaskData(project));
+		setTaskData(TaskData.Companion.emptyTaskData(project));
 	}
 
 	public void setTaskData(TaskData taskData) {
@@ -73,7 +73,7 @@ public final class TaskSettingsComponent extends JPanel {
 		add(LabeledComponent.create(testType, "Test type"));
 
 		UIUtils.mirrorFields(name, className);
-		UIUtils.mirrorFields(name, cppPath.getTextField(), TaskData.defaultCppPathFormat(project));
+		UIUtils.mirrorFields(name, cppPath.getTextField(), TaskData.Companion.defaultCppPathFormat(project));
 	}
 
 	public TaskData getTask() {

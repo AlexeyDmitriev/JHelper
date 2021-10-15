@@ -21,14 +21,6 @@ import java.util.Arrays;
 public class FileUtils {
 	private FileUtils() {}
 
-	public static OutputWriter getOutputWriter(VirtualFile virtualFile, Object requester) {
-		try {
-			return new OutputWriter(virtualFile.getOutputStream(requester));
-		} catch (IOException e) {
-			throw new NotificationException("Couldn't open virtual file to write", e);
-		}
-	}
-
 	@Nullable
 	private static VirtualFile findChild(VirtualFile file, @NotNull String child) {
 		if (child.equals(".")) {

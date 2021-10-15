@@ -3,7 +3,6 @@ package name.admitriev.jhelper.actions;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import name.admitriev.jhelper.exceptions.JHelperException;
 import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.ui.Notificator;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +18,7 @@ public abstract class BaseAction extends AnAction {
 				exception.getContent(),
 				NotificationType.ERROR
 			);
-		} catch (JHelperException exception) {
+		} catch (RuntimeException exception) {
 			Notificator.showNotification(
 				"Please report this exception to our bug tracker",
 				"You can see it again in the event log",

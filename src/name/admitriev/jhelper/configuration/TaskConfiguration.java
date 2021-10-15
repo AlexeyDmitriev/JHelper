@@ -9,7 +9,6 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.jetbrains.cidr.execution.CidrCommandLineState;
-import name.admitriev.jhelper.exceptions.JHelperException;
 import name.admitriev.jhelper.task.TaskData;
 import name.admitriev.jhelper.ui.TaskSettingsComponent;
 import net.egork.chelper.task.StreamConfiguration;
@@ -187,7 +186,7 @@ public class TaskConfiguration extends RunConfigurationBase {
 	public @Nullable CidrCommandLineState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
 //        RunConfiguration configuration = TaskRunner.getRunnerSettings(getProject()).getConfiguration();
 //		return new CidrCommandLineState(environment, new CMakeLauncher(environment, (CMakeAppRunConfiguration)configuration));
-		throw new JHelperException("This method is not expected to be used");
+		throw new RuntimeException("This method is not expected to be used");
 	}
 
 	public void setFromTaskData(TaskData data) {
