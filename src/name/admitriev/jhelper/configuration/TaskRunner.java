@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import name.admitriev.jhelper.IDEUtils;
+import name.admitriev.jhelper.common.CommonUtils;
 import name.admitriev.jhelper.exceptions.NotificationException;
 import name.admitriev.jhelper.generation.CodeGenerationUtils;
 import org.jetbrains.annotations.NotNull;
@@ -94,17 +95,7 @@ public class TaskRunner implements ProgramRunner<RunnerSettings> {
 	}
 
 	private static void generateRunFileForTask(Project project, TaskConfiguration taskConfiguration) {
-		String pathToClassFile = taskConfiguration.getCppPath();
-		VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
-		if (virtualFile == null) {
-			throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
-		}
-
-		PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
-		if (psiFile == null) {
-			throw new NotificationException("Couldn't get PSI file for input file");
-		}
-
+		PsiFile psiFile = CommonUtils.generatePSIFromTask(project, taskConfiguration);
 		CodeGenerationUtils.generateRunFile(project, psiFile, taskConfiguration);
 	}
 }

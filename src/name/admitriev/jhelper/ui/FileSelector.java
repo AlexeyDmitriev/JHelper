@@ -14,9 +14,7 @@ public class FileSelector extends TextFieldWithBrowseButton.NoPathCompletion {
 
 	public FileSelector(Project project, String initialValue, FileChooserDescriptor descriptor) {
 		super(new JTextField(initialValue));
-		addBrowseFolderListener(
-			new RelativePathBrowseListener(descriptor, project)
-		);
+		addBrowseFolderListener(new RelativePathBrowseListener(descriptor, project));
 		installPathCompletion(descriptor);
 	}
 

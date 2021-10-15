@@ -10,6 +10,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.SearchScope;
+import name.admitriev.jhelper.common.CommonUtils;
 import name.admitriev.jhelper.components.Configurator;
 import name.admitriev.jhelper.configuration.TaskConfiguration;
 import name.admitriev.jhelper.exceptions.NotificationException;
@@ -150,17 +151,7 @@ public class CodeGenerationUtils {
 		@NotNull Project project,
 		@NotNull TaskConfiguration taskConfiguration
 	) {
-		String pathToClassFile = taskConfiguration.getCppPath();
-		VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
-		if (virtualFile == null) {
-			throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
-		}
-
-		PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
-		if (psiFile == null) {
-			throw new NotificationException("Couldn't get PSI file for input file");
-		}
-		generateSubmissionFile(project, psiFile, taskConfiguration);
+		generateSubmissionFile(project, CommonUtils.generatePSIFromTask(project, taskConfiguration), taskConfiguration);
 	}
 
 	private static void generateSubmissionFile(

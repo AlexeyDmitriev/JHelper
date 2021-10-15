@@ -74,7 +74,7 @@ public class TaskUtils {
 			taskConfiguration,
 			factory
 		);
-		manager.addConfiguration(configuration, true);
+		configuration.storeInDotIdeaFolder();
 
 		manager.setSelectedConfiguration(configuration);
 	}
