@@ -15,7 +15,7 @@ public class EditTestsAction extends BaseAction {
 	protected void performAction(AnActionEvent e) {
 		Project project = e.getProject();
 		RunnerAndConfigurationSettings selectedConfiguration =
-				RunManagerImpl.getInstanceImpl(project).getSelectedConfiguration();
+			RunManagerImpl.getInstanceImpl(project).getSelectedConfiguration();
 		if (selectedConfiguration == null) {
 			return;
 		}

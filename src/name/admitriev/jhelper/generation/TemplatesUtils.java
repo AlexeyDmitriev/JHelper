@@ -1,6 +1,5 @@
 package name.admitriev.jhelper.generation;
 
-import com.intellij.ide.impl.ProjectUtil;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;

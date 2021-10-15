@@ -9,25 +9,25 @@ import java.util.Collection;
  * A class for receiving available contests and problems from parser asynchronously
  */
 public abstract class Receiver implements DescriptionReceiver {
-    private boolean stopped = false;
+	private boolean stopped = false;
 
-    @Override
-    public boolean isStopped() {
-        return stopped;
-    }
+	@Override
+	public boolean isStopped() {
+		return stopped;
+	}
 
-    public void stop() {
-        stopped = true;
-    }
+	public void stop() {
+		stopped = true;
+	}
 
-    public static class Empty extends Receiver {
-        public Empty() {
-            stop();
-        }
+	public static class Empty extends Receiver {
+		public Empty() {
+			stop();
+		}
 
-        @Override
-        public void receiveDescriptions(Collection<Description> descriptions) {
+		@Override
+		public void receiveDescriptions(Collection<Description> descriptions) {
 
-        }
-    }
+		}
+	}
 }

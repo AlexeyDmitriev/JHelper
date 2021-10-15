@@ -32,12 +32,11 @@ public class DeleteTaskAction extends BaseAction {
 			removeFiles(project, (TaskConfiguration) configuration);
 			runManager.removeConfiguration(selectedConfiguration);
 			selectSomeTaskConfiguration(runManager);
-		}
-		else {
+		} else {
 			Notificator.showNotification(
-					"Not a JHelper configuration",
-					"To delete a configuration you should choose it first",
-					NotificationType.WARNING
+				"Not a JHelper configuration",
+				"To delete a configuration you should choose it first",
+				NotificationType.WARNING
 			);
 		}
 	}
@@ -46,23 +45,22 @@ public class DeleteTaskAction extends BaseAction {
 		String cppPath = taskConfiguration.getCppPath();
 
 		ApplicationManager.getApplication().runWriteAction(
-				new Runnable() {
-					@Override
-					public void run() {
-						VirtualFile classFile = project.getBaseDir().findFileByRelativePath(cppPath);
-						if (classFile != null) {
-							try {
-								classFile.delete(this);
-							}
-							catch (IOException ignored) {
-								Notificator.showNotification(
-										"Couldn't delete class file",
-										NotificationType.WARNING
-								);
-							}
+			new Runnable() {
+				@Override
+				public void run() {
+					VirtualFile classFile = project.getBaseDir().findFileByRelativePath(cppPath);
+					if (classFile != null) {
+						try {
+							classFile.delete(this);
+						} catch (IOException ignored) {
+							Notificator.showNotification(
+								"Couldn't delete class file",
+								NotificationType.WARNING
+							);
 						}
 					}
 				}
+			}
 		);
 	}
 

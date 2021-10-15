@@ -4,13 +4,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
-import com.jetbrains.cidr.lang.psi.OCCppNamespace;
-import com.jetbrains.cidr.lang.psi.OCDeclaration;
-import com.jetbrains.cidr.lang.psi.OCDeclarator;
-import com.jetbrains.cidr.lang.psi.OCElement;
-import com.jetbrains.cidr.lang.psi.OCFunctionDefinition;
-import com.jetbrains.cidr.lang.psi.OCStructLike;
-import com.jetbrains.cidr.lang.psi.OCTypeElement;
+import com.jetbrains.cidr.lang.psi.*;
 import com.jetbrains.cidr.lang.psi.impl.OCDefineDirectiveImpl;
 import com.jetbrains.cidr.lang.psi.visitors.OCVisitor;
 
@@ -26,15 +20,14 @@ public class DeletionMarkingVisitor extends OCVisitor {
 		this.searchScope = searchScope;
 	}
 
-	private static boolean isParentFor(OCElement potentialParent, PsiElement potentialChild) {
-		while (potentialChild != null) {
-			//noinspection ObjectEquality
-			if (potentialChild == potentialParent) {
-				return true;
-			}
-			potentialChild = potentialChild.getParent();
-		}
-		return false;
+	@Override
+	public void visitDeclaration(OCDeclaration declaration) {
+		declaration.acceptChildren(this);
+	}
+
+	@Override
+	public void visitDeclarator(OCDeclarator declarator) {
+		removeIfNoReference(declarator);
 	}
 
 	@Override
@@ -50,16 +43,6 @@ public class DeletionMarkingVisitor extends OCVisitor {
 		super.visitFunctionDefinition(functionDefinition);
 	}
 
-	private void removeIfNoReference(OCElement element) {
-		for (PsiReference reference : ReferencesSearch.search(element, searchScope)) {
-			PsiElement referenceElement = reference.getElement();
-			if (!isParentFor(element, referenceElement)) {
-				return;
-			}
-		}
-		toDelete.add(element);
-	}
-
 	@Override
 	public void visitNamespace(OCCppNamespace namespace) {
 		if (namespace.getChildren().length == 0) {
@@ -67,17 +50,6 @@ public class DeletionMarkingVisitor extends OCVisitor {
 		} else {
 			namespace.acceptChildren(this);
 		}
-	}
-
-	@Override
-	public void visitDefineDirective(OCDefineDirectiveImpl directive) {
-		removeIfNoReference(directive);
-	}
-
-
-	@Override
-	public void visitDeclarator(OCDeclarator declarator) {
-		removeIfNoReference(declarator);
 	}
 
 	@Override
@@ -92,7 +64,28 @@ public class DeletionMarkingVisitor extends OCVisitor {
 	}
 
 	@Override
-	public void visitDeclaration(OCDeclaration declaration) {
-		declaration.acceptChildren(this);
+	public void visitDefineDirective(OCDefineDirectiveImpl directive) {
+		removeIfNoReference(directive);
+	}
+
+	private void removeIfNoReference(OCElement element) {
+		for (PsiReference reference : ReferencesSearch.search(element, searchScope)) {
+			PsiElement referenceElement = reference.getElement();
+			if (!isParentFor(element, referenceElement)) {
+				return;
+			}
+		}
+		toDelete.add(element);
+	}
+
+	private static boolean isParentFor(OCElement potentialParent, PsiElement potentialChild) {
+		while (potentialChild != null) {
+			//noinspection ObjectEquality
+			if (potentialChild == potentialParent) {
+				return true;
+			}
+			potentialChild = potentialChild.getParent();
+		}
+		return false;
 	}
 }

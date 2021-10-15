@@ -21,8 +21,18 @@ public class UIUtils {
 
 	/**
 	 * Make two fields change simultaneously until the second one ({@code copy}) changed manually.
+	 * Maintains equality of {@code main.getText()} and {@code copy.getText()}
+	 * <p>
+	 * Does nothing if this equality is wrong when method is called.
+	 */
+	public static void mirrorFields(JTextField main, JTextField copy) {
+		mirrorFields(main, copy, "%s");
+	}
+
+	/**
+	 * Make two fields change simultaneously until the second one ({@code copy}) changed manually.
 	 * Maintains equality of {@code String.format(format, main.getText())} and {@code copy.getText()}
-	 *
+	 * <p>
 	 * Does nothing if this equality is wrong when method is called.
 	 *
 	 * @param format format for {@link String#format}. Should contain exactly one format specifier equal to %s
@@ -36,44 +46,34 @@ public class UIUtils {
 		AtomicBoolean secondChanged = new AtomicBoolean(false);
 		main.getDocument().addDocumentListener(
 
-				new DocumentAdapter() {
+			new DocumentAdapter() {
 
-					@Override
-					protected void textChanged(DocumentEvent e) {
-						if (secondChanged.get()) {
-							return;
-						}
-						while (!changingFirst.compareAndSet(false, true)) {
-							// intentionally empty
-						}
-
-						copy.setText(String.format(format, main.getText()));
-
-						changingFirst.set(false);
+				@Override
+				protected void textChanged(@NotNull DocumentEvent e) {
+					if (secondChanged.get()) {
+						return;
 					}
+					while (!changingFirst.compareAndSet(false, true)) {
+						// intentionally empty
+					}
+
+					copy.setText(String.format(format, main.getText()));
+
+					changingFirst.set(false);
 				}
+			}
 		);
 
 		copy.getDocument().addDocumentListener(
-				new DocumentAdapter() {
-					@Override
-					protected void textChanged(DocumentEvent e) {
-						if (!changingFirst.get()) {
-							secondChanged.set(true);
-						}
+			new DocumentAdapter() {
+				@Override
+				protected void textChanged(@NotNull DocumentEvent e) {
+					if (!changingFirst.get()) {
+						secondChanged.set(true);
 					}
 				}
+			}
 		);
-	}
-
-	/**
-	 * Make two fields change simultaneously until the second one ({@code copy}) changed manually.
-	 * Maintains equality of {@code main.getText()} and {@code copy.getText()}
-	 *
-	 * Does nothing if this equality is wrong when method is called.
-	 */
-	public static void mirrorFields(JTextField main, JTextField copy) {
-		mirrorFields(main, copy, "%s");
 	}
 
 	/**
@@ -81,29 +81,29 @@ public class UIUtils {
 	 */
 	public static void openMethodInEditor(Project project, OCFile file, String methodName) {
 		new OpenFileDescriptor(
-				project,
-				file.getVirtualFile(),
-				findMethodBody(file, methodName).getTextOffset()
+			project,
+			file.getVirtualFile(),
+			findMethodBody(file, methodName).getTextOffset()
 		).navigate(true);
 	}
 
 	private static PsiElement findMethodBody(OCFile file, @NotNull String method) {
 		Ref<PsiElement> result = new Ref<>();
 		file.accept(
-				new OCRecursiveVisitor() {
-					@Override
-					public void visitFunctionDefinition(OCFunctionDefinition ocFunctionDefinition) {
-						if (method.equals(ocFunctionDefinition.getName())) {
-							// continue recursion
-							super.visitFunctionDefinition(ocFunctionDefinition);
-						}
-					}
+			new OCRecursiveVisitor() {
+				@Override
+				public void visitBlockStatement(OCBlockStatement ocBlockStatement) {
+					result.set(ocBlockStatement.getOpeningBrace().getNextSibling());
+				}
 
-					@Override
-					public void visitBlockStatement(OCBlockStatement ocBlockStatement) {
-						result.set(ocBlockStatement.getOpeningBrace().getNextSibling());
+				@Override
+				public void visitFunctionDefinition(OCFunctionDefinition ocFunctionDefinition) {
+					if (method.equals(ocFunctionDefinition.getName())) {
+						// continue recursion
+						super.visitFunctionDefinition(ocFunctionDefinition);
 					}
 				}
+			}
 		);
 		return result.get();
 	}

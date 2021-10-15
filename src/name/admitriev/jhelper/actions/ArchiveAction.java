@@ -22,49 +22,49 @@ import java.nio.charset.StandardCharsets;
 
 public class ArchiveAction extends BaseAction {
 
-    @Override
-    protected void performAction(AnActionEvent e) {
-        Project project = e.getProject();
-        if (project == null) {
-            throw new NotificationException("No project found", "Are you in any project?");
-        }
-        Configurator configurator = project.getComponent(Configurator.class);
-        Configurator.State configuration = configurator.getState();
+	@Override
+	protected void performAction(AnActionEvent e) {
+		Project project = e.getProject();
+		if (project == null) {
+			throw new NotificationException("No project found", "Are you in any project?");
+		}
+		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator.State configuration = configurator.getState();
 
-        RunManagerEx runManager = RunManagerEx.getInstanceEx(project);
-        RunnerAndConfigurationSettings selectedConfiguration = runManager.getSelectedConfiguration();
-        if (selectedConfiguration == null) {
-            return;
-        }
+		RunManagerEx runManager = RunManagerEx.getInstanceEx(project);
+		RunnerAndConfigurationSettings selectedConfiguration = runManager.getSelectedConfiguration();
+		if (selectedConfiguration == null) {
+			return;
+		}
 
-        RunConfiguration runConfiguration = selectedConfiguration.getConfiguration();
-        if (!(runConfiguration instanceof TaskConfiguration)) {
-            Notificator.showNotification(
-                "Not a JHelper configuration",
-                "You have to choose JHelper Task to copy",
-                NotificationType.WARNING
-            );
-            return;
-        }
+		RunConfiguration runConfiguration = selectedConfiguration.getConfiguration();
+		if (!(runConfiguration instanceof TaskConfiguration)) {
+			Notificator.showNotification(
+				"Not a JHelper configuration",
+				"You have to choose JHelper Task to copy",
+				NotificationType.WARNING
+			);
+			return;
+		}
 
-        CodeGenerationUtils.generateSubmissionFileForTask(project, (TaskConfiguration) runConfiguration);
+		CodeGenerationUtils.generateSubmissionFileForTask(project, (TaskConfiguration) runConfiguration);
 
-        VirtualFile file = project.getBaseDir().findFileByRelativePath(configuration.getOutputFile());
-        if (file == null) throw new NotificationException("Couldn't find output file");
+		VirtualFile file = project.getBaseDir().findFileByRelativePath(configuration.getOutputFile());
+		if (file == null) throw new NotificationException("Couldn't find output file");
 
-        ArchiveDialog archiveDialog = new ArchiveDialog(project, configuration, (TaskConfiguration) runConfiguration);
-        archiveDialog.show();
-        if (archiveDialog.isOK()) {
-            Document document = FileDocumentManager.getInstance().getDocument(file);
-            if (document == null) throw new NotificationException("Cannot create Document");
-            try {
-                String fileName = archiveDialog.getArchiveFile();
-                PrintWriter writer = new PrintWriter(fileName, String.valueOf(StandardCharsets.UTF_8));
-                writer.write(document.getText());
-                writer.close();
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-        }
-    }
+		ArchiveDialog archiveDialog = new ArchiveDialog(project, configuration, (TaskConfiguration) runConfiguration);
+		archiveDialog.show();
+		if (archiveDialog.isOK()) {
+			Document document = FileDocumentManager.getInstance().getDocument(file);
+			if (document == null) throw new NotificationException("Cannot create Document");
+			try {
+				String fileName = archiveDialog.getArchiveFile();
+				PrintWriter writer = new PrintWriter(fileName, String.valueOf(StandardCharsets.UTF_8));
+				writer.write(document.getText());
+				writer.close();
+			} catch (IOException exception) {
+				exception.printStackTrace();
+			}
+		}
+	}
 }

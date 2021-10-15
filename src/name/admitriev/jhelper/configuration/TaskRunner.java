@@ -26,85 +26,85 @@ import java.util.List;
  * as described in <a href="http://confluence.jetbrains.com/display/IDEADEV/Run+Configurations#RunConfigurations-RunningaProcess">IDEA DEV Confluence</a>
  */
 public class TaskRunner implements ProgramRunner<RunnerSettings> {
-    private static final String RUN_CONFIGURATION_NAME = "testrunner";
+	private static final String RUN_CONFIGURATION_NAME = "testrunner";
 
-    @NotNull
-    @Override
-    public String getRunnerId() {
-        return "name.admitriev.jhelper.configuration.TaskRunner";
-    }
+	@Nullable
+	public static RunnerAndConfigurationSettings getRunnerSettings(@NotNull Project project) {
+		return getSettingsByName(project);
+	}
 
-    @Override
-    public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile) {
-        return profile instanceof TaskConfiguration;
-    }
+	@Nullable
+	private static RunnerAndConfigurationSettings getSettingsByName(@NotNull Project project) {
+		for (RunnerAndConfigurationSettings configuration : RunManager.getInstance(project).getAllSettings()) {
+			if (configuration.getName().equals(TaskRunner.RUN_CONFIGURATION_NAME)) {
+				return configuration;
+			}
+		}
+		return null;
+	}
 
-    /**
-     * Runs specified TaskConfiguration: generates code and then runs output configuration.
-     *
-     * @throws ClassCastException if {@code environment.getRunProfile()} is not {@link TaskConfiguration}.
-     * @see ExecutionEnvironment#getRunProfile()
-     */
-    @Override
-    public void execute(@NotNull ExecutionEnvironment environment) {
-        Project project = environment.getProject();
+	@NotNull
+	@Override
+	public String getRunnerId() {
+		return "name.admitriev.jhelper.configuration.TaskRunner";
+	}
 
-        TaskConfiguration taskConfiguration = (TaskConfiguration) environment.getRunProfile();
-        CodeGenerationUtils.generateSubmissionFileForTask(project, taskConfiguration);
+	@Override
+	public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile) {
+		return profile instanceof TaskConfiguration;
+	}
 
-        generateRunFileForTask(project, taskConfiguration);
+	/**
+	 * Runs specified TaskConfiguration: generates code and then runs output configuration.
+	 *
+	 * @throws ClassCastException if {@code environment.getRunProfile()} is not {@link TaskConfiguration}.
+	 * @see ExecutionEnvironment#getRunProfile()
+	 */
+	@Override
+	public void execute(@NotNull ExecutionEnvironment environment) {
+		Project project = environment.getProject();
 
-        List<RunnerAndConfigurationSettings> allSettings = RunManager.getInstance(project).getAllSettings();
-        RunnerAndConfigurationSettings testRunnerSettings = null;
-        for (RunnerAndConfigurationSettings configuration : allSettings) {
-            if (configuration.getName().equals(RUN_CONFIGURATION_NAME)) {
-                testRunnerSettings = configuration;
-            }
-        }
-        if (testRunnerSettings == null) {
-            throw new NotificationException(
-                "No run configuration found",
-                "It should be called (" + RUN_CONFIGURATION_NAME + ")"
-            );
-        }
+		TaskConfiguration taskConfiguration = (TaskConfiguration) environment.getRunProfile();
+		CodeGenerationUtils.generateSubmissionFileForTask(project, taskConfiguration);
 
-        ExecutionTarget originalExecutionTarget = environment.getExecutionTarget();
-        ExecutionTarget testRunnerExecutionTarget = ((TaskConfigurationExecutionTarget) originalExecutionTarget).getOriginalTarget();
-        RunnerAndConfigurationSettings originalSettings = environment.getRunnerAndConfigurationSettings();
+		generateRunFileForTask(project, taskConfiguration);
 
-        IDEUtils.chooseConfigurationAndTarget(project, testRunnerSettings, testRunnerExecutionTarget);
-        ProgramRunnerUtil.executeConfiguration(testRunnerSettings, environment.getExecutor());
+		List<RunnerAndConfigurationSettings> allSettings = RunManager.getInstance(project).getAllSettings();
+		RunnerAndConfigurationSettings testRunnerSettings = null;
+		for (RunnerAndConfigurationSettings configuration : allSettings) {
+			if (configuration.getName().equals(RUN_CONFIGURATION_NAME)) {
+				testRunnerSettings = configuration;
+			}
+		}
+		if (testRunnerSettings == null) {
+			throw new NotificationException(
+				"No run configuration found",
+				"It should be called (" + RUN_CONFIGURATION_NAME + ")"
+			);
+		}
 
-        IDEUtils.chooseConfigurationAndTarget(project, originalSettings, originalExecutionTarget);
-    }
+		ExecutionTarget originalExecutionTarget = environment.getExecutionTarget();
+		ExecutionTarget testRunnerExecutionTarget = ((TaskConfigurationExecutionTarget) originalExecutionTarget).getOriginalTarget();
+		RunnerAndConfigurationSettings originalSettings = environment.getRunnerAndConfigurationSettings();
 
-    @Nullable
-    public static RunnerAndConfigurationSettings getRunnerSettings(@NotNull Project project) {
-        return getSettingsByName(project, RUN_CONFIGURATION_NAME);
-    }
+		IDEUtils.chooseConfigurationAndTarget(project, testRunnerSettings, testRunnerExecutionTarget);
+		ProgramRunnerUtil.executeConfiguration(testRunnerSettings, environment.getExecutor());
 
-    private static void generateRunFileForTask(Project project, TaskConfiguration taskConfiguration) {
-        String pathToClassFile = taskConfiguration.getCppPath();
-        VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
-        if (virtualFile == null) {
-            throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
-        }
+		IDEUtils.chooseConfigurationAndTarget(project, originalSettings, originalExecutionTarget);
+	}
 
-        PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
-        if (psiFile == null) {
-            throw new NotificationException("Couldn't get PSI file for input file");
-        }
+	private static void generateRunFileForTask(Project project, TaskConfiguration taskConfiguration) {
+		String pathToClassFile = taskConfiguration.getCppPath();
+		VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
+		if (virtualFile == null) {
+			throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
+		}
 
-        CodeGenerationUtils.generateRunFile(project, psiFile, taskConfiguration);
-    }
+		PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
+		if (psiFile == null) {
+			throw new NotificationException("Couldn't get PSI file for input file");
+		}
 
-    @Nullable
-    private static RunnerAndConfigurationSettings getSettingsByName(@NotNull Project project, String name) {
-        for (RunnerAndConfigurationSettings configuration : RunManager.getInstance(project).getAllSettings()) {
-            if (configuration.getName().equals(name)) {
-                return configuration;
-            }
-        }
-        return null;
-    }
+		CodeGenerationUtils.generateRunFile(project, psiFile, taskConfiguration);
+	}
 }

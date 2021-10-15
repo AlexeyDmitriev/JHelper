@@ -55,36 +55,6 @@ public class CodeGenerationUtils {
 		);
 	}
 
-	private static void generateSubmissionFile(
-		@NotNull Project project,
-		@NotNull PsiFile inputFile,
-		@NotNull TaskConfiguration task
-	) {
-		if (FileUtils.isNotCppFile(inputFile)) {
-			throw new NotificationException("Not a cpp file", "Only cpp files are currently supported");
-		}
-
-		String result = IncludesProcessor.process(inputFile);
-		PsiFile psiOutputFile = getOutputFile(project);
-
-		FileUtils.writeToFile(
-			psiOutputFile,
-			generateSubmissionFileContent(project, result, task)
-		);
-
-		Configurator configurator = project.getComponent(Configurator.class);
-		Configurator.State configuration = configurator.getState();
-
-		if (configuration.isCodeEliminationOn()) {
-			removeUnusedCode(psiOutputFile);
-		}
-
-		if (configuration.isCodeReformattingOn()) {
-			new ReformatCodeProcessor(psiOutputFile, false).run();
-		}
-	}
-
-
 	private static String generateRunFileContent(Project project, TaskConfiguration task, String path) {
 		String template = TemplatesUtils.getTemplate(project, "run");
 		template = TemplatesUtils.replaceAll(template, TemplatesUtils.TASK_FILE, path);
@@ -129,6 +99,97 @@ public class CodeGenerationUtils {
 		}
 		sb.append('"');
 		return sb;
+	}
+
+	private static String generateSolverCall(TestType testType) {
+		switch (testType) {
+			case SINGLE:
+				return "solver.solve();";
+			case MULTI_NUMBER:
+				return "int n;\n" +
+					"cin >> n;\n" +
+					"for(int i = 0; i < n; ++i) {\n" +
+					"\tsolver.solve();\n" +
+					"}\n";
+			case MULTI_EOF:
+				return "while(in.good()) {\n" +
+					"\tsolver.solve(in, out);\n" +
+					"}\n";
+			default:
+				throw new IllegalArgumentException("Unknown testType:" + testType);
+		}
+	}
+
+	@NotNull
+	private static PsiFile getRunFile(Project project) {
+		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator.State configuration = configurator.getState();
+
+		VirtualFile outputFile = project.getBaseDir().findFileByRelativePath(configuration.getRunFile());
+		if (outputFile == null) {
+			throw new NotificationException(
+				"No run file found.",
+				"You should configure run file to point to existing file"
+			);
+		}
+
+		PsiFile psiOutputFile = PsiManager.getInstance(project).findFile(outputFile);
+		if (psiOutputFile == null) {
+			throw new NotificationException("Couldn't open run file as PSI");
+		}
+		return psiOutputFile;
+	}
+
+	/**
+	 * Generates code for submission.
+	 * Adds main function, inlines all used code except standard library and puts it to output file from configuration
+	 *
+	 * @param project Project to get configuration from
+	 */
+	public static void generateSubmissionFileForTask(
+		@NotNull Project project,
+		@NotNull TaskConfiguration taskConfiguration
+	) {
+		String pathToClassFile = taskConfiguration.getCppPath();
+		VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
+		if (virtualFile == null) {
+			throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
+		}
+
+		PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
+		if (psiFile == null) {
+			throw new NotificationException("Couldn't get PSI file for input file");
+		}
+		generateSubmissionFile(project, psiFile, taskConfiguration);
+	}
+
+	private static void generateSubmissionFile(
+		@NotNull Project project,
+		@NotNull PsiFile inputFile,
+		@NotNull TaskConfiguration task
+	) {
+		if (FileUtils.isNotCppFile(inputFile)) {
+			throw new NotificationException("Not a cpp file", "Only cpp files are currently supported");
+		}
+
+		String result = IncludesProcessor.process(inputFile);
+		PsiFile psiOutputFile = getOutputFile(project);
+
+		FileUtils.writeToFile(
+			psiOutputFile,
+			generateSubmissionFileContent(project, result, task)
+		);
+
+		Configurator configurator = project.getComponent(Configurator.class);
+		Configurator.State configuration = configurator.getState();
+
+		if (configuration.isCodeEliminationOn()) {
+			removeUnusedCode(psiOutputFile);
+		}
+
+		if (configuration.isCodeReformattingOn()) {
+			new ReformatCodeProcessor(psiOutputFile, false).run();
+		}
 	}
 
 	private static String generateSubmissionFileContent(Project project, String code, TaskConfiguration task) {
@@ -186,25 +247,6 @@ public class CodeGenerationUtils {
 			"}";
 	}
 
-	private static String generateSolverCall(TestType testType) {
-		switch (testType) {
-			case SINGLE:
-				return "solver.solve();";
-			case MULTI_NUMBER:
-				return "int n;\n" +
-					"cin >> n;\n" +
-					"for(int i = 0; i < n; ++i) {\n" +
-					"\tsolver.solve();\n" +
-					"}\n";
-			case MULTI_EOF:
-				return "while(in.good()) {\n" +
-					"\tsolver.solve(in, out);\n" +
-					"}\n";
-			default:
-				throw new IllegalArgumentException("Unknown testType:" + testType);
-		}
-	}
-
 	private static String getOutputDeclaration(TaskConfiguration task) {
 		String outputFileName = task.getOutput().getFileName(task.getName(), ".out");
 		if (outputFileName == null) {
@@ -244,27 +286,6 @@ public class CodeGenerationUtils {
 		return psiOutputFile;
 	}
 
-
-	@NotNull
-	private static PsiFile getRunFile(Project project) {
-		Configurator configurator = project.getComponent(Configurator.class);
-		Configurator.State configuration = configurator.getState();
-
-		VirtualFile outputFile = project.getBaseDir().findFileByRelativePath(configuration.getRunFile());
-		if (outputFile == null) {
-			throw new NotificationException(
-				"No run file found.",
-				"You should configure run file to point to existing file"
-			);
-		}
-
-		PsiFile psiOutputFile = PsiManager.getInstance(project).findFile(outputFile);
-		if (psiOutputFile == null) {
-			throw new NotificationException("Couldn't open run file as PSI");
-		}
-		return psiOutputFile;
-	}
-
 	private static void removeUnusedCode(PsiFile file) {
 		while (true) {
 			Collection<PsiElement> toDelete = new ArrayList<>();
@@ -278,28 +299,5 @@ public class CodeGenerationUtils {
 				() -> toDelete.forEach(PsiElement::delete)
 			);
 		}
-	}
-
-	/**
-	 * Generates code for submission.
-	 * Adds main function, inlines all used code except standard library and puts it to output file from configuration
-	 *
-	 * @param project Project to get configuration from
-	 */
-	public static void generateSubmissionFileForTask(
-		@NotNull Project project,
-		@NotNull TaskConfiguration taskConfiguration
-	) {
-		String pathToClassFile = taskConfiguration.getCppPath();
-		VirtualFile virtualFile = project.getBaseDir().findFileByRelativePath(pathToClassFile);
-		if (virtualFile == null) {
-			throw new NotificationException("Task file not found", "Seems your task is in inconsistent state");
-		}
-
-		PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
-		if (psiFile == null) {
-			throw new NotificationException("Couldn't get PSI file for input file");
-		}
-		generateSubmissionFile(project, psiFile, taskConfiguration);
 	}
 }

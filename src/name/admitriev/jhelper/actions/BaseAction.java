@@ -13,19 +13,17 @@ public abstract class BaseAction extends AnAction {
 	public void actionPerformed(@NotNull AnActionEvent e) {
 		try {
 			performAction(e);
-		}
-		catch (NotificationException exception) {
+		} catch (NotificationException exception) {
 			Notificator.showNotification(
-					exception.getTitle(),
-					exception.getContent(),
-					NotificationType.ERROR
+				exception.getTitle(),
+				exception.getContent(),
+				NotificationType.ERROR
 			);
-		}
-		catch (JHelperException exception) {
+		} catch (JHelperException exception) {
 			Notificator.showNotification(
-					"Please report this exception to our bug tracker",
-					"You can see it again in the event log",
-					NotificationType.ERROR
+				"Please report this exception to our bug tracker",
+				"You can see it again in the event log",
+				NotificationType.ERROR
 			);
 			throw exception;
 		}

@@ -25,13 +25,13 @@ runIde {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile fileTree(dir: 'lib', include: 'chelper.jar')
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    implementation fileTree(dir: 'lib', include: 'chelper.jar')
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2020.3'
+    version '2021.1'
     updateSinceUntilBuild false
     type 'CL'
     setPlugins('com.intellij.clion', 'com.intellij.cidr.lang')

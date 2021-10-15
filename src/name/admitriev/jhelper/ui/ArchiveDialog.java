@@ -13,45 +13,45 @@ import javax.swing.*;
 import java.io.File;
 
 public class ArchiveDialog extends DialogWrapper {
-    private final JComponent component;
+	private final JComponent component;
 
-    private JTextField archiveFileName;
-    private FileSelector archiveDirectory;
-    private File baseFile;
+	private final JTextField archiveFileName;
+	private final FileSelector archiveDirectory;
+	private final File baseFile;
 
-    public ArchiveDialog(@NotNull Project project, Configurator.State configuration, TaskConfiguration runConfiguration) {
-        super(project);
-        setTitle("Archive Task");
-        baseFile = new File(project.getBasePath());
-        archiveDirectory = new FileSelector(
-            project,
-            configuration.getArchiveDirectory(),
-            RelativeFileChooserDescriptor.directoryChooser(project.getBaseDir())
-        );
-        archiveFileName = new JTextField(runConfiguration.getName());
+	public ArchiveDialog(@NotNull Project project, Configurator.State configuration, TaskConfiguration runConfiguration) {
+		super(project);
+		setTitle("Archive Task");
+		baseFile = new File(project.getBasePath());
+		archiveDirectory = new FileSelector(
+			project,
+			configuration.getArchiveDirectory(),
+			RelativeFileChooserDescriptor.directoryChooser(project.getBaseDir())
+		);
+		archiveFileName = new JTextField(runConfiguration.getName());
 
-        JPanel panel = new JPanel(new VerticalLayout());
-        panel.add(LabeledComponent.create(archiveDirectory, "Archive Directory"));
-        panel.add(LabeledComponent.create(archiveFileName, "Archive file"));
+		JPanel panel = new JPanel(new VerticalLayout());
+		panel.add(LabeledComponent.create(archiveDirectory, "Archive directory"));
+		panel.add(LabeledComponent.create(archiveFileName, "Archive file"));
 
-        component = panel;
-        init();
-    }
+		component = panel;
+		init();
+	}
 
-    @Nullable
-    @Override
-    protected JComponent createCenterPanel() {
-        return component;
-    }
+	@Nullable
+	@Override
+	protected JComponent createCenterPanel() {
+		return component;
+	}
 
-    public String getArchiveFile() {
-        File file = new File(baseFile, archiveDirectory.getText());
-        String fileName = archiveFileName.getText();
-        if (!fileName.contains(".cpp")) {
-            fileName += ".cpp";
-        }
-        file = new File(file, fileName);
-        file.getParentFile().mkdirs();
-        return file.getAbsolutePath();
-    }
+	public String getArchiveFile() {
+		File file = new File(baseFile, archiveDirectory.getText());
+		String fileName = archiveFileName.getText();
+		if (!fileName.contains(".cpp")) {
+			fileName += ".cpp";
+		}
+		file = new File(file, fileName);
+		file.getParentFile().mkdirs();
+		return file.getAbsolutePath();
+	}
 }

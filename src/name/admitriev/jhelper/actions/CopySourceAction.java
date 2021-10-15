@@ -37,14 +37,14 @@ public class CopySourceAction extends BaseAction {
 		RunConfiguration runConfiguration = selectedConfiguration.getConfiguration();
 		if (!(runConfiguration instanceof TaskConfiguration)) {
 			Notificator.showNotification(
-					"Not a JHelper configuration",
-					"You have to choose JHelper Task to copy",
-					NotificationType.WARNING
+				"Not a JHelper configuration",
+				"You have to choose JHelper Task to copy",
+				NotificationType.WARNING
 			);
 			return;
 		}
 
-		CodeGenerationUtils.generateSubmissionFileForTask(project, (TaskConfiguration)runConfiguration);
+		CodeGenerationUtils.generateSubmissionFileForTask(project, (TaskConfiguration) runConfiguration);
 
 		VirtualFile file = project.getBaseDir().findFileByRelativePath(configuration.getOutputFile());
 		if (file == null)

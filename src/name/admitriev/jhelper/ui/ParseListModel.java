@@ -10,33 +10,33 @@ import java.util.List;
  * ListModel that allows adding an entire {@code Collection}
  */
 public class ParseListModel<T> extends AbstractListModel<T> {
-    private final List<T> list = new ArrayList<>();
+	private final List<T> list = new ArrayList<>();
 
-    @Override
-    public int getSize() {
-        return list.size();
-    }
+	public void removeAll() {
+		int size = getSize();
+		if (size == 0) {
+			return;
+		}
+		list.clear();
+		fireIntervalRemoved(this, 0, size - 1);
+	}
 
-    @Override
-    public T getElementAt(int index) {
-        return list.get(index);
-    }
+	@Override
+	public int getSize() {
+		return list.size();
+	}
 
-    public void removeAll() {
-        int size = getSize();
-        if (size == 0) {
-            return;
-        }
-        list.clear();
-        fireIntervalRemoved(this, 0, size - 1);
-    }
+	@Override
+	public T getElementAt(int index) {
+		return list.get(index);
+	}
 
-    public void addAll(Collection<T> collection) {
-        if (collection.isEmpty()) {
-            return;
-        }
-        int size = getSize();
-        list.addAll(collection);
-        fireIntervalAdded(this, size, getSize() - 1);
-    }
+	public void addAll(Collection<T> collection) {
+		if (collection.isEmpty()) {
+			return;
+		}
+		int size = getSize();
+		list.addAll(collection);
+		fireIntervalAdded(this, size, getSize() - 1);
+	}
 }

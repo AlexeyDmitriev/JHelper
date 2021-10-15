@@ -19,6 +19,17 @@ public class IncludesProcessor {
 	private IncludesProcessor() {
 	}
 
+	private static boolean isInternalInclude(OCIncludeDirective include) {
+		PsiFile file = include.getIncludedFile();
+		return file != null && ((OCFile) file).isInProjectSources();
+	}
+
+	public static @NotNull String process(PsiFile file) {
+		IncludesProcessor processor = new IncludesProcessor();
+		processor.processFile(file);
+		return processor.result.toString();
+	}
+
 	private void processFile(PsiFile file) {
 		if (processedFiles.contains(file)) {
 			return;
@@ -44,11 +55,6 @@ public class IncludesProcessor {
 		}
 	}
 
-	private static boolean isInternalInclude(OCIncludeDirective include) {
-		PsiFile file = include.getIncludedFile();
-		return file != null && ((OCFile) file).isInProjectSources();
-	}
-
 	private void processAngleBracketsInclude(OCIncludeDirective include) {
 		PsiFile file = include.getIncludedFile();
 		if (processedFiles.contains(file)) {
@@ -56,11 +62,5 @@ public class IncludesProcessor {
 		}
 		processedFiles.add(file);
 		result.append(include.getText());
-	}
-
-	public static @NotNull String process(PsiFile file) {
-		IncludesProcessor processor = new IncludesProcessor();
-		processor.processFile(file);
-		return processor.result.toString();
 	}
 }

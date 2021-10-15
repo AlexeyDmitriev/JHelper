@@ -15,17 +15,15 @@ import javax.swing.*;
  * Panel for task configuration.
  */
 public final class TaskSettingsComponent extends JPanel {
+	private final boolean canChangeName;
+	private final Project project;
+	private final StreamConfigurationPanel.SizeChangedListener listener;
 	private JTextField name = null;
 	private JTextField className = null;
 	private FileSelector cppPath = null;
 	private StreamConfigurationPanel input = null;
 	private StreamConfigurationPanel output = null;
 	private ComboBox<TestType> testType = null;
-	private final boolean canChangeName;
-
-	private Project project;
-
-	private StreamConfigurationPanel.SizeChangedListener listener;
 
 	public TaskSettingsComponent(Project project, boolean canChangeName) {
 		this(project, canChangeName, null);
@@ -47,21 +45,21 @@ public final class TaskSettingsComponent extends JPanel {
 
 		className = new JTextField(taskData.getClassName());
 		cppPath = new FileSelector(
-				project,
-				taskData.getCppPath(),
-				RelativeFileChooserDescriptor.fileChooser(project.getBaseDir())
+			project,
+			taskData.getCppPath(),
+			RelativeFileChooserDescriptor.fileChooser(project.getBaseDir())
 		);
 		input = new StreamConfigurationPanel(
-				taskData.getInput(),
-				StreamConfiguration.StreamType.values(),
-				"input.txt",
-				listener
+			taskData.getInput(),
+			StreamConfiguration.StreamType.values(),
+			"input.txt",
+			listener
 		);
 		output = new StreamConfigurationPanel(
-				taskData.getOutput(),
-				StreamConfiguration.OUTPUT_TYPES,
-				"output.txt",
-				listener
+			taskData.getOutput(),
+			StreamConfiguration.OUTPUT_TYPES,
+			"output.txt",
+			listener
 		);
 
 		testType = new ComboBox<>(TestType.values());
@@ -80,13 +78,13 @@ public final class TaskSettingsComponent extends JPanel {
 
 	public TaskData getTask() {
 		return new TaskData(
-				name.getText(),
-				className.getText(),
-				cppPath.getText(),
-				input.getStreamConfiguration(),
-				output.getStreamConfiguration(),
-				(TestType) testType.getSelectedItem(),
-				new Test[0]
+			name.getText(),
+			className.getText(),
+			cppPath.getText(),
+			input.getStreamConfiguration(),
+			output.getStreamConfiguration(),
+			(TestType) testType.getSelectedItem(),
+			new Test[0]
 		);
 	}
 

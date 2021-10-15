@@ -12,32 +12,32 @@ import javax.swing.*;
 
 public class FileSelector extends TextFieldWithBrowseButton.NoPathCompletion {
 
-    public FileSelector(Project project, String initialValue, FileChooserDescriptor descriptor) {
-        super(new JTextField(initialValue));
-        addBrowseFolderListener(
-            new RelativePathBrowseListener(descriptor, project)
-        );
-        installPathCompletion(descriptor);
-    }
+	public FileSelector(Project project, String initialValue, FileChooserDescriptor descriptor) {
+		super(new JTextField(initialValue));
+		addBrowseFolderListener(
+			new RelativePathBrowseListener(descriptor, project)
+		);
+		installPathCompletion(descriptor);
+	}
 
-    private static class RelativePathBrowseListener extends TextBrowseFolderListener {
-        private final String basePath;
+	private static class RelativePathBrowseListener extends TextBrowseFolderListener {
+		private final String basePath;
 
-        private RelativePathBrowseListener(FileChooserDescriptor descriptor, Project project) {
-            super(descriptor, project);
-            basePath = project.getBasePath();
-        }
+		private RelativePathBrowseListener(FileChooserDescriptor descriptor, Project project) {
+			super(descriptor, project);
+			basePath = project.getBasePath();
+		}
 
-        @NotNull
-        @Override
-        protected String chosenFileToResultingText(@NotNull VirtualFile chosenFile) {
-            return FileUtils.relativePath(basePath, chosenFile.getPath());
-        }
+		@NotNull
+		@Override
+		protected String expandPath(@NotNull String path) {
+			return basePath + '/' + path;
+		}
 
-        @NotNull
-        @Override
-        protected String expandPath(@NotNull String path) {
-            return basePath + '/' + path;
-        }
-    }
+		@NotNull
+		@Override
+		protected String chosenFileToResultingText(@NotNull VirtualFile chosenFile) {
+			return FileUtils.relativePath(basePath, chosenFile.getPath());
+		}
+	}
 }
