@@ -15,9 +15,7 @@ public class ConfigureAction extends BaseAction {
 		}
 
 		Configurator configurator = project.getComponent(Configurator.class);
-		Configurator.State configuration = configurator.getState();
-
-		ConfigurationDialog x = new ConfigurationDialog(project, configuration);
+		ConfigurationDialog x = new ConfigurationDialog(project, configurator.getState());
 		x.show();
 		if (x.isOK()) {
 			configurator.loadState(x.getConfiguration());

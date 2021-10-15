@@ -46,16 +46,7 @@ public class EditTestsDialog extends DialogWrapper {
 		JPanel mainPanel = new JPanel(mainLayout);
 		JPanel selectorAndButtonsPanel = new JPanel(new BorderLayout());
 
-		selectorAndButtonsPanel.add(
-			LabeledComponent.create(
-				new JBScrollPane(
-					generateListPanel(),
-					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-				),
-				"Tests"
-			)
-		);
+		selectorAndButtonsPanel.add(LabeledComponent.create(new JBScrollPane(generateListPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), "Tests"));
 
 		selectorAndButtonsPanel.add(createButtonPanel(), BorderLayout.PAGE_END);
 		mainPanel.add(selectorAndButtonsPanel);
@@ -71,27 +62,23 @@ public class EditTestsDialog extends DialogWrapper {
 	private JPanel generateListPanel() {
 		JPanel checkBoxesAndSelectorPanel = new JPanel(new BorderLayout());
 		checkBoxesPanel = new JPanel(new VerticalFlowLayout(VerticalFlowLayout.TOP, 0, 0, false, false));
-		for (Test test : tests) {
-			JCheckBox checkBox = createCheckBox(test);
-			checkBoxesPanel.add(checkBox);
-		}
+		tests.forEach(test -> checkBoxesPanel.add(createCheckBox(test)));
+
 		checkBoxesAndSelectorPanel.add(checkBoxesPanel, BorderLayout.WEST);
 		testList = new JBList<>(tests);
 		testList.setFixedCellHeight(HEIGHT);
 		testList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		testList.setLayoutOrientation(JList.VERTICAL);
-		testList.addListSelectionListener(
-			e -> {
-				if (updating) {
-					return;
-				}
-				int index = testList.getSelectedIndex();
-				if (index >= 0 && index < testList.getItemsCount()) {
-					saveCurrentTest();
-					setSelectedTest(index);
-				}
+		testList.addListSelectionListener(e -> {
+			if (updating) {
+				return;
 			}
-		);
+			int index = testList.getSelectedIndex();
+			if (index >= 0 && index < testList.getItemsCount()) {
+				saveCurrentTest();
+				setSelectedTest(index);
+			}
+		});
 		checkBoxesAndSelectorPanel.add(testList, BorderLayout.CENTER);
 		return checkBoxesAndSelectorPanel;
 	}
@@ -118,106 +105,93 @@ public class EditTestsDialog extends DialogWrapper {
 	private JTextArea generateSavingTextArea() {
 		JTextArea result = new JTextArea();
 		result.setFont(Font.decode(Font.MONOSPACED));
-		result.getDocument().addDocumentListener(
-			new DocumentAdapter() {
-				@Override
-				protected void textChanged(@NotNull DocumentEvent e) {
-					saveCurrentTest();
-				}
+		result.getDocument().addDocumentListener(new DocumentAdapter() {
+			@Override
+			protected void textChanged(@NotNull DocumentEvent e) {
+				saveCurrentTest();
 			}
-		);
+		});
 		return result;
 	}
 
 	private JPanel createButtonPanel() {
 		JPanel buttonsPanel = new JPanel(new GridLayout(2, 2));
 		JButton allButton = new JButton("All");
-		allButton.addActionListener(
-			e -> {
-				int index = 0;
-				for (JCheckBox checkBox : checkBoxes) {
-					checkBox.setSelected(true);
-					tests.set(
-						index,
-						tests.get(index).setActive(true)
-					);
-					index++;
-				}
-				setSelectedTest(currentTest);
-			}
-		);
+		allButton.addActionListener(__ -> onClickAllTasks());
 		buttonsPanel.add(allButton);
 		JButton noneButton = new JButton("None");
-		noneButton.addActionListener(
-			e -> {
-				int index = 0;
-				for (JCheckBox checkBox : checkBoxes) {
-					checkBox.setSelected(false);
-					tests.set(
-						index,
-						tests.get(index).setActive(false)
-					);
-					index++;
-				}
-				setSelectedTest(currentTest);
-			}
-		);
+		noneButton.addActionListener(__ -> onClickNoneTask());
 		buttonsPanel.add(noneButton);
 		JButton newTestButton = new JButton("New");
-		newTestButton.addActionListener(
-			e -> {
-				saveCurrentTest();
-				int index = tests.size();
-				Test test = new Test("", "", index);
-				tests.add(test);
-				checkBoxesPanel.add(createCheckBox(test));
-				setSelectedTest(index);
-			}
-		);
+		newTestButton.addActionListener(__ -> onClickNewTest());
 		buttonsPanel.add(newTestButton);
 		JButton removeButton = new JButton("Remove");
-		removeButton.addActionListener(
-			e -> {
-				if (currentTest == -1) {
-					return;
-				}
-				while (checkBoxes.size() > currentTest) {
-					checkBoxesPanel.remove(checkBoxes.get(currentTest));
-					checkBoxes.remove(currentTest);
-				}
-				tests.remove(currentTest);
-				int size = tests.size();
-				for (int i = currentTest; i < size; i++) {
-					Test test = tests.get(i);
-					test = new Test(test.input, test.output, i, test.active);
-					tests.set(i, test);
-					checkBoxesPanel.add(createCheckBox(test));
-				}
-				if (currentTest < size) {
-					setSelectedTest(currentTest);
-					return;
-				}
-				if (size > 0) {
-					setSelectedTest(0);
-					return;
-				}
-				setSelectedTest(-1);
-			}
-		);
+		removeButton.addActionListener(__ -> onClickRemoveTask());
 		buttonsPanel.add(removeButton);
 		return buttonsPanel;
+	}
+
+	private void markAllTests(boolean on) {
+		for (int index = 0; index < checkBoxes.size(); ++index) {
+			checkBoxes.get(index).setSelected(on);
+			tests.set(index, tests.get(index).setActive(on));
+		}
+	}
+
+	private void onClickAllTasks() {
+		markAllTests(true);
+		setSelectedTest(currentTest);
+	}
+
+	private void onClickNoneTask() {
+		markAllTests(false);
+		setSelectedTest(currentTest);
+	}
+
+	private void onClickRemoveTask() {
+		if (currentTest == -1) {
+			return;
+		}
+		while (checkBoxes.size() > currentTest) {
+			checkBoxesPanel.remove(checkBoxes.get(currentTest));
+			checkBoxes.remove(currentTest);
+		}
+		tests.remove(currentTest);
+		int size = tests.size();
+		for (int i = currentTest; i < size; i++) {
+			Test test = tests.get(i);
+			test = new Test(test.input, test.output, i, test.active);
+			tests.set(i, test);
+			checkBoxesPanel.add(createCheckBox(test));
+		}
+		if (currentTest < size) {
+			setSelectedTest(currentTest);
+			return;
+		}
+		if (size > 0) {
+			setSelectedTest(0);
+			return;
+		}
+		setSelectedTest(-1);
+	}
+
+	private void onClickNewTest() {
+		saveCurrentTest();
+		int index = tests.size();
+		Test test = new Test("", "", index);
+		tests.add(test);
+		checkBoxesPanel.add(createCheckBox(test));
+		setSelectedTest(index);
 	}
 
 	private JCheckBox createCheckBox(Test test) {
 		JCheckBox checkBox = new JCheckBox("", test.active);
 		Dimension preferredSize = new Dimension(checkBox.getPreferredSize().width, HEIGHT);
 		checkBox.setPreferredSize(preferredSize);
-		checkBox.addActionListener(
-			e -> {
-				tests.set(test.index, tests.get(test.index).setActive(checkBox.isSelected()));
-				setSelectedTest(currentTest);
-			}
-		);
+		checkBox.addActionListener(e -> {
+			tests.set(test.index, tests.get(test.index).setActive(checkBox.isSelected()));
+			setSelectedTest(currentTest);
+		});
 		checkBoxes.add(checkBox);
 		return checkBox;
 	}
@@ -237,7 +211,7 @@ public class EditTestsDialog extends DialogWrapper {
 			outputPanel.setVisible(knowAnswer.isSelected());
 		}
 		currentTest = index;
-		testList.setListData(tests.toArray(new Test[tests.size()]));
+		testList.setListData(tests.toArray(new Test[0]));
 		if (testList.getSelectedIndex() != currentTest) {
 			testList.setSelectedIndex(currentTest);
 		}
@@ -250,20 +224,17 @@ public class EditTestsDialog extends DialogWrapper {
 		if (currentTest == -1) {
 			return;
 		}
-		tests.set(
+		tests.set(currentTest, new Test(
+			input.getText(),
+			knowAnswer.isSelected() ? output.getText() : null,
 			currentTest,
-			new Test(
-				input.getText(),
-				knowAnswer.isSelected() ? output.getText() : null,
-				currentTest,
-				checkBoxes.get(currentTest).isSelected()
-			)
-		);
+			checkBoxes.get(currentTest).isSelected()
+		));
 		outputPanel.setVisible(knowAnswer.isSelected());
 	}
 
 	public Test[] getTests() {
-		return tests.toArray(new Test[tests.size()]);
+		return tests.toArray(new Test[0]);
 	}
 
 	@Nullable
